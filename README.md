@@ -1,6 +1,6 @@
-# FlexiList
+# flexilist
 
-FlexiList is a modern, cross-platform mobile and web application designed for flexible and secure list tracking. It allows users to create custom lists with dynamic fields (text, number, date, etc.), ensuring that you can track *anything*—from grocery lists and daily tasks to project milestones and inventory—exactly the way you want.
+flexilist is a modern, cross-platform mobile and web application designed for flexible and secure list tracking. It allows users to create custom lists with dynamic fields (text, number, date, etc.), ensuring that you can track *anything*—from grocery lists and daily tasks to project milestones and inventory—exactly the way you want.
 
 ## Features
 
