@@ -22,6 +22,9 @@ export default function ListDetailScreen() {
     const [datePickerVisible, setDatePickerVisible] = useState(false);
     const [datePickerField, setDatePickerField] = useState<string | null>(null);
     const [tempDate, setTempDate] = useState(new Date());
+    const [search, setSearch] = useState('');
+    const [sortBy, setSortBy] = useState<'name' | 'date'>('date');
+    const [sortMenuVisible, setSortMenuVisible] = useState(false);
 
     useEffect(() => {
         const fetchList = async () => {
@@ -154,6 +157,24 @@ export default function ListDetailScreen() {
         </View>
     );
 
+    // Filter and sort items
+    const firstFieldId = list.fields[0]?.id;
+    const filteredAndSortedItems = items
+        .filter(item => {
+            if (!search || !firstFieldId) return true;
+            const value = item.data[firstFieldId]?.toString().toLowerCase() || '';
+            return value.includes(search.toLowerCase());
+        })
+        .sort((a, b) => {
+            if (sortBy === 'name' && firstFieldId) {
+                const aValue = a.data[firstFieldId]?.toString().toLowerCase() || '';
+                const bValue = b.data[firstFieldId]?.toString().toLowerCase() || '';
+                return aValue.localeCompare(bValue);
+            } else {
+                return b.createdAt - a.createdAt;
+            }
+        });
+
     return (
         <View style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
@@ -173,11 +194,32 @@ export default function ListDetailScreen() {
                             {!!list.description && <Text style={styles.headerDescription}>{list.description}</Text>}
                         </View>
                     </View>
+
+                    {/* Search and Sort Bar */}
+                    <View style={styles.searchSortContainer}>
+                        <View style={styles.searchBar}>
+                            <Ionicons name="search" size={20} color="#9ca3af" />
+                            <TextInput
+                                placeholder="Search items..."
+                                value={search}
+                                onChangeText={setSearch}
+                                style={styles.searchInput}
+                                placeholderTextColor="#9ca3af"
+                            />
+                        </View>
+                        <TouchableOpacity
+                            onPress={() => setSortMenuVisible(!sortMenuVisible)}
+                            style={styles.sortButton}
+                        >
+                            <Ionicons name="options-outline" size={24} color="#1f2937" />
+                        </TouchableOpacity>
+                    </View>
+
                 </View>
             </LinearGradient>
 
             <FlatList
-                data={items}
+                data={filteredAndSortedItems}
                 keyExtractor={item => item.id}
                 contentContainerStyle={styles.listContent}
                 renderItem={({ item }) => (
@@ -224,6 +266,38 @@ export default function ListDetailScreen() {
                     </View>
                 )}
             />
+
+            {sortMenuVisible && (
+                <View style={styles.sortDropdownOverlay}>
+                    <View style={styles.sortDropdown}>
+                        <Text style={styles.dropdownTitle}>Sort by</Text>
+
+                        <TouchableOpacity
+                            style={[styles.dropdownItem, sortBy === 'date' && styles.dropdownItemActive]}
+                            onPress={() => {
+                                setSortBy('date');
+                                setSortMenuVisible(false);
+                            }}
+                        >
+                            <Ionicons name="time-outline" size={20} color={sortBy === 'date' ? '#2563EB' : '#4b5563'} />
+                            <Text style={[styles.dropdownText, sortBy === 'date' && styles.dropdownTextActive]}>Date Created</Text>
+                            {sortBy === 'date' && <Ionicons name="checkmark" size={16} color="#2563EB" style={{ marginLeft: 'auto' }} />}
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[styles.dropdownItem, sortBy === 'name' && styles.dropdownItemActive]}
+                            onPress={() => {
+                                setSortBy('name');
+                                setSortMenuVisible(false);
+                            }}
+                        >
+                            <Ionicons name="text-outline" size={20} color={sortBy === 'name' ? '#2563EB' : '#4b5563'} />
+                            <Text style={[styles.dropdownText, sortBy === 'name' && styles.dropdownTextActive]}>Alphabetical</Text>
+                            {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#2563EB" style={{ marginLeft: 'auto' }} />}
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
 
             <TouchableOpacity
                 onPress={openAddModal}
@@ -338,6 +412,7 @@ export default function ListDetailScreen() {
 
 const styles = StyleSheet.create({
     container: {
+        position: 'relative',
         flex: 1,
         backgroundColor: '#ffffff',
     },
@@ -366,6 +441,84 @@ const styles = StyleSheet.create({
     backButton: {
         marginRight: 16,
         padding: 4,
+    },
+    searchSortContainer: {
+        flexDirection: 'row',
+        gap: 12,
+        marginTop: 32,
+        alignItems: 'center',
+    },
+    searchBar: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        borderRadius: 16,
+        paddingHorizontal: 16,
+        paddingVertical: 0,
+        gap: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 1,
+    },
+    searchInput: {
+        flex: 1,
+        fontSize: 16,
+        color: '#1f2937',
+        paddingVertical: 14,
+        paddingHorizontal: 6
+    },
+    sortButton: {
+        width: 44,
+        height: 44,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    sortDropdown: {
+        backgroundColor: 'white',
+        borderRadius: 16,
+        padding: 8,
+        width: 200,
+        borderWidth: 1,
+        borderColor: '#f3f4f6',
+        shadowOpacity: 0,
+        elevation: 0,
+    },
+    sortDropdownOverlay: {
+        position: 'absolute',
+        top: 120,
+        right: 20,
+        zIndex: 2000,
+    },
+    dropdownTitle: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#9ca3af',
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    dropdownItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 12,
+        borderRadius: 8,
+        gap: 12,
+    },
+    dropdownItemActive: {
+        backgroundColor: '#eff6ff',
+    },
+    dropdownText: {
+        fontSize: 16,
+        color: '#4b5563',
+        fontWeight: '500',
+    },
+    dropdownTextActive: {
+        color: '#2563EB',
+        fontWeight: '600',
     },
     headerTitle: {
         fontSize: 28,
