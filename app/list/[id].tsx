@@ -8,7 +8,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { doc, getDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { Alert, FlatList, Modal, Platform, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Modal, Platform, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
 export default function ListDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -181,250 +181,253 @@ export default function ListDetailScreen() {
         });
 
     return (
-        <View style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-            <LinearGradient
-                colors={['#ffffff', '#f9fafb']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.header}
-            >
-                <View style={styles.headerContent}>
-                    <View style={styles.titleRow}>
-                        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                            <Ionicons name="arrow-back" size={24} color="#1f2937" />
-                        </TouchableOpacity>
-                        <View>
-                            <Text style={styles.headerTitle}>{list.title}</Text>
-                            {!!list.description && <Text style={styles.headerDescription}>{list.description}</Text>}
+        <TouchableWithoutFeedback onPress={() => setSortMenuVisible(false)}>
+            <View style={styles.container}>
+                <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
+                <LinearGradient
+                    colors={['#ffffff', '#f9fafb']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.header}
+                >
+                    <View style={styles.headerContent}>
+                        <View style={styles.titleRow}>
+                            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                                <Ionicons name="arrow-back" size={24} color="#1f2937" />
+                            </TouchableOpacity>
+                            <View>
+                                <Text style={styles.headerTitle}>{list.title}</Text>
+                                {!!list.description && <Text style={styles.headerDescription}>{list.description}</Text>}
+                            </View>
                         </View>
-                    </View>
 
-                    {/* Search and Sort Bar */}
-                    <View style={styles.searchSortContainer}>
-                        <View style={styles.searchBar}>
-                            <Ionicons name="search" size={20} color="#9ca3af" />
-                            <TextInput
-                                placeholder="Search items..."
-                                value={search}
-                                onChangeText={setSearch}
-                                style={styles.searchInput}
-                                placeholderTextColor="#9ca3af"
-                            />
-                        </View>
-                        <TouchableOpacity
-                            onPress={() => setShowCompleted(!showCompleted)}
-                            style={styles.sortButton}
-                            activeOpacity={0.7}
-                            {...(Platform.OS === 'web' ? { title: showCompleted ? "Hide Completed Items" : "Show Completed Items" } as any : {})}
-                        >
-                            <Ionicons
-                                name={showCompleted ? "eye-outline" : "eye-off-outline"}
-                                size={24}
-                                color="#1f2937"
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => setSortMenuVisible(!sortMenuVisible)}
-                            style={styles.sortButton}
-                            activeOpacity={0.7}
-                        >
-                            <Ionicons name="options-outline" size={24} color="#1f2937" />
-                        </TouchableOpacity>
-                    </View>
+                        {/* Search and Sort Bar */}
+                        <View style={styles.searchSortContainer}>
+                            <View style={styles.searchBar}>
+                                <Ionicons name="search" size={20} color="#9ca3af" />
+                                <TextInput
+                                    placeholder="Search items..."
+                                    value={search}
+                                    onChangeText={setSearch}
+                                    style={styles.searchInput}
+                                    placeholderTextColor="#9ca3af"
+                                />
+                            </View>
+                            <TouchableOpacity
+                                onPress={() => setShowCompleted(!showCompleted)}
+                                style={styles.sortButton}
+                                activeOpacity={0.7}
+                                {...(Platform.OS === 'web' ? { title: showCompleted ? "Hide Completed Items" : "Show Completed Items" } as any : {})}
+                            >
+                                <Ionicons
+                                    name={showCompleted ? "eye-outline" : "eye-off-outline"}
+                                    size={24}
+                                    color="#1f2937"
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    setSortMenuVisible(!sortMenuVisible);
+                                }}
+                                style={styles.sortButton}
+                                activeOpacity={0.7}
+                            >
+                                <Ionicons name="options-outline" size={24} color="#1f2937" />
+                            </TouchableOpacity>
 
-                </View>
-            </LinearGradient>
+                            {sortMenuVisible && (
+                                <View style={styles.sortDropdown}>
+                                    <Text style={styles.dropdownTitle}>Sort by</Text>
 
-            <FlatList
-                data={filteredAndSortedItems}
-                keyExtractor={item => item.id}
-                contentContainerStyle={styles.listContent}
-                renderItem={({ item }) => (
-                    <View style={[styles.itemCard, item.completed && styles.itemCardCompleted]}>
-                        <TouchableOpacity
-                            onPress={() => toggleComplete(item.id, item.completed || false)}
-                            style={styles.checkbox}
-                        >
-                            <Ionicons
-                                name={item.completed ? "checkbox" : "square-outline"}
-                                size={24}
-                                color={item.completed ? "#10b981" : "#9ca3af"}
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => openEditModal(item)}
-                            style={styles.itemContent}
-                        >
-                            {list.fields.length > 0 && (
-                                <View style={styles.itemRow}>
-                                    {/* First field as main text */}
-                                    <Text style={[styles.itemMainText, item.completed && styles.itemMainTextCompleted]}>
-                                        {list.fields[0].type === 'date'
-                                            ? (item.data[list.fields[0].id] || 'No date')
-                                            : item.data[list.fields[0].id] || 'Untitled'}
-                                    </Text>
+                                    <TouchableOpacity
+                                        style={[styles.dropdownItem, sortBy === 'date' && styles.dropdownItemActive]}
+                                        onPress={() => {
+                                            setSortBy('date');
+                                            setSortMenuVisible(false);
+                                        }}
+                                    >
+                                        <Ionicons name="time-outline" size={20} color={sortBy === 'date' ? '#2563EB' : '#4b5563'} />
+                                        <Text style={[styles.dropdownText, sortBy === 'date' && styles.dropdownTextActive]}>Date Created</Text>
+                                        {sortBy === 'date' && <Ionicons name="checkmark" size={16} color="#2563EB" style={{ marginLeft: 'auto' }} />}
+                                    </TouchableOpacity>
 
-                                    {/* Remaining fields as labels */}
-                                    {list.fields.length > 1 && list.fields.slice(1).map(field => (
-                                        item.data[field.id] && (
-                                            <View key={field.id} style={styles.labelChip}>
-                                                <Text style={[styles.labelText, item.completed && styles.labelTextCompleted]}>
-                                                    {field.name}: {item.data[field.id]}
-                                                </Text>
-                                            </View>
-                                        )
-                                    ))}
+                                    <TouchableOpacity
+                                        style={[styles.dropdownItem, sortBy === 'name' && styles.dropdownItemActive]}
+                                        onPress={() => {
+                                            setSortBy('name');
+                                            setSortMenuVisible(false);
+                                        }}
+                                    >
+                                        <Ionicons name="text-outline" size={20} color={sortBy === 'name' ? '#2563EB' : '#4b5563'} />
+                                        <Text style={[styles.dropdownText, sortBy === 'name' && styles.dropdownTextActive]}>Alphabetical</Text>
+                                        {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#2563EB" style={{ marginLeft: 'auto' }} />}
+                                    </TouchableOpacity>
                                 </View>
                             )}
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => deleteItem(item.id)} style={styles.deleteButton}>
-                            <Ionicons name="trash-outline" size={20} color="#EF4444" />
-                        </TouchableOpacity>
+                        </View>
+
                     </View>
-                )}
-            />
+                </LinearGradient>
 
-            {sortMenuVisible && (
-                <View style={styles.sortDropdownOverlay}>
-                    <View style={styles.sortDropdown}>
-                        <Text style={styles.dropdownTitle}>Sort by</Text>
+                <FlatList
+                    data={filteredAndSortedItems}
+                    keyExtractor={item => item.id}
+                    contentContainerStyle={styles.listContent}
+                    renderItem={({ item }) => (
+                        <View style={[styles.itemCard, item.completed && styles.itemCardCompleted]}>
+                            <TouchableOpacity
+                                onPress={() => toggleComplete(item.id, item.completed || false)}
+                                style={styles.checkbox}
+                            >
+                                <Ionicons
+                                    name={item.completed ? "checkbox" : "square-outline"}
+                                    size={24}
+                                    color={item.completed ? "#10b981" : "#9ca3af"}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => openEditModal(item)}
+                                style={styles.itemContent}
+                            >
+                                {list.fields.length > 0 && (
+                                    <View style={styles.itemRow}>
+                                        {/* First field as main text */}
+                                        <Text style={[styles.itemMainText, item.completed && styles.itemMainTextCompleted]}>
+                                            {list.fields[0].type === 'date'
+                                                ? (item.data[list.fields[0].id] || 'No date')
+                                                : item.data[list.fields[0].id] || 'Untitled'}
+                                        </Text>
 
-                        <TouchableOpacity
-                            style={[styles.dropdownItem, sortBy === 'date' && styles.dropdownItemActive]}
-                            onPress={() => {
-                                setSortBy('date');
-                                setSortMenuVisible(false);
-                            }}
-                        >
-                            <Ionicons name="time-outline" size={20} color={sortBy === 'date' ? '#2563EB' : '#4b5563'} />
-                            <Text style={[styles.dropdownText, sortBy === 'date' && styles.dropdownTextActive]}>Date Created</Text>
-                            {sortBy === 'date' && <Ionicons name="checkmark" size={16} color="#2563EB" style={{ marginLeft: 'auto' }} />}
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={[styles.dropdownItem, sortBy === 'name' && styles.dropdownItemActive]}
-                            onPress={() => {
-                                setSortBy('name');
-                                setSortMenuVisible(false);
-                            }}
-                        >
-                            <Ionicons name="text-outline" size={20} color={sortBy === 'name' ? '#2563EB' : '#4b5563'} />
-                            <Text style={[styles.dropdownText, sortBy === 'name' && styles.dropdownTextActive]}>Alphabetical</Text>
-                            {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#2563EB" style={{ marginLeft: 'auto' }} />}
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            )}
-
-            <TouchableOpacity
-                onPress={openAddModal}
-                style={styles.fab}
-            >
-                <Ionicons name="add" size={28} color="white" />
-            </TouchableOpacity>
-
-            <Modal visible={modalVisible} animationType="slide" transparent={true}>
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>{editingId ? 'Edit Item' : 'Add Item'}</Text>
-                        <TouchableOpacity onPress={() => setModalVisible(false)}>
-                            <Text style={styles.cancelButton}>Cancel</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <ScrollView style={styles.modalContent}>
-                        {list.fields.map((field, index) => (
-                            <View key={field.id} style={styles.inputGroup}>
-                                <Text style={styles.label}>
-                                    {field.name}{(index === 0 || field.required) && ' *'}
-                                </Text>
-                                {renderFieldInput(field)}
-                                {fieldErrors[field.id] && (
-                                    <View style={styles.errorContainer}>
-                                        <Ionicons name="alert-circle" size={14} color="#ef4444" />
-                                        <Text style={styles.errorText}>{fieldErrors[field.id]}</Text>
+                                        {/* Remaining fields as labels */}
+                                        {list.fields.length > 1 && list.fields.slice(1).map(field => (
+                                            item.data[field.id] && (
+                                                <View key={field.id} style={styles.labelChip}>
+                                                    <Text style={[styles.labelText, item.completed && styles.labelTextCompleted]}>
+                                                        {field.name}: {item.data[field.id]}
+                                                    </Text>
+                                                </View>
+                                            )
+                                        ))}
                                     </View>
                                 )}
-                            </View>
-                        ))}
-                    </ScrollView>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => deleteItem(item.id)} style={styles.deleteButton}>
+                                <Ionicons name="trash-outline" size={20} color="#EF4444" />
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                />
 
-                    <View style={styles.modalFooter}>
-                        <Button title="Save Item" onPress={handleSaveItem} />
+                <TouchableOpacity
+                    onPress={openAddModal}
+                    style={styles.fab}
+                >
+                    <Ionicons name="add" size={28} color="white" />
+                </TouchableOpacity>
+
+                <Modal visible={modalVisible} animationType="slide" transparent={true}>
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>{editingId ? 'Edit Item' : 'Add Item'}</Text>
+                            <TouchableOpacity onPress={() => setModalVisible(false)}>
+                                <Text style={styles.cancelButton}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        <ScrollView style={styles.modalContent}>
+                            {list.fields.map((field, index) => (
+                                <View key={field.id} style={styles.inputGroup}>
+                                    <Text style={styles.label}>
+                                        {field.name}{(index === 0 || field.required) && ' *'}
+                                    </Text>
+                                    {renderFieldInput(field)}
+                                    {fieldErrors[field.id] && (
+                                        <View style={styles.errorContainer}>
+                                            <Ionicons name="alert-circle" size={14} color="#ef4444" />
+                                            <Text style={styles.errorText}>{fieldErrors[field.id]}</Text>
+                                        </View>
+                                    )}
+                                </View>
+                            ))}
+                        </ScrollView>
+
+                        <View style={styles.modalFooter}>
+                            <Button title="Save Item" onPress={handleSaveItem} />
+                        </View>
                     </View>
-                </View>
-            </Modal>
+                </Modal>
 
-            {/* Date Picker Modal */}
-            {datePickerVisible && (
-                Platform.OS === 'web' ? (
-                    <Modal
-                        visible={datePickerVisible}
-                        transparent={true}
-                        animationType="fade"
-                        onRequestClose={() => setDatePickerVisible(false)}
-                    >
-                        <View style={styles.modalOverlay}>
-                            <View style={styles.datePickerModal}>
-                                <Text style={styles.datePickerTitle}>Select Date</Text>
-                                <input
-                                    type="date"
-                                    value={tempDate.toISOString().split('T')[0]}
-                                    onChange={(e) => {
-                                        const date = new Date(e.target.value);
-                                        if (!isNaN(date.getTime())) {
-                                            setTempDate(date);
-                                        }
-                                    }}
-                                    style={{
-                                        width: '100%',
-                                        padding: 16,
-                                        fontSize: 16,
-                                        borderRadius: 12,
-                                        border: '1px solid #e5e7eb',
-                                        marginBottom: 24,
-                                    }}
-                                />
-                                <View style={styles.datePickerButtons}>
-                                    <TouchableOpacity
-                                        onPress={() => setDatePickerVisible(false)}
-                                        style={[styles.datePickerButton, styles.datePickerCancelButton]}
-                                    >
-                                        <Text style={styles.datePickerCancelText}>Cancel</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            if (datePickerField) {
-                                                const formattedDate = tempDate.toISOString().split('T')[0];
-                                                setCurrentItem({ ...currentItem, [datePickerField]: formattedDate });
+                {/* Date Picker Modal */}
+                {datePickerVisible && (
+                    Platform.OS === 'web' ? (
+                        <Modal
+                            visible={datePickerVisible}
+                            transparent={true}
+                            animationType="fade"
+                            onRequestClose={() => setDatePickerVisible(false)}
+                        >
+                            <View style={styles.modalOverlay}>
+                                <View style={styles.datePickerModal}>
+                                    <Text style={styles.datePickerTitle}>Select Date</Text>
+                                    <input
+                                        type="date"
+                                        value={tempDate.toISOString().split('T')[0]}
+                                        onChange={(e) => {
+                                            const date = new Date(e.target.value);
+                                            if (!isNaN(date.getTime())) {
+                                                setTempDate(date);
                                             }
-                                            setDatePickerVisible(false);
                                         }}
-                                        style={[styles.datePickerButton, styles.datePickerConfirmButton]}
-                                    >
-                                        <Text style={styles.datePickerConfirmText}>Confirm</Text>
-                                    </TouchableOpacity>
+                                        style={{
+                                            width: '100%',
+                                            padding: 16,
+                                            fontSize: 16,
+                                            borderRadius: 12,
+                                            border: '1px solid #e5e7eb',
+                                            marginBottom: 24,
+                                        }}
+                                    />
+                                    <View style={styles.datePickerButtons}>
+                                        <TouchableOpacity
+                                            onPress={() => setDatePickerVisible(false)}
+                                            style={[styles.datePickerButton, styles.datePickerCancelButton]}
+                                        >
+                                            <Text style={styles.datePickerCancelText}>Cancel</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                if (datePickerField) {
+                                                    const formattedDate = tempDate.toISOString().split('T')[0];
+                                                    setCurrentItem({ ...currentItem, [datePickerField]: formattedDate });
+                                                }
+                                                setDatePickerVisible(false);
+                                            }}
+                                            style={[styles.datePickerButton, styles.datePickerConfirmButton]}
+                                        >
+                                            <Text style={styles.datePickerConfirmText}>Confirm</Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
                             </View>
-                        </View>
-                    </Modal>
-                ) : (
-                    <DateTimePicker
-                        value={tempDate}
-                        mode="date"
-                        display="default"
-                        onChange={(event, selectedDate) => {
-                            if (event.type === 'set' && selectedDate && datePickerField) {
-                                const formattedDate = selectedDate.toISOString().split('T')[0];
-                                setCurrentItem({ ...currentItem, [datePickerField]: formattedDate });
-                            }
-                            setDatePickerVisible(false);
-                        }}
-                    />
-                )
-            )}
-        </View>
+                        </Modal>
+                    ) : (
+                        <DateTimePicker
+                            value={tempDate}
+                            mode="date"
+                            display="default"
+                            onChange={(event, selectedDate) => {
+                                if (event.type === 'set' && selectedDate && datePickerField) {
+                                    const formattedDate = selectedDate.toISOString().split('T')[0];
+                                    setCurrentItem({ ...currentItem, [datePickerField]: formattedDate });
+                                }
+                                setDatePickerVisible(false);
+                            }}
+                        />
+                    )
+                )}
+            </View>
+        </TouchableWithoutFeedback>
     );
 }
 
@@ -446,6 +449,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         borderBottomLeftRadius: 32,
         borderBottomRightRadius: 32,
+        zIndex: 100, // Ensure header (and dropdowns) stack above list
     },
     headerContent: {
         maxWidth: 800,
@@ -465,6 +469,7 @@ const styles = StyleSheet.create({
         gap: 12,
         marginTop: 32,
         alignItems: 'center',
+        zIndex: 102, // Ensure dropdown renders above list
     },
     searchBar: {
         flex: 1,
@@ -496,6 +501,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     sortDropdown: {
+        position: 'absolute',
+        top: 60,
+        right: 0,
         backgroundColor: 'white',
         borderRadius: 16,
         padding: 8,
@@ -504,12 +512,7 @@ const styles = StyleSheet.create({
         borderColor: '#f3f4f6',
         shadowOpacity: 0,
         elevation: 0,
-    },
-    sortDropdownOverlay: {
-        position: 'absolute',
-        top: 120,
-        right: 20,
-        zIndex: 2000,
+        zIndex: 1000,
     },
     dropdownTitle: {
         fontSize: 12,
