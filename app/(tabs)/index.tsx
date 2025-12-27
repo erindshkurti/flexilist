@@ -76,9 +76,9 @@ export default function HomeScreen() {
         style={styles.header}
       >
         <View style={styles.headerContent}>
-          <View>
-            <Text style={styles.greeting}>Welcome back</Text>
-            <Text style={styles.headerTitle}>My Lists</Text>
+          <View style={styles.titleRow}>
+            <Ionicons name="list-outline" size={32} color="#1f2937" style={{ marginRight: 12 }} />
+            <Text style={styles.headerTitle}>FlexiList</Text>
           </View>
           <View style={styles.headerButtons}>
             <TouchableOpacity
@@ -143,7 +143,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#ffffff',
   },
   header: {
     paddingTop: 60,
@@ -161,16 +161,14 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
   },
-  greeting: {
-    fontSize: 14,
-    color: '#6b7280',
-    fontWeight: '500',
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   headerTitle: {
     fontSize: 32,
     fontWeight: '800',
     color: '#1f2937',
-    marginTop: 4,
   },
   headerButtons: {
     flexDirection: 'row',
@@ -317,6 +315,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 80,
+    backgroundColor: '#ffffff',
   },
   emptyIcon: {
     marginBottom: 24,
