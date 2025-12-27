@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
     maxWidth: 800,
     width: '100%',
     alignSelf: 'center',
-    zIndex: 101,
+    zIndex: 200, // Higher than searchContainer to ensure dropdown appears on top
   },
   titleRow: {
     flexDirection: 'row',
