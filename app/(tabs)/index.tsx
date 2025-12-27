@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { Alert, FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
 export default function HomeScreen() {
-  const { lists, loading } = useLists();
+  const { lists, loading, deleteList } = useLists();
   const { user, signOut } = useAuth();
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'date'>('date');
@@ -22,6 +22,30 @@ export default function HomeScreen() {
     } catch (error: any) {
       Alert.alert('Sign Out Failed', error.message);
     }
+  };
+
+  const handleDeleteList = async (listId: string, listTitle: string) => {
+    Alert.alert(
+      'Delete List',
+      `Are you sure you want to delete "${listTitle}"? This action cannot be undone.`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteList(listId);
+            } catch (error: any) {
+              Alert.alert('Error', 'Failed to delete list');
+            }
+          }
+        }
+      ]
+    );
   };
 
   const filteredLists = lists
@@ -65,7 +89,19 @@ export default function HomeScreen() {
           )}
         </View>
       </View>
-      <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+      <View style={styles.listCardActions}>
+        <TouchableOpacity
+          onPress={(e) => {
+            e.stopPropagation();
+            handleDeleteList(item.id, item.title);
+          }}
+          style={styles.deleteButton}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="trash-outline" size={20} color="#ef4444" />
+        </TouchableOpacity>
+        <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+      </View>
     </TouchableOpacity>
   );
 
@@ -444,6 +480,14 @@ const styles = StyleSheet.create({
   },
   listCardContent: {
     flex: 1,
+  },
+  listCardActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  deleteButton: {
+    padding: 4,
   },
   listHeader: {
     flexDirection: 'row',
