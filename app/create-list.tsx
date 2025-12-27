@@ -1,11 +1,11 @@
 import { Button } from '@/components/Button';
-import { ScreenLayout } from '@/components/ScreenLayout';
 import { useLists } from '@/hooks/useLists';
 import { ListField } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function CreateListScreen() {
     const [title, setTitle] = useState('');
@@ -50,93 +50,100 @@ export default function CreateListScreen() {
 
         setLoading(true);
         try {
+            console.log('Creating list with:', { title, description, fields });
             await createList(title, description, fields);
+            console.log('List created successfully, navigating back...');
             router.back();
         } catch (error) {
-            Alert.alert("Error", "Failed to create list.");
-        } finally {
+            console.error('Error creating list:', error);
+            Alert.alert("Error", `Failed to create list: ${error instanceof Error ? error.message : 'Unknown error'}`);
             setLoading(false);
         }
     };
 
     return (
-        <ScreenLayout>
-            <View className="flex-row items-center mb-6">
-                <TouchableOpacity onPress={() => router.back()} className="mr-4">
-                    <Ionicons name="arrow-back" size={24} color="black" />
-                </TouchableOpacity>
-                <Text className="text-2xl font-bold dark:text-white">Create New List</Text>
-            </View>
-
-            <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-                <View className="mb-6 space-y-4">
-                    <View>
-                        <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">List Title</Text>
-                        <TextInput
-                            value={title}
-                            onChangeText={setTitle}
-                            placeholder="e.g., Grocery List"
-                            className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white"
-                        />
-                    </View>
-
-                    <View>
-                        <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description (Optional)</Text>
-                        <TextInput
-                            value={description}
-                            onChangeText={setDescription}
-                            placeholder="What is this list for?"
-                            className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white"
-                        />
+        <View style={styles.container}>
+            <LinearGradient
+                colors={['#ffffff', '#f9fafb']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.header}
+            >
+                <View style={styles.headerContent}>
+                    <View style={styles.titleRow}>
+                        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                            <Ionicons name="arrow-back" size={24} color="#1f2937" />
+                        </TouchableOpacity>
+                        <Text style={styles.headerTitle}>Create New List</Text>
                     </View>
                 </View>
+            </LinearGradient>
 
-                <View className="mb-6">
-                    <View className="flex-row justify-between items-center mb-4">
-                        <Text className="text-lg font-semibold dark:text-white">Fields</Text>
-                        <TouchableOpacity onPress={addField} className="flex-row items-center">
-                            <Ionicons name="add-circle" size={20} color="#2563EB" />
-                            <Text className="text-blue-600 ml-1 font-medium">Add Field</Text>
+            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+                <View style={styles.section}>
+                    <Text style={styles.label}>List Title</Text>
+                    <TextInput
+                        value={title}
+                        onChangeText={setTitle}
+                        placeholder="e.g., Grocery List"
+                        placeholderTextColor="#9ca3af"
+                        style={styles.input}
+                    />
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.label}>Description (Optional)</Text>
+                    <TextInput
+                        value={description}
+                        onChangeText={setDescription}
+                        placeholder="What is this list for?"
+                        placeholderTextColor="#9ca3af"
+                        style={styles.input}
+                    />
+                </View>
+
+                <View style={styles.section}>
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>Fields</Text>
+                        <TouchableOpacity onPress={addField} style={styles.addFieldButton}>
+                            <Ionicons name="add-circle" size={20} color="#1f2937" />
+                            <Text style={styles.addFieldText}>Add Field</Text>
                         </TouchableOpacity>
                     </View>
 
                     {fields.map((field, index) => (
-                        <View key={field.id} className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl mb-3 border border-gray-200 dark:border-gray-700">
-                            <View className="flex-row justify-between items-start mb-3">
-                                <Text className="text-xs font-bold text-gray-400 uppercase">Field {index + 1}</Text>
+                        <View key={field.id} style={styles.fieldCard}>
+                            <View style={styles.fieldHeader}>
+                                <Text style={styles.fieldLabel}>Field {index + 1}</Text>
                                 {fields.length > 1 && (
                                     <TouchableOpacity onPress={() => removeField(field.id)}>
-                                        <Ionicons name="trash-outline" size={18} color="#EF4444" />
+                                        <Ionicons name="trash-outline" size={18} color="#ef4444" />
                                     </TouchableOpacity>
                                 )}
                             </View>
 
-                            <View className="flex-row space-x-3">
-                                <View className="flex-1">
+                            <View style={styles.fieldRow}>
+                                <View style={styles.fieldNameContainer}>
                                     <TextInput
                                         value={field.name}
                                         onChangeText={(text) => updateField(field.id, 'name', text)}
                                         placeholder="Field Name"
-                                        className="bg-white dark:bg-gray-900 p-3 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white"
+                                        placeholderTextColor="#9ca3af"
+                                        style={styles.fieldInput}
                                     />
                                 </View>
-                                <View className="w-1/3">
-                                    {/* Simple Type Selector - could be a modal or dropdown */}
-                                    <View className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden">
-                                        {/* For simplicity, just cycling types on tap or hardcoded for now. 
-                         Ideally use a Picker or Modal. I'll implement a simple cycler for MVP. */}
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                const types: ListField['type'][] = ['text', 'number', 'boolean', 'date'];
-                                                const currentIdx = types.indexOf(field.type);
-                                                const nextType = types[(currentIdx + 1) % types.length];
-                                                updateField(field.id, 'type', nextType);
-                                            }}
-                                            className="p-3 items-center"
-                                        >
-                                            <Text className="text-gray-900 dark:text-white capitalize">{field.type}</Text>
-                                        </TouchableOpacity>
-                                    </View>
+                                <View style={styles.fieldTypeContainer}>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            const types: ListField['type'][] = ['text', 'number', 'boolean', 'date'];
+                                            const currentIdx = types.indexOf(field.type);
+                                            const nextType = types[(currentIdx + 1) % types.length];
+                                            updateField(field.id, 'type', nextType);
+                                        }}
+                                        style={styles.typeButton}
+                                    >
+                                        <Text style={styles.typeText}>{field.type}</Text>
+                                    </TouchableOpacity>
                                 </View>
                             </View>
                         </View>
@@ -144,9 +151,152 @@ export default function CreateListScreen() {
                 </View>
             </ScrollView>
 
-            <View className="pt-4 border-t border-gray-100 dark:border-gray-800">
+            <View style={styles.footer}>
                 <Button title="Create List" onPress={handleCreate} loading={loading} />
             </View>
-        </ScreenLayout>
+        </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#ffffff',
+    },
+    header: {
+        paddingTop: 60,
+        paddingBottom: 24,
+        paddingHorizontal: 20,
+        borderBottomLeftRadius: 32,
+        borderBottomRightRadius: 32,
+    },
+    headerContent: {
+        maxWidth: 800,
+        width: '100%',
+        alignSelf: 'center',
+    },
+    titleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    backButton: {
+        marginRight: 16,
+        padding: 4,
+    },
+    headerTitle: {
+        fontSize: 28,
+        fontWeight: '800',
+        color: '#1f2937',
+    },
+    scrollView: {
+        flex: 1,
+    },
+    scrollContent: {
+        padding: 20,
+        maxWidth: 800,
+        width: '100%',
+        alignSelf: 'center',
+    },
+    section: {
+        marginBottom: 24,
+    },
+    label: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#374151',
+        marginBottom: 8,
+    },
+    input: {
+        backgroundColor: '#f9fafb',
+        borderWidth: 1,
+        borderColor: '#e5e7eb',
+        borderRadius: 12,
+        padding: 16,
+        fontSize: 16,
+        color: '#1f2937',
+    },
+    sectionHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#1f2937',
+    },
+    addFieldButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+    },
+    addFieldText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#1f2937',
+    },
+    fieldCard: {
+        backgroundColor: '#f9fafb',
+        borderWidth: 1,
+        borderColor: '#e5e7eb',
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 12,
+    },
+    fieldHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    fieldLabel: {
+        fontSize: 12,
+        fontWeight: '700',
+        color: '#9ca3af',
+        textTransform: 'uppercase',
+    },
+    fieldRow: {
+        flexDirection: 'row',
+        gap: 12,
+    },
+    fieldNameContainer: {
+        flex: 1,
+    },
+    fieldInput: {
+        backgroundColor: '#ffffff',
+        borderWidth: 1,
+        borderColor: '#e5e7eb',
+        borderRadius: 8,
+        padding: 12,
+        fontSize: 15,
+        color: '#1f2937',
+    },
+    fieldTypeContainer: {
+        width: 110,
+    },
+    typeButton: {
+        backgroundColor: '#ffffff',
+        borderWidth: 1,
+        borderColor: '#e5e7eb',
+        borderRadius: 8,
+        padding: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    typeText: {
+        fontSize: 15,
+        color: '#1f2937',
+        textTransform: 'capitalize',
+        fontWeight: '500',
+    },
+    footer: {
+        padding: 20,
+        borderTopWidth: 1,
+        borderTopColor: '#e5e7eb',
+        backgroundColor: '#ffffff',
+        maxWidth: 800,
+        width: '100%',
+        alignSelf: 'center',
+    },
+});

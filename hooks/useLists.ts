@@ -35,19 +35,29 @@ export const useLists = () => {
         });
 
         return unsubscribe;
-    }, [user]);
+    }, [user?.uid]); // Only re-subscribe when user ID changes
 
     const createList = async (title: string, description: string, fields: ListField[]) => {
-        if (!user) return;
+        if (!user) {
+            console.error('Cannot create list: No user logged in');
+            throw new Error('You must be logged in to create a list');
+        }
 
-        await addDoc(collection(db, 'lists'), {
-            userId: user.uid,
-            title,
-            description,
-            fields,
-            createdAt: Date.now(),
-            updatedAt: Date.now()
-        });
+        try {
+            console.log('Adding list to Firestore...');
+            const docRef = await addDoc(collection(db, 'lists'), {
+                userId: user.uid,
+                title,
+                description,
+                fields,
+                createdAt: Date.now(),
+                updatedAt: Date.now()
+            });
+            console.log('List created with ID:', docRef.id);
+        } catch (error) {
+            console.error('Firestore error:', error);
+            throw error;
+        }
     };
 
     const deleteList = async (listId: string) => {

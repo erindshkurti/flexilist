@@ -80,20 +80,12 @@ export default function HomeScreen() {
             <Ionicons name="list-outline" size={32} color="#1f2937" style={{ marginRight: 12 }} />
             <Text style={styles.headerTitle}>FlexiList</Text>
           </View>
-          <View style={styles.headerButtons}>
-            <TouchableOpacity
-              onPress={handleSignOut}
-              style={styles.signOutButton}
-            >
-              <Ionicons name="log-out-outline" size={24} color="#1f2937" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => router.push('/create-list')}
-              style={styles.addButton}
-            >
-              <Ionicons name="add" size={28} color="white" />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            onPress={handleSignOut}
+            style={styles.signOutButton}
+          >
+            <Ionicons name="log-out-outline" size={24} color="#1f2937" />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.searchContainer}>
@@ -136,6 +128,14 @@ export default function HomeScreen() {
           }
         />
       </View>
+
+      {/* Floating Action Button */}
+      <TouchableOpacity
+        onPress={() => router.push('/create-list')}
+        style={styles.fab}
+      >
+        <Ionicons name="add" size={28} color="white" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -170,11 +170,6 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#1f2937',
   },
-  headerButtons: {
-    flexDirection: 'row',
-    gap: 12,
-    alignItems: 'center',
-  },
   signOutButton: {
     width: 48,
     height: 48,
@@ -188,18 +183,21 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  addButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+  fab: {
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     backgroundColor: '#1f2937',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
   },
   searchContainer: {
     flexDirection: 'row',
