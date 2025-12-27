@@ -1,15 +1,26 @@
+import { useAuth } from '@/context/AuthContext';
 import { useLists } from '@/hooks/useLists';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
   const { lists, loading } = useLists();
+  const { signOut } = useAuth();
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'date'>('date');
   const router = useRouter();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.replace('/login');
+    } catch (error: any) {
+      Alert.alert('Sign Out Failed', error.message);
+    }
+  };
 
   const filteredLists = lists
     .filter(list => list.title.toLowerCase().includes(search.toLowerCase()))
@@ -69,12 +80,20 @@ export default function HomeScreen() {
             <Text style={styles.greeting}>Welcome back</Text>
             <Text style={styles.headerTitle}>My Lists</Text>
           </View>
-          <TouchableOpacity
-            onPress={() => router.push('/create-list')}
-            style={styles.addButton}
-          >
-            <Ionicons name="add" size={28} color="white" />
-          </TouchableOpacity>
+          <View style={styles.headerButtons}>
+            <TouchableOpacity
+              onPress={handleSignOut}
+              style={styles.signOutButton}
+            >
+              <Ionicons name="log-out-outline" size={24} color="#1f2937" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push('/create-list')}
+              style={styles.addButton}
+            >
+              <Ionicons name="add" size={28} color="white" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.searchContainer}>
@@ -138,6 +157,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 24,
+    maxWidth: 800,
+    width: '100%',
+    alignSelf: 'center',
   },
   greeting: {
     fontSize: 14,
@@ -149,6 +171,24 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#1f2937',
     marginTop: 4,
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'center',
+  },
+  signOutButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
   },
   addButton: {
     width: 56,
@@ -166,6 +206,9 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     gap: 12,
+    maxWidth: 800,
+    width: '100%',
+    alignSelf: 'center',
   },
   searchBar: {
     flex: 1,
@@ -207,6 +250,9 @@ const styles = StyleSheet.create({
   listContent: {
     padding: 20,
     paddingTop: 24,
+    maxWidth: 800,
+    width: '100%',
+    alignSelf: 'center',
   },
   listCard: {
     backgroundColor: 'white',
