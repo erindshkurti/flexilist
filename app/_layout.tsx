@@ -66,6 +66,7 @@ function RootLayoutNav() {
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="create-list" options={{ presentation: 'modal', headerShown: false }} />
         <Stack.Screen name="list/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="edit-list/[id]" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
