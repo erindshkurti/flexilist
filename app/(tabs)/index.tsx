@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, FlatList, Image, Modal, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
 export default function HomeScreen() {
   const { lists, loading, deleteList } = useLists();
@@ -13,6 +13,8 @@ export default function HomeScreen() {
   const [sortBy, setSortBy] = useState<'name' | 'date'>('date');
   const [filterMenuVisible, setFilterMenuVisible] = useState(false);
   const [profileMenuVisible, setProfileMenuVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [listToDelete, setListToDelete] = useState<{ id: string; title: string } | null>(null);
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -24,28 +26,24 @@ export default function HomeScreen() {
     }
   };
 
-  const handleDeleteList = async (listId: string, listTitle: string) => {
-    Alert.alert(
-      'Delete List',
-      `Are you sure you want to delete "${listTitle}"? This action cannot be undone.`,
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel'
-        },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteList(listId);
-            } catch (error: any) {
-              Alert.alert('Error', 'Failed to delete list');
-            }
-          }
-        }
-      ]
-    );
+  const handleDeleteList = (listId: string, listTitle: string) => {
+    setListToDelete({ id: listId, title: listTitle });
+    setDeleteModalVisible(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!listToDelete) return;
+
+    try {
+      console.log('Deleting list:', listToDelete.id);
+      await deleteList(listToDelete.id);
+      console.log('List deleted successfully');
+      setDeleteModalVisible(false);
+      setListToDelete(null);
+    } catch (error: any) {
+      window.alert('Error: Failed to delete list');
+      console.error('Delete error:', error);
+    }
   };
 
   const filteredLists = lists
@@ -91,8 +89,8 @@ export default function HomeScreen() {
       </View>
       <View style={styles.listCardActions}>
         <TouchableOpacity
-          onPress={(e) => {
-            e.stopPropagation();
+          onPress={() => {
+            console.log('Delete button clicked!');
             handleDeleteList(item.id, item.title);
           }}
           style={styles.deleteButton}
@@ -106,149 +104,189 @@ export default function HomeScreen() {
   );
 
   return (
-    <TouchableWithoutFeedback onPress={() => {
-      setFilterMenuVisible(false);
-      setProfileMenuVisible(false);
-    }}>
-      <View style={styles.container}>
-        <LinearGradient
-          colors={['#ffffff', '#f9fafb']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.header}
-        >
-          <View style={styles.headerContent}>
-            <View style={styles.titleRow}>
-              <Ionicons name="list-outline" size={32} color="#1f2937" style={{ marginRight: 12 }} />
-              <Text style={styles.headerTitle}>FlexiList</Text>
+    <>
+      <TouchableWithoutFeedback onPress={() => {
+        setFilterMenuVisible(false);
+        setProfileMenuVisible(false);
+      }}>
+        <View style={styles.container}>
+          <LinearGradient
+            colors={['#ffffff', '#f9fafb']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.header}
+          >
+            <View style={styles.headerContent}>
+              <View style={styles.titleRow}>
+                <Ionicons name="list-outline" size={32} color="#1f2937" style={{ marginRight: 12 }} />
+                <Text style={styles.headerTitle}>FlexiList</Text>
+              </View>
+              <View style={styles.headerRight}>
+                <TouchableOpacity
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setProfileMenuVisible(!profileMenuVisible);
+                    setFilterMenuVisible(false);
+                  }}
+                  style={styles.profileButton}
+                >
+                  {user?.photoURL ? (
+                    <Image
+                      source={{ uri: user.photoURL }}
+                      style={styles.profileImage}
+                    />
+                  ) : (
+                    <View style={[styles.profileImage, styles.profilePlaceholder]}>
+                      <Text style={styles.profileInitial}>{user?.email?.[0]?.toUpperCase() || 'U'}</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+
+                {profileMenuVisible && (
+                  <View style={styles.profileMenu}>
+                    <View style={styles.profileHeader}>
+                      <Text style={styles.profileName} numberOfLines={1}>{user?.displayName || 'User'}</Text>
+                      <Text style={styles.profileEmail} numberOfLines={1}>{user?.email}</Text>
+                    </View>
+                    <View style={styles.menuDivider} />
+                    <TouchableOpacity
+                      style={styles.menuItem}
+                      onPress={() => {
+                        setProfileMenuVisible(false);
+                        handleSignOut();
+                      }}
+                    >
+                      <Ionicons name="log-out-outline" size={20} color="#ef4444" />
+                      <Text style={[styles.menuText, { color: '#ef4444' }]}>Sign Out</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
             </View>
-            <View style={styles.headerRight}>
+
+            <View style={styles.searchContainer}>
+              <View style={styles.searchBar}>
+                <Ionicons name="search" size={20} color="#9ca3af" />
+                <TextInput
+                  placeholder="Search lists..."
+                  value={search}
+                  onChangeText={setSearch}
+                  style={styles.searchInput}
+                  placeholderTextColor="#9ca3af"
+                />
+              </View>
               <TouchableOpacity
                 onPress={(e) => {
                   e.stopPropagation();
-                  setProfileMenuVisible(!profileMenuVisible);
-                  setFilterMenuVisible(false);
+                  setFilterMenuVisible(!filterMenuVisible);
+                  setProfileMenuVisible(false);
                 }}
-                style={styles.profileButton}
+                style={styles.sortButton}
               >
-                {user?.photoURL ? (
-                  <Image
-                    source={{ uri: user.photoURL }}
-                    style={styles.profileImage}
-                  />
-                ) : (
-                  <View style={[styles.profileImage, styles.profilePlaceholder]}>
-                    <Text style={styles.profileInitial}>{user?.email?.[0]?.toUpperCase() || 'U'}</Text>
-                  </View>
-                )}
+                <Ionicons name="options-outline" size={24} color="#1f2937" />
               </TouchableOpacity>
 
-              {profileMenuVisible && (
-                <View style={styles.profileMenu}>
-                  <View style={styles.profileHeader}>
-                    <Text style={styles.profileName} numberOfLines={1}>{user?.displayName || 'User'}</Text>
-                    <Text style={styles.profileEmail} numberOfLines={1}>{user?.email}</Text>
-                  </View>
-                  <View style={styles.menuDivider} />
+              {filterMenuVisible && (
+                <View style={styles.dropdownMenu}>
+                  <Text style={styles.dropdownTitle}>Sort by</Text>
+
                   <TouchableOpacity
-                    style={styles.menuItem}
+                    style={[styles.dropdownItem, sortBy === 'date' && styles.dropdownItemActive]}
                     onPress={() => {
-                      setProfileMenuVisible(false);
-                      handleSignOut();
+                      setSortBy('date');
+                      setFilterMenuVisible(false);
                     }}
                   >
-                    <Ionicons name="log-out-outline" size={20} color="#ef4444" />
-                    <Text style={[styles.menuText, { color: '#ef4444' }]}>Sign Out</Text>
+                    <Ionicons name="time-outline" size={20} color={sortBy === 'date' ? '#2563EB' : '#4b5563'} />
+                    <Text style={[styles.dropdownText, sortBy === 'date' && styles.dropdownTextActive]}>Date Created</Text>
+                    {sortBy === 'date' && <Ionicons name="checkmark" size={16} color="#2563EB" style={{ marginLeft: 'auto' }} />}
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[styles.dropdownItem, sortBy === 'name' && styles.dropdownItemActive]}
+                    onPress={() => {
+                      setSortBy('name');
+                      setFilterMenuVisible(false);
+                    }}
+                  >
+                    <Ionicons name="text-outline" size={20} color={sortBy === 'name' ? '#2563EB' : '#4b5563'} />
+                    <Text style={[styles.dropdownText, sortBy === 'name' && styles.dropdownTextActive]}>Alphabetical</Text>
+                    {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#2563EB" style={{ marginLeft: 'auto' }} />}
                   </TouchableOpacity>
                 </View>
               )}
             </View>
-          </View>
+          </LinearGradient>
 
-          <View style={styles.searchContainer}>
-            <View style={styles.searchBar}>
-              <Ionicons name="search" size={20} color="#9ca3af" />
-              <TextInput
-                placeholder="Search lists..."
-                value={search}
-                onChangeText={setSearch}
-                style={styles.searchInput}
-                placeholderTextColor="#9ca3af"
-              />
-            </View>
-            <TouchableOpacity
-              onPress={(e) => {
-                e.stopPropagation();
-                setFilterMenuVisible(!filterMenuVisible);
-                setProfileMenuVisible(false);
-              }}
-              style={styles.sortButton}
-            >
-              <Ionicons name="options-outline" size={24} color="#1f2937" />
-            </TouchableOpacity>
-
-            {filterMenuVisible && (
-              <View style={styles.dropdownMenu}>
-                <Text style={styles.dropdownTitle}>Sort by</Text>
-
-                <TouchableOpacity
-                  style={[styles.dropdownItem, sortBy === 'date' && styles.dropdownItemActive]}
-                  onPress={() => {
-                    setSortBy('date');
-                    setFilterMenuVisible(false);
-                  }}
-                >
-                  <Ionicons name="time-outline" size={20} color={sortBy === 'date' ? '#2563EB' : '#4b5563'} />
-                  <Text style={[styles.dropdownText, sortBy === 'date' && styles.dropdownTextActive]}>Date Created</Text>
-                  {sortBy === 'date' && <Ionicons name="checkmark" size={16} color="#2563EB" style={{ marginLeft: 'auto' }} />}
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[styles.dropdownItem, sortBy === 'name' && styles.dropdownItemActive]}
-                  onPress={() => {
-                    setSortBy('name');
-                    setFilterMenuVisible(false);
-                  }}
-                >
-                  <Ionicons name="text-outline" size={20} color={sortBy === 'name' ? '#2563EB' : '#4b5563'} />
-                  <Text style={[styles.dropdownText, sortBy === 'name' && styles.dropdownTextActive]}>Alphabetical</Text>
-                  {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#2563EB" style={{ marginLeft: 'auto' }} />}
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
-        </LinearGradient>
-
-        <View style={styles.listContainer}>
-          <FlatList
-            data={filteredLists}
-            renderItem={renderItem}
-            keyExtractor={item => item.id}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-            ListEmptyComponent={
-              !loading ? (
-                <View style={styles.emptyState}>
-                  <View style={styles.emptyIcon}>
-                    <Ionicons name="albums-outline" size={64} color="#d1d5db" />
+          <View style={styles.listContainer}>
+            <FlatList
+              data={filteredLists}
+              renderItem={renderItem}
+              keyExtractor={item => item.id}
+              contentContainerStyle={styles.listContent}
+              showsVerticalScrollIndicator={false}
+              ListEmptyComponent={
+                !loading ? (
+                  <View style={styles.emptyState}>
+                    <View style={styles.emptyIcon}>
+                      <Ionicons name="albums-outline" size={64} color="#d1d5db" />
+                    </View>
+                    <Text style={styles.emptyTitle}>No lists yet</Text>
+                    <Text style={styles.emptySubtitle}>Create your first list to get started!</Text>
                   </View>
-                  <Text style={styles.emptyTitle}>No lists yet</Text>
-                  <Text style={styles.emptySubtitle}>Create your first list to get started!</Text>
-                </View>
-              ) : null
-            }
-          />
-        </View>
+                ) : null
+              }
+            />
+          </View>
 
-        {/* Floating Action Button */}
-        <TouchableOpacity
-          onPress={() => router.push('/create-list')}
-          style={styles.fab}
-        >
-          <Ionicons name="add" size={28} color="white" />
-        </TouchableOpacity>
-      </View>
-    </TouchableWithoutFeedback>
+          {/* Floating Action Button */}
+          <TouchableOpacity
+            onPress={() => router.push('/create-list')}
+            style={styles.fab}
+          >
+            <Ionicons name="add" size={28} color="white" />
+          </TouchableOpacity>
+        </View>
+      </TouchableWithoutFeedback>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        visible={deleteModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setDeleteModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.deleteModal}>
+            <View style={styles.deleteModalHeader}>
+              <Ionicons name="warning-outline" size={48} color="#ef4444" />
+              <Text style={styles.deleteModalTitle}>Delete List</Text>
+            </View>
+            <Text style={styles.deleteModalMessage}>
+              Are you sure you want to delete "{listToDelete?.title}"?{'\n'}
+              This action cannot be undone.
+            </Text>
+            <View style={styles.deleteModalButtons}>
+              <TouchableOpacity
+                onPress={() => {
+                  setDeleteModalVisible(false);
+                  setListToDelete(null);
+                }}
+                style={[styles.deleteModalButton, styles.cancelButton]}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={confirmDelete}
+                style={[styles.deleteModalButton, styles.confirmDeleteButton]}
+              >
+                <Text style={styles.confirmDeleteButtonText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 }
 
@@ -489,6 +527,16 @@ const styles = StyleSheet.create({
   deleteButton: {
     padding: 4,
   },
+  deleteButtonAbsolute: {
+    position: 'absolute',
+    right: 60,
+    top: '50%',
+    marginTop: -10,
+    padding: 8,
+    zIndex: 100,
+    backgroundColor: 'white',
+    borderRadius: 8,
+  },
   listHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -556,5 +604,72 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: 'Inter_400Regular',
     color: '#6b7280',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  deleteModal: {
+    backgroundColor: 'white',
+    borderRadius: 24,
+    padding: 32,
+    width: '100%',
+    maxWidth: 400,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 24,
+    elevation: 10,
+  },
+  deleteModalHeader: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  deleteModalTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    fontFamily: 'Inter_700Bold',
+    color: '#1f2937',
+    marginTop: 12,
+  },
+  deleteModalMessage: {
+    fontSize: 16,
+    fontFamily: 'Inter_400Regular',
+    color: '#6b7280',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 32,
+  },
+  deleteModalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  deleteModalButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cancelButton: {
+    backgroundColor: '#f3f4f6',
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    fontFamily: 'Inter_600SemiBold',
+    color: '#4b5563',
+  },
+  confirmDeleteButton: {
+    backgroundColor: '#ef4444',
+  },
+  confirmDeleteButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    fontFamily: 'Inter_600SemiBold',
+    color: 'white',
   },
 });

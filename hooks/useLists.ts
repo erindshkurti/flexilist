@@ -61,7 +61,14 @@ export const useLists = () => {
     };
 
     const deleteList = async (listId: string) => {
-        await deleteDoc(doc(db, 'lists', listId));
+        try {
+            console.log('Deleting list:', listId);
+            await deleteDoc(doc(db, 'lists', listId));
+            console.log('List deleted successfully');
+        } catch (error) {
+            console.error('Error deleting list:', error);
+            throw error;
+        }
     };
 
     return { lists, loading, createList, deleteList };
