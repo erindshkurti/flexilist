@@ -15,8 +15,9 @@ export default function ListDetailScreen() {
     const { items, loading: itemsLoading, addItem, deleteItem, updateItem } = useListItems(id!);
     const router = useRouter();
     const [modalVisible, setModalVisible] = useState(false);
-    const [currentItem, setCurrentItem] = useState<any>({});
+    const [currentItem, setCurrentItem] = useState<Record<string, any>>({});
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
         const fetchList = async () => {
@@ -34,13 +35,21 @@ export default function ListDetailScreen() {
         if (!list) return;
 
         // Basic validation
+        const errors: Record<string, string> = {};
         const requiredFields = list.fields.filter(f => f.required);
+
         for (const field of requiredFields) {
-            if (!currentItem[field.id]) {
-                Alert.alert("Error", `${field.name} is required.`);
-                return;
+            if (!currentItem[field.id] || (typeof currentItem[field.id] === 'string' && !currentItem[field.id].trim())) {
+                errors[field.id] = `${field.name} is required`;
             }
         }
+
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
+            return;
+        }
+
+        setFieldErrors({});
 
         try {
             if (editingId) {
@@ -65,6 +74,7 @@ export default function ListDetailScreen() {
     const openAddModal = () => {
         setCurrentItem({});
         setEditingId(null);
+        setFieldErrors({});
         setModalVisible(true);
     };
 
@@ -176,6 +186,12 @@ export default function ListDetailScreen() {
                                     {field.name}{field.required && ' *'}
                                 </Text>
                                 {renderFieldInput(field)}
+                                {fieldErrors[field.id] && (
+                                    <View style={styles.errorContainer}>
+                                        <Ionicons name="alert-circle" size={14} color="#ef4444" />
+                                        <Text style={styles.errorText}>{fieldErrors[field.id]}</Text>
+                                    </View>
+                                )}
                             </View>
                         ))}
                     </ScrollView>
@@ -331,6 +347,16 @@ const styles = StyleSheet.create({
         padding: 16,
         fontSize: 16,
         color: '#1f2937',
+    },
+    errorContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        marginTop: 6,
+    },
+    errorText: {
+        fontSize: 13,
+        color: '#ef4444',
     },
     booleanInput: {
         padding: 12,

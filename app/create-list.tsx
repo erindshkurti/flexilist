@@ -16,6 +16,8 @@ export default function CreateListScreen() {
     const { createList } = useLists();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [typeDropdownVisible, setTypeDropdownVisible] = useState<string | null>(null);
+    const [errors, setErrors] = useState<{ title?: string; fields?: Record<string, string> }>({});
 
     const addField = () => {
         setFields([...fields, {
@@ -39,14 +41,29 @@ export default function CreateListScreen() {
     };
 
     const handleCreate = async () => {
+        const newErrors: { title?: string; fields?: Record<string, string> } = {};
+
         if (!title.trim()) {
-            Alert.alert("Error", "Please enter a list title.");
+            newErrors.title = "Please enter a list title";
+        }
+
+        const fieldErrors: Record<string, string> = {};
+        fields.forEach((f, index) => {
+            if (!f.name.trim()) {
+                fieldErrors[f.id] = "Field name is required";
+            }
+        });
+
+        if (Object.keys(fieldErrors).length > 0) {
+            newErrors.fields = fieldErrors;
+        }
+
+        if (newErrors.title || newErrors.fields) {
+            setErrors(newErrors);
             return;
         }
-        if (fields.some(f => !f.name.trim())) {
-            Alert.alert("Error", "All fields must have a name.");
-            return;
-        }
+
+        setErrors({});
 
         setLoading(true);
         try {
@@ -87,8 +104,14 @@ export default function CreateListScreen() {
                         onChangeText={setTitle}
                         placeholder="e.g., Grocery List"
                         placeholderTextColor="#9ca3af"
-                        style={styles.input}
+                        style={[styles.input, errors.title && styles.inputError]}
                     />
+                    {errors.title && (
+                        <View style={styles.errorContainer}>
+                            <Ionicons name="alert-circle" size={14} color="#ef4444" />
+                            <Text style={styles.errorText}>{errors.title}</Text>
+                        </View>
+                    )}
                 </View>
 
                 <View style={styles.section}>
@@ -129,21 +152,49 @@ export default function CreateListScreen() {
                                         onChangeText={(text) => updateField(field.id, 'name', text)}
                                         placeholder="Field Name"
                                         placeholderTextColor="#9ca3af"
-                                        style={styles.fieldInput}
+                                        style={[styles.fieldInput, errors.fields?.[field.id] && styles.inputError]}
                                     />
+                                    {errors.fields?.[field.id] && (
+                                        <View style={styles.errorContainer}>
+                                            <Ionicons name="alert-circle" size={14} color="#ef4444" />
+                                            <Text style={styles.errorText}>{errors.fields[field.id]}</Text>
+                                        </View>
+                                    )}
                                 </View>
                                 <View style={styles.fieldTypeContainer}>
                                     <TouchableOpacity
-                                        onPress={() => {
-                                            const types: ListField['type'][] = ['text', 'number', 'boolean', 'date'];
-                                            const currentIdx = types.indexOf(field.type);
-                                            const nextType = types[(currentIdx + 1) % types.length];
-                                            updateField(field.id, 'type', nextType);
-                                        }}
+                                        onPress={() => setTypeDropdownVisible(typeDropdownVisible === field.id ? null : field.id)}
                                         style={styles.typeButton}
                                     >
                                         <Text style={styles.typeText}>{field.type}</Text>
+                                        <Ionicons name="chevron-down" size={16} color="#6b7280" />
                                     </TouchableOpacity>
+
+                                    {typeDropdownVisible === field.id && (
+                                        <View style={styles.typeDropdown}>
+                                            {(['text', 'number', 'boolean', 'date'] as const).map((type) => (
+                                                <TouchableOpacity
+                                                    key={type}
+                                                    onPress={() => {
+                                                        updateField(field.id, 'type', type);
+                                                        setTypeDropdownVisible(null);
+                                                    }}
+                                                    style={[
+                                                        styles.typeDropdownItem,
+                                                        field.type === type && styles.typeDropdownItemActive
+                                                    ]}
+                                                >
+                                                    <Text style={[
+                                                        styles.typeDropdownText,
+                                                        field.type === type && styles.typeDropdownTextActive
+                                                    ]}>{type}</Text>
+                                                    {field.type === type && (
+                                                        <Ionicons name="checkmark" size={16} color="#2563EB" />
+                                                    )}
+                                                </TouchableOpacity>
+                                            ))}
+                                        </View>
+                                    )}
                                 </View>
                             </View>
                         </View>
@@ -274,6 +325,7 @@ const styles = StyleSheet.create({
     },
     fieldTypeContainer: {
         width: 110,
+        position: 'relative',
     },
     typeButton: {
         backgroundColor: '#ffffff',
@@ -281,14 +333,64 @@ const styles = StyleSheet.create({
         borderColor: '#e5e7eb',
         borderRadius: 8,
         padding: 12,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        justifyContent: 'center',
     },
     typeText: {
-        fontSize: 15,
+        fontSize: 14,
         color: '#1f2937',
         textTransform: 'capitalize',
-        fontWeight: '500',
+    },
+    typeDropdown: {
+        position: 'absolute',
+        top: 48,
+        left: 0,
+        right: 0,
+        backgroundColor: 'white',
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#e5e7eb',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 5,
+        zIndex: 1000,
+    },
+    typeDropdownItem: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f3f4f6',
+    },
+    typeDropdownItemActive: {
+        backgroundColor: '#eff6ff',
+    },
+    typeDropdownText: {
+        fontSize: 14,
+        color: '#4b5563',
+        textTransform: 'capitalize',
+    },
+    typeDropdownTextActive: {
+        color: '#2563EB',
+        fontWeight: '600',
+    },
+    inputError: {
+        borderColor: '#ef4444',
+        borderWidth: 2,
+    },
+    errorContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        marginTop: 6,
+    },
+    errorText: {
+        fontSize: 13,
+        color: '#ef4444',
     },
     footer: {
         padding: 20,
