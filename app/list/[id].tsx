@@ -556,7 +556,7 @@ const styles = StyleSheet.create({
     },
     listContent: {
         padding: 20,
-        maxWidth: 800,
+        maxWidth: 840,
         width: '100%',
         alignSelf: 'center',
         paddingBottom: 100, // Space for FAB
