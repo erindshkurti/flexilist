@@ -125,22 +125,18 @@ export default function ListDetailScreen() {
                 <TextInput
                     value={value?.toString() || ''}
                     onChangeText={(text) => {
-                        if (field.type === 'number') {
-                            // Only allow numbers and one decimal point
-                            if (text === '' || /^\d*\.?\d*$/.test(text)) {
-                                setCurrentItem({ ...currentItem, [field.id]: text });
-                            }
-                        } else {
-                            setCurrentItem({ ...currentItem, [field.id]: text });
-                        }
+                        setCurrentItem({ ...currentItem, [field.id]: text });
                     }}
                     placeholder={`Enter ${field.name}`}
                     placeholderTextColor="#9ca3af"
                     keyboardType={field.type === 'number' ? 'numeric' : 'default'}
                     style={styles.input}
                 />
-                {field.type === 'number' && (
-                    <Text style={styles.fieldHint}>Only numbers are allowed</Text>
+                {field.type === 'number' && value && value !== '' && !/^\d*\.?\d*$/.test(value.toString()) && (
+                    <View style={styles.errorContainer}>
+                        <Ionicons name="alert-circle" size={14} color="#ef4444" />
+                        <Text style={styles.errorText}>Only numbers are allowed</Text>
+                    </View>
                 )}
             </>
         );
