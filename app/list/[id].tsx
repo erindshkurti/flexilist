@@ -165,14 +165,27 @@ export default function ListDetailScreen() {
                             onPress={() => openEditModal(item)}
                             style={styles.itemContent}
                         >
-                            {list.fields.map(field => (
-                                <View key={field.id} style={styles.fieldRow}>
-                                    <Text style={[styles.fieldLabel, item.completed && styles.fieldLabelCompleted]}>{field.name}</Text>
-                                    <Text style={[styles.fieldValue, item.completed && styles.fieldValueCompleted]}>
-                                        {field.type === 'boolean' ? (item.data[field.id] ? 'Yes' : 'No') : item.data[field.id]}
+                            {list.fields.length > 0 && (
+                                <View style={styles.itemRow}>
+                                    {/* First field as main text */}
+                                    <Text style={[styles.itemMainText, item.completed && styles.itemMainTextCompleted]}>
+                                        {list.fields[0].type === 'boolean'
+                                            ? (item.data[list.fields[0].id] ? 'Yes' : 'No')
+                                            : item.data[list.fields[0].id] || 'Untitled'}
                                     </Text>
+
+                                    {/* Remaining fields as labels */}
+                                    {list.fields.length > 1 && list.fields.slice(1).map(field => (
+                                        item.data[field.id] && (
+                                            <View key={field.id} style={styles.labelChip}>
+                                                <Text style={[styles.labelText, item.completed && styles.labelTextCompleted]}>
+                                                    {field.name}: {field.type === 'boolean' ? (item.data[field.id] ? 'Yes' : 'No') : item.data[field.id]}
+                                                </Text>
+                                            </View>
+                                        )
+                                    ))}
                                 </View>
-                            ))}
+                            )}
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => deleteItem(item.id)} style={styles.deleteButton}>
                             <Ionicons name="trash-outline" size={20} color="#EF4444" />
@@ -294,6 +307,35 @@ const styles = StyleSheet.create({
     },
     itemContent: {
         flex: 1,
+    },
+    itemRow: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        gap: 8,
+    },
+    itemMainText: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#1f2937',
+    },
+    itemMainTextCompleted: {
+        color: '#9ca3af',
+        textDecorationLine: 'line-through',
+    },
+    labelChip: {
+        backgroundColor: '#f3f4f6',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 12,
+    },
+    labelText: {
+        fontSize: 12,
+        color: '#6b7280',
+    },
+    labelTextCompleted: {
+        color: '#9ca3af',
+        textDecorationLine: 'line-through',
     },
     fieldRow: {
         marginBottom: 4,
