@@ -1,7 +1,7 @@
 export interface ListField {
     id: string;
     name: string;
-    type: 'text' | 'number' | 'boolean' | 'date';
+    type: 'text' | 'number' | 'date';
     required: boolean;
 }
 

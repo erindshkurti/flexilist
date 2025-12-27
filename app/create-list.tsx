@@ -189,7 +189,7 @@ export default function CreateListScreen() {
 
                                     {typeDropdownVisible === field.id && (
                                         <View style={styles.typeDropdown}>
-                                            {(['text', 'number', 'boolean', 'date'] as const).map((type) => (
+                                            {(['text', 'number', 'date'] as const).map((type) => (
                                                 <TouchableOpacity
                                                     key={type}
                                                     onPress={() => {

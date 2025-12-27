@@ -3,11 +3,12 @@ import { db } from '@/config/firebase';
 import { useListItems } from '@/hooks/useListItems';
 import { List, ListField } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { doc, getDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { Alert, FlatList, Modal, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Modal, Platform, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function ListDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -18,6 +19,9 @@ export default function ListDetailScreen() {
     const [currentItem, setCurrentItem] = useState<Record<string, any>>({});
     const [editingId, setEditingId] = useState<string | null>(null);
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+    const [datePickerVisible, setDatePickerVisible] = useState(false);
+    const [datePickerField, setDatePickerField] = useState<string | null>(null);
+    const [tempDate, setTempDate] = useState(new Date());
 
     useEffect(() => {
         const fetchList = async () => {
@@ -86,34 +90,59 @@ export default function ListDetailScreen() {
         setModalVisible(true);
     };
 
+
     const renderFieldInput = (field: ListField) => {
         const value = currentItem[field.id];
+        const hasNumberError = field.type === 'number' && value && !/^\d*\.?\d*$/.test(value.toString());
 
-        if (field.type === 'boolean') {
+        if (field.type === 'date') {
             return (
-                <TouchableOpacity
-                    onPress={() => setCurrentItem({ ...currentItem, [field.id]: !value })}
-                    style={[
-                        styles.booleanInput,
-                        value ? styles.booleanActive : styles.booleanInactive
-                    ]}
-                >
-                    <Text style={[styles.booleanText, value ? styles.booleanTextActive : styles.booleanTextInactive]}>
-                        {value ? 'Yes' : 'No'}
-                    </Text>
-                </TouchableOpacity>
+                <>
+                    <TouchableOpacity
+                        onPress={() => {
+                            setDatePickerField(field.id);
+                            if (value) {
+                                const dateParts = value.split('-');
+                                if (dateParts.length === 3) {
+                                    setTempDate(new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2])));
+                                }
+                            }
+                            setDatePickerVisible(true);
+                        }}
+                        style={styles.dateInput}
+                    >
+                        <Text style={value ? styles.dateText : styles.datePlaceholder}>
+                            {value || 'YYYY-MM-DD'}
+                        </Text>
+                        <Ionicons name="calendar-outline" size={20} color="#6b7280" />
+                    </TouchableOpacity>
+                </>
             );
         }
 
         return (
-            <TextInput
-                value={value?.toString() || ''}
-                onChangeText={(text) => setCurrentItem({ ...currentItem, [field.id]: field.type === 'number' ? Number(text) : text })}
-                placeholder={`Enter ${field.name}`}
-                placeholderTextColor="#9ca3af"
-                keyboardType={field.type === 'number' ? 'numeric' : 'default'}
-                style={styles.input}
-            />
+            <>
+                <TextInput
+                    value={value?.toString() || ''}
+                    onChangeText={(text) => {
+                        if (field.type === 'number') {
+                            // Only allow numbers and one decimal point
+                            if (text === '' || /^\d*\.?\d*$/.test(text)) {
+                                setCurrentItem({ ...currentItem, [field.id]: text });
+                            }
+                        } else {
+                            setCurrentItem({ ...currentItem, [field.id]: text });
+                        }
+                    }}
+                    placeholder={`Enter ${field.name}`}
+                    placeholderTextColor="#9ca3af"
+                    keyboardType={field.type === 'number' ? 'numeric' : 'default'}
+                    style={styles.input}
+                />
+                {field.type === 'number' && (
+                    <Text style={styles.fieldHint}>Only numbers are allowed</Text>
+                )}
+            </>
         );
     };
 
@@ -169,8 +198,8 @@ export default function ListDetailScreen() {
                                 <View style={styles.itemRow}>
                                     {/* First field as main text */}
                                     <Text style={[styles.itemMainText, item.completed && styles.itemMainTextCompleted]}>
-                                        {list.fields[0].type === 'boolean'
-                                            ? (item.data[list.fields[0].id] ? 'Yes' : 'No')
+                                        {list.fields[0].type === 'date'
+                                            ? (item.data[list.fields[0].id] || 'No date')
                                             : item.data[list.fields[0].id] || 'Untitled'}
                                     </Text>
 
@@ -179,7 +208,7 @@ export default function ListDetailScreen() {
                                         item.data[field.id] && (
                                             <View key={field.id} style={styles.labelChip}>
                                                 <Text style={[styles.labelText, item.completed && styles.labelTextCompleted]}>
-                                                    {field.name}: {field.type === 'boolean' ? (item.data[field.id] ? 'Yes' : 'No') : item.data[field.id]}
+                                                    {field.name}: {item.data[field.id]}
                                                 </Text>
                                             </View>
                                         )
@@ -232,6 +261,75 @@ export default function ListDetailScreen() {
                     </View>
                 </View>
             </Modal>
+
+            {/* Date Picker Modal */}
+            {datePickerVisible && (
+                Platform.OS === 'web' ? (
+                    <Modal
+                        visible={datePickerVisible}
+                        transparent={true}
+                        animationType="fade"
+                        onRequestClose={() => setDatePickerVisible(false)}
+                    >
+                        <View style={styles.modalOverlay}>
+                            <View style={styles.datePickerModal}>
+                                <Text style={styles.datePickerTitle}>Select Date</Text>
+                                <input
+                                    type="date"
+                                    value={tempDate.toISOString().split('T')[0]}
+                                    onChange={(e) => {
+                                        const date = new Date(e.target.value);
+                                        if (!isNaN(date.getTime())) {
+                                            setTempDate(date);
+                                        }
+                                    }}
+                                    style={{
+                                        width: '100%',
+                                        padding: 16,
+                                        fontSize: 16,
+                                        borderRadius: 12,
+                                        border: '1px solid #e5e7eb',
+                                        marginBottom: 24,
+                                    }}
+                                />
+                                <View style={styles.datePickerButtons}>
+                                    <TouchableOpacity
+                                        onPress={() => setDatePickerVisible(false)}
+                                        style={[styles.datePickerButton, styles.datePickerCancelButton]}
+                                    >
+                                        <Text style={styles.datePickerCancelText}>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            if (datePickerField) {
+                                                const formattedDate = tempDate.toISOString().split('T')[0];
+                                                setCurrentItem({ ...currentItem, [datePickerField]: formattedDate });
+                                            }
+                                            setDatePickerVisible(false);
+                                        }}
+                                        style={[styles.datePickerButton, styles.datePickerConfirmButton]}
+                                    >
+                                        <Text style={styles.datePickerConfirmText}>Confirm</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
+                ) : (
+                    <DateTimePicker
+                        value={tempDate}
+                        mode="date"
+                        display="default"
+                        onChange={(event, selectedDate) => {
+                            if (event.type === 'set' && selectedDate && datePickerField) {
+                                const formattedDate = selectedDate.toISOString().split('T')[0];
+                                setCurrentItem({ ...currentItem, [datePickerField]: formattedDate });
+                            }
+                            setDatePickerVisible(false);
+                        }}
+                    />
+                )
+            )}
         </View>
     );
 }
@@ -457,5 +555,92 @@ const styles = StyleSheet.create({
     },
     modalFooter: {
         paddingTop: 16,
+    },
+    dateInput: {
+        backgroundColor: '#f9fafb',
+        borderWidth: 1,
+        borderColor: '#e5e7eb',
+        borderRadius: 12,
+        padding: 16,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    dateText: {
+        fontSize: 16,
+        color: '#1f2937',
+    },
+    datePlaceholder: {
+        fontSize: 16,
+        color: '#9ca3af',
+    },
+    fieldHint: {
+        fontSize: 12,
+        color: '#6b7280',
+        marginTop: 6,
+        fontStyle: 'italic',
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    datePickerModal: {
+        backgroundColor: 'white',
+        borderRadius: 24,
+        padding: 32,
+        width: '100%',
+        maxWidth: 400,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.2,
+        shadowRadius: 24,
+        elevation: 10,
+    },
+    datePickerTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#1f2937',
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    datePickerInput: {
+        backgroundColor: '#f9fafb',
+        borderWidth: 1,
+        borderColor: '#e5e7eb',
+        borderRadius: 12,
+        padding: 16,
+        fontSize: 16,
+        color: '#1f2937',
+        marginBottom: 24,
+        textAlign: 'center',
+    },
+    datePickerButtons: {
+        flexDirection: 'row',
+        gap: 12,
+    },
+    datePickerButton: {
+        flex: 1,
+        paddingVertical: 14,
+        borderRadius: 12,
+        alignItems: 'center',
+    },
+    datePickerCancelButton: {
+        backgroundColor: '#f3f4f6',
+    },
+    datePickerConfirmButton: {
+        backgroundColor: '#3b82f6',
+    },
+    datePickerCancelText: {
+        color: '#6b7280',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    datePickerConfirmText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: '600',
     },
 });
