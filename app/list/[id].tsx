@@ -1,13 +1,13 @@
 import { Button } from '@/components/Button';
-import { ScreenLayout } from '@/components/ScreenLayout';
 import { db } from '@/config/firebase';
 import { useListItems } from '@/hooks/useListItems';
 import { List, ListField } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { doc, getDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { Alert, FlatList, Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function ListDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -75,9 +75,12 @@ export default function ListDetailScreen() {
             return (
                 <TouchableOpacity
                     onPress={() => setCurrentItem({ ...currentItem, [field.id]: !value })}
-                    className={`p-3 rounded-lg border ${value ? 'bg-blue-100 border-blue-500' : 'bg-gray-50 border-gray-200'}`}
+                    style={[
+                        styles.booleanInput,
+                        value ? styles.booleanActive : styles.booleanInactive
+                    ]}
                 >
-                    <Text className={`${value ? 'text-blue-700' : 'text-gray-500'}`}>
+                    <Text style={[styles.booleanText, value ? styles.booleanTextActive : styles.booleanTextInactive]}>
                         {value ? 'Yes' : 'No'}
                     </Text>
                 </TouchableOpacity>
@@ -89,45 +92,60 @@ export default function ListDetailScreen() {
                 value={value?.toString() || ''}
                 onChangeText={(text) => setCurrentItem({ ...currentItem, [field.id]: field.type === 'number' ? Number(text) : text })}
                 placeholder={`Enter ${field.name}`}
+                placeholderTextColor="#9ca3af"
                 keyboardType={field.type === 'number' ? 'numeric' : 'default'}
-                className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white"
+                style={styles.input}
             />
         );
     };
 
-    if (!list) return <ScreenLayout><Text>Loading...</Text></ScreenLayout>;
+    if (!list) return (
+        <View style={styles.loadingContainer}>
+            <Text>Loading...</Text>
+        </View>
+    );
 
     return (
-        <ScreenLayout>
-            <View className="flex-row items-center mb-6">
-                <TouchableOpacity onPress={() => router.back()} className="mr-4">
-                    <Ionicons name="arrow-back" size={24} color="black" />
-                </TouchableOpacity>
-                <View>
-                    <Text className="text-2xl font-bold dark:text-white">{list.title}</Text>
-                    {list.description && <Text className="text-gray-500">{list.description}</Text>}
+        <View style={styles.container}>
+            <LinearGradient
+                colors={['#ffffff', '#f9fafb']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.header}
+            >
+                <View style={styles.headerContent}>
+                    <View style={styles.titleRow}>
+                        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                            <Ionicons name="arrow-back" size={24} color="#1f2937" />
+                        </TouchableOpacity>
+                        <View>
+                            <Text style={styles.headerTitle}>{list.title}</Text>
+                            {!!list.description && <Text style={styles.headerDescription}>{list.description}</Text>}
+                        </View>
+                    </View>
                 </View>
-            </View>
+            </LinearGradient>
 
             <FlatList
                 data={items}
                 keyExtractor={item => item.id}
+                contentContainerStyle={styles.listContent}
                 renderItem={({ item }) => (
                     <TouchableOpacity
                         onPress={() => openEditModal(item)}
-                        className="bg-white dark:bg-gray-900 p-4 rounded-xl mb-3 border border-gray-100 dark:border-gray-800 flex-row justify-between items-center"
+                        style={styles.itemCard}
                     >
-                        <View className="flex-1">
+                        <View style={styles.itemContent}>
                             {list.fields.map(field => (
-                                <View key={field.id} className="mb-1">
-                                    <Text className="text-xs text-gray-400">{field.name}</Text>
-                                    <Text className="text-base text-gray-900 dark:text-white">
+                                <View key={field.id} style={styles.fieldRow}>
+                                    <Text style={styles.fieldLabel}>{field.name}</Text>
+                                    <Text style={styles.fieldValue}>
                                         {field.type === 'boolean' ? (item.data[field.id] ? 'Yes' : 'No') : item.data[field.id]}
                                     </Text>
                                 </View>
                             ))}
                         </View>
-                        <TouchableOpacity onPress={() => deleteItem(item.id)} className="p-2">
+                        <TouchableOpacity onPress={() => deleteItem(item.id)} style={styles.deleteButton}>
                             <Ionicons name="trash-outline" size={20} color="#EF4444" />
                         </TouchableOpacity>
                     </TouchableOpacity>
@@ -136,34 +154,208 @@ export default function ListDetailScreen() {
 
             <TouchableOpacity
                 onPress={openAddModal}
-                className="absolute bottom-10 right-6 bg-blue-600 w-14 h-14 rounded-full items-center justify-center shadow-lg"
+                style={styles.fab}
             >
-                <Ionicons name="add" size={30} color="white" />
+                <Ionicons name="add" size={28} color="white" />
             </TouchableOpacity>
 
             <Modal visible={modalVisible} animationType="slide" presentationStyle="pageSheet">
-                <View className="flex-1 bg-white dark:bg-black p-6">
-                    <View className="flex-row justify-between items-center mb-6">
-                        <Text className="text-xl font-bold dark:text-white">{editingId ? 'Edit Item' : 'Add Item'}</Text>
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalHeader}>
+                        <Text style={styles.modalTitle}>{editingId ? 'Edit Item' : 'Add Item'}</Text>
                         <TouchableOpacity onPress={() => setModalVisible(false)}>
-                            <Text className="text-blue-600 font-medium">Cancel</Text>
+                            <Text style={styles.cancelButton}>Cancel</Text>
                         </TouchableOpacity>
                     </View>
 
-                    <ScrollView>
+                    <ScrollView style={styles.modalContent}>
                         {list.fields.map(field => (
-                            <View key={field.id} className="mb-4">
-                                <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    {field.name} {field.required && '*'}
+                            <View key={field.id} style={styles.inputGroup}>
+                                <Text style={styles.label}>
+                                    {field.name}{field.required && ' *'}
                                 </Text>
                                 {renderFieldInput(field)}
                             </View>
                         ))}
                     </ScrollView>
 
-                    <Button title="Save Item" onPress={handleSaveItem} />
+                    <View style={styles.modalFooter}>
+                        <Button title="Save Item" onPress={handleSaveItem} />
+                    </View>
                 </View>
             </Modal>
-        </ScreenLayout>
+        </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#ffffff',
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#ffffff',
+    },
+    header: {
+        paddingTop: 60,
+        paddingBottom: 24,
+        paddingHorizontal: 20,
+        borderBottomLeftRadius: 32,
+        borderBottomRightRadius: 32,
+    },
+    headerContent: {
+        maxWidth: 800,
+        width: '100%',
+        alignSelf: 'center',
+    },
+    titleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    backButton: {
+        marginRight: 16,
+        padding: 4,
+    },
+    headerTitle: {
+        fontSize: 28,
+        fontWeight: '800',
+        color: '#1f2937',
+    },
+    headerDescription: {
+        fontSize: 14,
+        color: '#6b7280',
+        marginTop: 4,
+    },
+    listContent: {
+        padding: 20,
+        maxWidth: 800,
+        width: '100%',
+        alignSelf: 'center',
+        paddingBottom: 100, // Space for FAB
+    },
+    itemCard: {
+        backgroundColor: '#ffffff', // Changed to white for cleaner look
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        elevation: 2,
+        borderWidth: 1,
+        borderColor: '#f3f4f6',
+    },
+    itemContent: {
+        flex: 1,
+    },
+    fieldRow: {
+        marginBottom: 4,
+    },
+    fieldLabel: {
+        fontSize: 12,
+        color: '#9ca3af',
+        marginBottom: 2,
+        fontWeight: '500',
+    },
+    fieldValue: {
+        fontSize: 16,
+        color: '#1f2937',
+        fontWeight: '500',
+    },
+    deleteButton: {
+        padding: 8,
+        marginLeft: 12,
+    },
+    fab: {
+        position: 'absolute',
+        bottom: 24,
+        right: 24,
+        width: 64,
+        height: 64,
+        borderRadius: 32,
+        backgroundColor: '#1f2937',
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+        elevation: 8,
+    },
+    modalContainer: {
+        flex: 1,
+        backgroundColor: '#ffffff',
+        padding: 24,
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 24,
+    },
+    modalTitle: {
+        fontSize: 24,
+        fontWeight: '700',
+        color: '#1f2937',
+    },
+    cancelButton: {
+        fontSize: 16,
+        color: '#2563EB',
+        fontWeight: '600',
+    },
+    modalContent: {
+        flex: 1,
+    },
+    inputGroup: {
+        marginBottom: 20,
+    },
+    label: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#374151',
+        marginBottom: 8,
+    },
+    input: {
+        backgroundColor: '#f9fafb',
+        borderWidth: 1,
+        borderColor: '#e5e7eb',
+        borderRadius: 12,
+        padding: 16,
+        fontSize: 16,
+        color: '#1f2937',
+    },
+    booleanInput: {
+        padding: 12,
+        borderRadius: 12,
+        borderWidth: 1,
+        alignItems: 'center',
+    },
+    booleanActive: {
+        backgroundColor: '#eff6ff',
+        borderColor: '#3b82f6',
+    },
+    booleanInactive: {
+        backgroundColor: '#f9fafb',
+        borderColor: '#e5e7eb',
+    },
+    booleanText: {
+        fontWeight: '600',
+        fontSize: 16,
+    },
+    booleanTextActive: {
+        color: '#1d4ed8',
+    },
+    booleanTextInactive: {
+        color: '#6b7280',
+    },
+    modalFooter: {
+        paddingTop: 16,
+    },
+});
