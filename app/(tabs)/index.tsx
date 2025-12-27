@@ -63,9 +63,7 @@ export default function HomeScreen() {
     >
       <View style={styles.listCardContent}>
         <View style={styles.listHeader}>
-          <View style={styles.iconBadge}>
-            <Ionicons name="list-outline" size={20} color="#667eea" />
-          </View>
+
           <View style={styles.listInfo}>
             <Text style={styles.listTitle}>{item.title}</Text>
             {item.description ? (
