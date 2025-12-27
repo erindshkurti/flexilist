@@ -38,22 +38,27 @@ export default function ListDetailScreen() {
     const handleSaveItem = async () => {
         if (!list) return;
 
-        // Basic validation
         const errors: Record<string, string> = {};
-        const requiredFields = list.fields.filter(f => f.required);
 
-        for (const field of requiredFields) {
-            if (!currentItem[field.id] || (typeof currentItem[field.id] === 'string' && !currentItem[field.id].trim())) {
-                errors[field.id] = `${field.name} is required`;
+        // First field is always required
+        if (list.fields.length > 0) {
+            const firstField = list.fields[0];
+            if (!currentItem[firstField.id] || currentItem[firstField.id].toString().trim() === '') {
+                errors[firstField.id] = `${firstField.name} is required`;
             }
         }
+
+        // Check other required fields
+        list.fields.slice(1).forEach(field => {
+            if (field.required && (!currentItem[field.id] || currentItem[field.id].toString().trim() === '')) {
+                errors[field.id] = `${field.name} is required`;
+            }
+        });
 
         if (Object.keys(errors).length > 0) {
             setFieldErrors(errors);
             return;
         }
-
-        setFieldErrors({});
 
         try {
             if (editingId) {
@@ -64,6 +69,7 @@ export default function ListDetailScreen() {
             setModalVisible(false);
             setCurrentItem({});
             setEditingId(null);
+            setFieldErrors({});
         } catch (error) {
             Alert.alert("Error", "Failed to save item.");
         }
@@ -236,10 +242,10 @@ export default function ListDetailScreen() {
                     </View>
 
                     <ScrollView style={styles.modalContent}>
-                        {list.fields.map(field => (
+                        {list.fields.map((field, index) => (
                             <View key={field.id} style={styles.inputGroup}>
                                 <Text style={styles.label}>
-                                    {field.name}{field.required && ' *'}
+                                    {field.name}{(index === 0 || field.required) && ' *'}
                                 </Text>
                                 {renderFieldInput(field)}
                                 {fieldErrors[field.id] && (
