@@ -109,8 +109,8 @@ const styles = StyleSheet.create({
         letterSpacing: -1,
     },
     logo: {
-        width: 96,
-        height: 96,
+        width: 68,
+        height: 68,
         marginRight: 16,
     },
     subtitle: {
