@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 16,
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 0,
     gap: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -450,6 +450,8 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: '#1f2937',
+    paddingVertical: 14,
+    paddingHorizontal: 6,
   },
   sortButton: {
     width: 44,
