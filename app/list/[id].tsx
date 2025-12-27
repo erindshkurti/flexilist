@@ -7,7 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { doc, getDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { Alert, FlatList, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Modal, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function ListDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -107,6 +107,7 @@ export default function ListDetailScreen() {
 
     return (
         <View style={styles.container}>
+            <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
             <LinearGradient
                 colors={['#ffffff', '#f9fafb']}
                 start={{ x: 0, y: 0 }}
@@ -159,7 +160,7 @@ export default function ListDetailScreen() {
                 <Ionicons name="add" size={28} color="white" />
             </TouchableOpacity>
 
-            <Modal visible={modalVisible} animationType="slide" presentationStyle="pageSheet">
+            <Modal visible={modalVisible} animationType="slide" transparent={true}>
                 <View style={styles.modalContainer}>
                     <View style={styles.modalHeader}>
                         <Text style={styles.modalTitle}>{editingId ? 'Edit Item' : 'Add Item'}</Text>

@@ -246,6 +246,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 32,
     fontWeight: '800',
+    fontFamily: 'Inter_800ExtraBold',
     color: '#1f2937',
   },
   headerRight: {
@@ -272,6 +273,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
+    fontFamily: 'Inter_600SemiBold',
   },
   profileMenu: {
     position: 'absolute',
@@ -294,11 +296,13 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 16,
     fontWeight: '700',
+    fontFamily: 'Inter_700Bold',
     color: '#1f2937',
     marginBottom: 2,
   },
   profileEmail: {
     fontSize: 12,
+    fontFamily: 'Inter_400Regular',
     color: '#6b7280',
   },
   menuDivider: {
@@ -316,6 +320,7 @@ const styles = StyleSheet.create({
   menuText: {
     fontSize: 15,
     fontWeight: '500',
+    fontFamily: 'Inter_500Medium',
     color: '#374151',
   },
   fab: {
@@ -385,6 +390,7 @@ const styles = StyleSheet.create({
   dropdownTitle: {
     fontSize: 12,
     fontWeight: '600',
+    fontFamily: 'Inter_600SemiBold',
     color: '#9ca3af',
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -403,12 +409,14 @@ const styles = StyleSheet.create({
   },
   dropdownText: {
     fontSize: 16,
+    fontFamily: 'Inter_500Medium',
     color: '#4b5563',
     fontWeight: '500',
   },
   dropdownTextActive: {
     color: '#2563EB',
     fontWeight: '600',
+    fontFamily: 'Inter_600SemiBold',
   },
   listContainer: {
     flex: 1,
@@ -457,11 +465,13 @@ const styles = StyleSheet.create({
   listTitle: {
     fontSize: 18,
     fontWeight: '700',
+    fontFamily: 'Inter_700Bold',
     color: '#1f2937',
     marginBottom: 2,
   },
   listDescription: {
     fontSize: 14,
+    fontFamily: 'Inter_400Regular',
     color: '#6b7280',
   },
   fieldTags: {
@@ -479,6 +489,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#7c3aed',
     fontWeight: '600',
+    fontFamily: 'Inter_600SemiBold',
   },
   emptyState: {
     alignItems: 'center',
@@ -493,11 +504,13 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 22,
     fontWeight: '700',
+    fontFamily: 'Inter_700Bold',
     color: '#1f2937',
     marginBottom: 8,
   },
   emptySubtitle: {
     fontSize: 15,
+    fontFamily: 'Inter_400Regular',
     color: '#6b7280',
   },
 });
