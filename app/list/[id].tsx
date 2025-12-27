@@ -26,6 +26,8 @@ export default function ListDetailScreen() {
     const [sortBy, setSortBy] = useState<'name' | 'date'>('date');
     const [sortMenuVisible, setSortMenuVisible] = useState(false);
 
+    const [showCompleted, setShowCompleted] = useState(true);
+
     useEffect(() => {
         const fetchList = async () => {
             if (!id) return;
@@ -161,6 +163,9 @@ export default function ListDetailScreen() {
     const firstFieldId = list.fields[0]?.id;
     const filteredAndSortedItems = items
         .filter(item => {
+            // Hide completed items if toggle is off
+            if (!showCompleted && item.completed) return false;
+
             if (!search || !firstFieldId) return true;
             const value = item.data[firstFieldId]?.toString().toLowerCase() || '';
             return value.includes(search.toLowerCase());
@@ -208,8 +213,21 @@ export default function ListDetailScreen() {
                             />
                         </View>
                         <TouchableOpacity
+                            onPress={() => setShowCompleted(!showCompleted)}
+                            style={styles.sortButton}
+                            activeOpacity={0.7}
+                            {...(Platform.OS === 'web' ? { title: showCompleted ? "Hide Completed Items" : "Show Completed Items" } as any : {})}
+                        >
+                            <Ionicons
+                                name={showCompleted ? "eye-outline" : "eye-off-outline"}
+                                size={24}
+                                color="#1f2937"
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity
                             onPress={() => setSortMenuVisible(!sortMenuVisible)}
                             style={styles.sortButton}
+                            activeOpacity={0.7}
                         >
                             <Ionicons name="options-outline" size={24} color="#1f2937" />
                         </TouchableOpacity>
