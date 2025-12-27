@@ -90,6 +90,16 @@ export default function HomeScreen() {
       <View style={styles.listCardActions}>
         <TouchableOpacity
           onPress={() => {
+            console.log('Edit button clicked for:', item.title);
+            router.push(`/edit-list/${item.id}`);
+          }}
+          style={styles.editButton}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="create-outline" size={20} color="#3b82f6" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
             console.log('Delete button clicked!');
             handleDeleteList(item.id, item.title);
           }}
@@ -523,6 +533,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+  },
+  editButton: {
+    padding: 4,
   },
   deleteButton: {
     padding: 4,

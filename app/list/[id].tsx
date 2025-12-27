@@ -53,7 +53,7 @@ export default function ListDetailScreen() {
 
         try {
             if (editingId) {
-                await updateItem(editingId, currentItem);
+                await updateItem(editingId, { data: currentItem });
             } else {
                 await addItem(currentItem);
             }
@@ -62,6 +62,14 @@ export default function ListDetailScreen() {
             setEditingId(null);
         } catch (error) {
             Alert.alert("Error", "Failed to save item.");
+        }
+    };
+
+    const toggleComplete = async (itemId: string, currentCompleted: boolean) => {
+        try {
+            await updateItem(itemId, { completed: !currentCompleted });
+        } catch (error) {
+            console.error('Error toggling item completion:', error);
         }
     };
 
@@ -142,24 +150,34 @@ export default function ListDetailScreen() {
                 keyExtractor={item => item.id}
                 contentContainerStyle={styles.listContent}
                 renderItem={({ item }) => (
-                    <TouchableOpacity
-                        onPress={() => openEditModal(item)}
-                        style={styles.itemCard}
-                    >
-                        <View style={styles.itemContent}>
+                    <View style={[styles.itemCard, item.completed && styles.itemCardCompleted]}>
+                        <TouchableOpacity
+                            onPress={() => toggleComplete(item.id, item.completed || false)}
+                            style={styles.checkbox}
+                        >
+                            <Ionicons
+                                name={item.completed ? "checkbox" : "square-outline"}
+                                size={24}
+                                color={item.completed ? "#10b981" : "#9ca3af"}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => openEditModal(item)}
+                            style={styles.itemContent}
+                        >
                             {list.fields.map(field => (
                                 <View key={field.id} style={styles.fieldRow}>
-                                    <Text style={styles.fieldLabel}>{field.name}</Text>
-                                    <Text style={styles.fieldValue}>
+                                    <Text style={[styles.fieldLabel, item.completed && styles.fieldLabelCompleted]}>{field.name}</Text>
+                                    <Text style={[styles.fieldValue, item.completed && styles.fieldValueCompleted]}>
                                         {field.type === 'boolean' ? (item.data[field.id] ? 'Yes' : 'No') : item.data[field.id]}
                                     </Text>
                                 </View>
                             ))}
-                        </View>
+                        </TouchableOpacity>
                         <TouchableOpacity onPress={() => deleteItem(item.id)} style={styles.deleteButton}>
                             <Ionicons name="trash-outline" size={20} color="#EF4444" />
                         </TouchableOpacity>
-                    </TouchableOpacity>
+                    </View>
                 )}
             />
 
@@ -254,20 +272,25 @@ const styles = StyleSheet.create({
         paddingBottom: 100, // Space for FAB
     },
     itemCard: {
-        backgroundColor: '#ffffff', // Changed to white for cleaner look
+        backgroundColor: '#ffffff',
         borderRadius: 16,
         padding: 16,
         marginBottom: 12,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.05,
-        shadowRadius: 8,
+        shadowRadius: 4,
         elevation: 2,
-        borderWidth: 1,
-        borderColor: '#f3f4f6',
+    },
+    itemCardCompleted: {
+        backgroundColor: '#f3f4f6',
+        opacity: 0.7,
+    },
+    checkbox: {
+        marginRight: 12,
+        padding: 4,
     },
     itemContent: {
         flex: 1,
@@ -277,14 +300,22 @@ const styles = StyleSheet.create({
     },
     fieldLabel: {
         fontSize: 12,
+        fontWeight: '600',
         color: '#9ca3af',
-        marginBottom: 2,
-        fontWeight: '500',
+        textTransform: 'uppercase',
+        marginBottom: 4,
+    },
+    fieldLabelCompleted: {
+        color: '#d1d5db',
+        textDecorationLine: 'line-through',
     },
     fieldValue: {
         fontSize: 16,
         color: '#1f2937',
-        fontWeight: '500',
+    },
+    fieldValueCompleted: {
+        color: '#9ca3af',
+        textDecorationLine: 'line-through',
     },
     deleteButton: {
         padding: 8,

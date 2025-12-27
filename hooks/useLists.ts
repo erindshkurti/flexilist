@@ -1,7 +1,7 @@
 import { db } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
 import { List, ListField } from '@/types';
-import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, where } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
 export const useLists = () => {
@@ -71,5 +71,21 @@ export const useLists = () => {
         }
     };
 
-    return { lists, loading, createList, deleteList };
+    const updateList = async (listId: string, title: string, description: string, fields: ListField[]) => {
+        try {
+            console.log('Updating list:', listId);
+            await updateDoc(doc(db, 'lists', listId), {
+                title,
+                description,
+                fields,
+                updatedAt: Date.now()
+            });
+            console.log('List updated successfully');
+        } catch (error) {
+            console.error('Error updating list:', error);
+            throw error;
+        }
+    };
+
+    return { lists, loading, createList, deleteList, updateList };
 };

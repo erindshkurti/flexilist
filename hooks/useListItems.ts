@@ -39,9 +39,9 @@ export const useListItems = (listId: string) => {
         });
     };
 
-    const updateItem = async (itemId: string, data: Record<string, any>) => {
+    const updateItem = async (itemId: string, updates: Partial<Omit<ListItem, 'id' | 'listId' | 'createdAt'>>) => {
         await updateDoc(doc(db, 'lists', listId, 'items', itemId), {
-            data,
+            ...updates,
             updatedAt: Date.now()
         });
     };

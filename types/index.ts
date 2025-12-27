@@ -19,6 +19,7 @@ export interface ListItem {
     id: string;
     listId: string;
     data: Record<string, any>; // Keyed by field.id
+    completed?: boolean;
     createdAt: number;
     updatedAt: number;
 }
