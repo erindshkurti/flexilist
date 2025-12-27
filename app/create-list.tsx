@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function CreateListScreen() {
     const [title, setTitle] = useState('');
@@ -18,6 +18,7 @@ export default function CreateListScreen() {
     const [loading, setLoading] = useState(false);
     const [typeDropdownVisible, setTypeDropdownVisible] = useState<string | null>(null);
     const [errors, setErrors] = useState<{ title?: string; fields?: Record<string, string> }>({});
+    const [infoModalVisible, setInfoModalVisible] = useState(false);
 
     const addField = () => {
         setFields([...fields, {
@@ -143,7 +144,17 @@ export default function CreateListScreen() {
                             ]}
                         >
                             <View style={styles.fieldHeader}>
-                                <Text style={styles.fieldLabel}>Field {index + 1}</Text>
+                                <View style={styles.fieldLabelContainer}>
+                                    <Text style={styles.fieldLabel}>Field {index + 1}</Text>
+                                    {index === 0 && (
+                                        <TouchableOpacity
+                                            onPress={() => setInfoModalVisible(true)}
+                                            style={styles.infoIcon}
+                                        >
+                                            <Ionicons name="information-circle" size={16} color="#3b82f6" />
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
                                 {fields.length > 1 && (
                                     <TouchableOpacity onPress={() => removeField(field.id)}>
                                         <Ionicons name="trash-outline" size={18} color="#ef4444" />
@@ -207,6 +218,31 @@ export default function CreateListScreen() {
                     ))}
                 </View>
             </ScrollView>
+
+            <Modal
+                visible={infoModalVisible}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => setInfoModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.infoModal}>
+                        <View style={styles.infoModalHeader}>
+                            <Ionicons name="information-circle" size={32} color="#3b82f6" />
+                            <Text style={styles.infoModalTitle}>Primary Field</Text>
+                        </View>
+                        <Text style={styles.infoModalMessage}>
+                            This field will be used as the main text for each list item. It will be displayed prominently, while other fields appear as smaller labels.
+                        </Text>
+                        <TouchableOpacity
+                            onPress={() => setInfoModalVisible(false)}
+                            style={styles.infoModalButton}
+                        >
+                            <Text style={styles.infoModalButtonText}>Got it</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
 
             <View style={styles.footer}>
                 <Button title="Create List" onPress={handleCreate} loading={loading} />
@@ -316,6 +352,14 @@ const styles = StyleSheet.create({
         color: '#9ca3af',
         textTransform: 'uppercase',
     },
+    fieldLabelContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+    },
+    infoIcon: {
+        padding: 2,
+    },
     fieldRow: {
         flexDirection: 'row',
         gap: 12,
@@ -400,6 +444,54 @@ const styles = StyleSheet.create({
     errorText: {
         fontSize: 13,
         color: '#ef4444',
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    infoModal: {
+        backgroundColor: 'white',
+        borderRadius: 24,
+        padding: 32,
+        width: '100%',
+        maxWidth: 400,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.2,
+        shadowRadius: 24,
+        elevation: 10,
+    },
+    infoModalHeader: {
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    infoModalTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#1f2937',
+        marginTop: 12,
+    },
+    infoModalMessage: {
+        fontSize: 15,
+        color: '#6b7280',
+        textAlign: 'center',
+        lineHeight: 22,
+        marginBottom: 24,
+    },
+    infoModalButton: {
+        backgroundColor: '#3b82f6',
+        paddingVertical: 14,
+        paddingHorizontal: 24,
+        borderRadius: 12,
+        alignItems: 'center',
+    },
+    infoModalButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: '600',
     },
     footer: {
         padding: 20,
