@@ -1,50 +1,71 @@
-# Welcome to your Expo app 👋
+# FlexiList
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+FlexiList is a modern, cross-platform mobile and web application designed for flexible and secure list tracking. It allows users to create custom lists with dynamic fields (text, number, date, etc.), ensuring that you can track *anything*—from grocery lists and daily tasks to project milestones and inventory—exactly the way you want.
 
-## Get started
+## Features
 
-1. Install dependencies
+*   **Custom List Schemas**: Define exactly what data you want to track for each list (e.g., "Price" as a number, "Due Date" as a date).
+*   **Cross-Platform**: Runs seamlessly on iOS, Android, and the Web.
+*   **Secure Authentication**: Google Sign-In integration powered by Firebase Auth.
+*   **Cloud Sync**: Real-time data synchronization using Firestore.
+*   **Modern UI/UX**: clean, minimal design with glassmorphism elements, gradients, and smooth interactions.
+*   **Smart Filtering**: Search, sort, and toggle visibility of completed items.
 
-   ```bash
-   npm install
-   ```
+## Technology Stack
 
-2. Start the app
+*   **Framework**: [React Native](https://reactnative.dev/) with [Expo](https://expo.dev/)
+*   **Language**: [TypeScript](https://www.typescriptlang.org/)
+*   **Styling**: [NativeWind](https://www.nativewind.dev/) (Tailwind CSS for React Native)
+*   **Backend / Database**: [Firebase](https://firebase.google.com/) (Firestore & Auth)
+*   **Navigation**: [Expo Router](https://docs.expo.dev/router/introduction/)
 
-   ```bash
-   npx expo start
-   ```
+## Getting Started
 
-In the output, you'll find options to open the app in a
+### Prerequisites
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+*   Node.js (LTS recommended)
+*   npm or yarn
+*   Expo Go app (for mobile testing)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Installation
 
-## Get a fresh project
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/your-username/flexilist.git
+    cd flexilist
+    ```
 
-When you're ready, run:
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
 
-```bash
-npm run reset-project
-```
+3.  **Configure Environment**:
+    Create a `.env` file in the root directory with your Firebase config:
+    ```env
+    EXPO_PUBLIC_FIREBASE_API_KEY=your_api_key
+    EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+    EXPO_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+    EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+    EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+    EXPO_PUBLIC_FIREBASE_APP_ID=your_app_id
+    ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Running the App
 
-## Learn more
+*   **Web**:
+    ```bash
+    npm run web
+    ```
+*   **iOS**:
+    ```bash
+    npm run ios
+    ```
+*   **Android**:
+    ```bash
+    npm run android
+    ```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Security Note
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+This project uses Firebase for backend services. API keys are public by design. Access is secured via **Firestore Security Rules** and **App Check** (recommended for production). Ensure your Google Cloud Console keys are restricted to your specific domains and bundle identifiers (`com.erindshkurti.flexilist`).
