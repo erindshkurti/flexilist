@@ -135,7 +135,13 @@ export default function CreateListScreen() {
                     </View>
 
                     {fields.map((field, index) => (
-                        <View key={field.id} style={styles.fieldCard}>
+                        <View
+                            key={field.id}
+                            style={[
+                                styles.fieldCard,
+                                typeDropdownVisible === field.id && styles.fieldCardActive
+                            ]}
+                        >
                             <View style={styles.fieldHeader}>
                                 <Text style={styles.fieldLabel}>Field {index + 1}</Text>
                                 {fields.length > 1 && (
@@ -295,6 +301,9 @@ const styles = StyleSheet.create({
         padding: 16,
         marginBottom: 12,
     },
+    fieldCardActive: {
+        zIndex: 1000,
+    },
     fieldHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -356,7 +365,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 12,
         elevation: 5,
-        zIndex: 1000,
+        zIndex: 9999,
     },
     typeDropdownItem: {
         flexDirection: 'row',
