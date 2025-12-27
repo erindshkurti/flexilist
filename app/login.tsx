@@ -1,9 +1,8 @@
 import { Button } from '@/components/Button';
 import { useGoogleAuth } from '@/hooks/useGoogleAuth';
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Alert, Platform, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Platform, StyleSheet, Text, View } from 'react-native';
 
 export default function LoginScreen() {
     const { signIn } = useGoogleAuth();
@@ -48,8 +47,11 @@ export default function LoginScreen() {
                     {/* Title Section with Icon */}
                     <View style={styles.titleSection}>
                         <View style={styles.titleRow}>
-                            <Ionicons name="list-outline" size={52} color="#1f2937" style={{ marginRight: 16 }} />
-                            <Text style={styles.title}>FlexiList</Text>
+                            <Image
+                                source={require('../assets/images/logo.png')}
+                                style={styles.logo}
+                            />
+                            <Text style={styles.title}>flexilist</Text>
                         </View>
                         <Text style={styles.subtitle}>Track anything, your way.</Text>
                     </View>
@@ -102,14 +104,21 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 48,
         fontWeight: '800',
+        fontFamily: 'PlusJakartaSans_800ExtraBold',
         color: '#1f2937',
         letterSpacing: -1,
+    },
+    logo: {
+        width: 96,
+        height: 96,
+        marginRight: 16,
     },
     subtitle: {
         fontSize: 18,
         color: '#6b7280',
         marginTop: 8,
         fontWeight: '500',
+        fontFamily: 'PlusJakartaSans_500Medium',
     },
     card: {
         backgroundColor: 'white',
@@ -128,6 +137,7 @@ const styles = StyleSheet.create({
     cardTitle: {
         fontSize: 28,
         fontWeight: '700',
+        fontFamily: 'PlusJakartaSans_700Bold',
         color: '#1f2937',
         marginBottom: 8,
         textAlign: 'center',
@@ -135,6 +145,7 @@ const styles = StyleSheet.create({
     cardSubtitle: {
         fontSize: 15,
         color: '#6b7280',
+        fontFamily: 'PlusJakartaSans_400Regular',
         marginBottom: 32,
         textAlign: 'center',
     },
@@ -145,6 +156,7 @@ const styles = StyleSheet.create({
         marginTop: 32,
         fontSize: 13,
         color: '#9ca3af',
+        fontFamily: 'PlusJakartaSans_400Regular',
         textAlign: 'center',
     },
 });

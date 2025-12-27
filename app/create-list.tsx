@@ -279,6 +279,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 28,
         fontWeight: '800',
+        fontFamily: 'PlusJakartaSans_800ExtraBold',
         color: '#1f2937',
     },
     scrollView: {
@@ -296,6 +297,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 14,
         fontWeight: '600',
+        fontFamily: 'PlusJakartaSans_600SemiBold',
         color: '#374151',
         marginBottom: 8,
     },
@@ -307,6 +309,7 @@ const styles = StyleSheet.create({
         padding: 16,
         fontSize: 16,
         color: '#1f2937',
+        fontFamily: 'PlusJakartaSans_400Regular',
     },
     sectionHeader: {
         flexDirection: 'row',
@@ -317,6 +320,7 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 18,
         fontWeight: '700',
+        fontFamily: 'PlusJakartaSans_700Bold',
         color: '#1f2937',
     },
     addFieldButton: {
@@ -327,6 +331,7 @@ const styles = StyleSheet.create({
     addFieldText: {
         fontSize: 14,
         fontWeight: '600',
+        fontFamily: 'PlusJakartaSans_600SemiBold',
         color: '#1f2937',
     },
     fieldCard: {
@@ -349,6 +354,7 @@ const styles = StyleSheet.create({
     fieldLabel: {
         fontSize: 12,
         fontWeight: '700',
+        fontFamily: 'PlusJakartaSans_700Bold',
         color: '#9ca3af',
         textTransform: 'uppercase',
     },
@@ -375,6 +381,7 @@ const styles = StyleSheet.create({
         padding: 12,
         fontSize: 15,
         color: '#1f2937',
+        fontFamily: 'PlusJakartaSans_400Regular',
     },
     fieldTypeContainer: {
         width: 110,
@@ -394,6 +401,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#1f2937',
         textTransform: 'capitalize',
+        fontFamily: 'PlusJakartaSans_500Medium',
     },
     typeDropdown: {
         position: 'absolute',
@@ -426,10 +434,12 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#4b5563',
         textTransform: 'capitalize',
+        fontFamily: 'PlusJakartaSans_400Regular',
     },
     typeDropdownTextActive: {
         color: '#2563EB',
         fontWeight: '600',
+        fontFamily: 'PlusJakartaSans_600SemiBold',
     },
     inputError: {
         borderColor: '#ef4444',
@@ -444,6 +454,7 @@ const styles = StyleSheet.create({
     errorText: {
         fontSize: 13,
         color: '#ef4444',
+        fontFamily: 'PlusJakartaSans_400Regular',
     },
     modalOverlay: {
         flex: 1,
@@ -471,6 +482,7 @@ const styles = StyleSheet.create({
     infoModalTitle: {
         fontSize: 20,
         fontWeight: '700',
+        fontFamily: 'PlusJakartaSans_700Bold',
         color: '#1f2937',
         marginTop: 12,
     },
@@ -480,6 +492,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         lineHeight: 22,
         marginBottom: 24,
+        fontFamily: 'PlusJakartaSans_400Regular',
     },
     infoModalButton: {
         backgroundColor: '#3b82f6',
@@ -492,6 +505,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 16,
         fontWeight: '600',
+        fontFamily: 'PlusJakartaSans_600SemiBold',
     },
     footer: {
         padding: 20,

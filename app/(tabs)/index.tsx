@@ -128,8 +128,11 @@ export default function HomeScreen() {
           >
             <View style={styles.headerContent}>
               <View style={styles.titleRow}>
-                <Ionicons name="list-outline" size={32} color="#1f2937" style={{ marginRight: 12 }} />
-                <Text style={styles.headerTitle}>FlexiList</Text>
+                <Image
+                  source={require('../../assets/images/logo.png')}
+                  style={{ width: 40, height: 40, marginRight: 12 }}
+                />
+                <Text style={styles.headerTitle}>flexilist</Text>
               </View>
               <View style={styles.headerRight}>
                 <TouchableOpacity
@@ -330,7 +333,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 32,
     fontWeight: '800',
-    fontFamily: 'Inter_800ExtraBold',
+    fontFamily: 'PlusJakartaSans_800ExtraBold',
     color: '#1f2937',
   },
   headerRight: {
@@ -357,7 +360,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: 'PlusJakartaSans_600SemiBold',
   },
   profileMenu: {
     position: 'absolute',
@@ -380,13 +383,13 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 16,
     fontWeight: '700',
-    fontFamily: 'Inter_700Bold',
+    fontFamily: 'PlusJakartaSans_700Bold',
     color: '#1f2937',
     marginBottom: 2,
   },
   profileEmail: {
     fontSize: 12,
-    fontFamily: 'Inter_400Regular',
+    fontFamily: 'PlusJakartaSans_400Regular',
     color: '#6b7280',
   },
   menuDivider: {
@@ -404,7 +407,7 @@ const styles = StyleSheet.create({
   menuText: {
     fontSize: 15,
     fontWeight: '500',
-    fontFamily: 'Inter_500Medium',
+    fontFamily: 'PlusJakartaSans_500Medium',
     color: '#374151',
   },
   fab: {
@@ -476,7 +479,7 @@ const styles = StyleSheet.create({
   dropdownTitle: {
     fontSize: 12,
     fontWeight: '600',
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: 'PlusJakartaSans_600SemiBold',
     color: '#9ca3af',
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -495,14 +498,14 @@ const styles = StyleSheet.create({
   },
   dropdownText: {
     fontSize: 16,
-    fontFamily: 'Inter_500Medium',
+    fontFamily: 'PlusJakartaSans_500Medium',
     color: '#4b5563',
     fontWeight: '500',
   },
   dropdownTextActive: {
     color: '#2563EB',
     fontWeight: '600',
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: 'PlusJakartaSans_600SemiBold',
   },
   listContainer: {
     flex: 1,
@@ -572,13 +575,13 @@ const styles = StyleSheet.create({
   listTitle: {
     fontSize: 18,
     fontWeight: '700',
-    fontFamily: 'Inter_700Bold',
+    fontFamily: 'PlusJakartaSans_700Bold',
     color: '#1f2937',
     marginBottom: 2,
   },
   listDescription: {
     fontSize: 14,
-    fontFamily: 'Inter_400Regular',
+    fontFamily: 'PlusJakartaSans_400Regular',
     color: '#6b7280',
   },
   fieldTags: {
@@ -596,7 +599,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#7c3aed',
     fontWeight: '600',
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: 'PlusJakartaSans_600SemiBold',
   },
   emptyState: {
     alignItems: 'center',
@@ -611,13 +614,13 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 22,
     fontWeight: '700',
-    fontFamily: 'Inter_700Bold',
+    fontFamily: 'PlusJakartaSans_700Bold',
     color: '#1f2937',
     marginBottom: 8,
   },
   emptySubtitle: {
     fontSize: 15,
-    fontFamily: 'Inter_400Regular',
+    fontFamily: 'PlusJakartaSans_400Regular',
     color: '#6b7280',
   },
   modalOverlay: {
@@ -646,13 +649,13 @@ const styles = StyleSheet.create({
   deleteModalTitle: {
     fontSize: 24,
     fontWeight: '700',
-    fontFamily: 'Inter_700Bold',
+    fontFamily: 'PlusJakartaSans_700Bold',
     color: '#1f2937',
     marginTop: 12,
   },
   deleteModalMessage: {
     fontSize: 16,
-    fontFamily: 'Inter_400Regular',
+    fontFamily: 'PlusJakartaSans_400Regular',
     color: '#6b7280',
     textAlign: 'center',
     lineHeight: 24,
@@ -675,7 +678,7 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: 'PlusJakartaSans_600SemiBold',
     color: '#4b5563',
   },
   confirmDeleteButton: {
@@ -684,7 +687,7 @@ const styles = StyleSheet.create({
   confirmDeleteButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: 'PlusJakartaSans_600SemiBold',
     color: 'white',
   },
 });

@@ -468,7 +468,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#1f2937',
         paddingVertical: 14,
-        paddingHorizontal: 6
+        paddingHorizontal: 6,
+        fontFamily: 'PlusJakartaSans_500Medium',
     },
     sortButton: {
         width: 44,
@@ -495,6 +496,7 @@ const styles = StyleSheet.create({
     dropdownTitle: {
         fontSize: 12,
         fontWeight: '600',
+        fontFamily: 'PlusJakartaSans_600SemiBold',
         color: '#9ca3af',
         paddingHorizontal: 12,
         paddingVertical: 8,
@@ -515,20 +517,24 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#4b5563',
         fontWeight: '500',
+        fontFamily: 'PlusJakartaSans_500Medium',
     },
     dropdownTextActive: {
         color: '#2563EB',
         fontWeight: '600',
+        fontFamily: 'PlusJakartaSans_600SemiBold',
     },
     headerTitle: {
         fontSize: 28,
         fontWeight: '800',
+        fontFamily: 'PlusJakartaSans_800ExtraBold',
         color: '#1f2937',
     },
     headerDescription: {
         fontSize: 14,
         color: '#6b7280',
         marginTop: 4,
+        fontFamily: 'PlusJakartaSans_400Regular',
     },
     listContent: {
         padding: 20,
@@ -570,6 +576,7 @@ const styles = StyleSheet.create({
     itemMainText: {
         fontSize: 18,
         fontWeight: '600',
+        fontFamily: 'PlusJakartaSans_600SemiBold',
         color: '#1f2937',
     },
     itemMainTextCompleted: {
@@ -585,6 +592,7 @@ const styles = StyleSheet.create({
     labelText: {
         fontSize: 12,
         color: '#6b7280',
+        fontFamily: 'PlusJakartaSans_500Medium',
     },
     labelTextCompleted: {
         color: '#9ca3af',
@@ -596,20 +604,29 @@ const styles = StyleSheet.create({
     fieldLabel: {
         fontSize: 12,
         fontWeight: '600',
+        fontFamily: 'PlusJakartaSans_600SemiBold',
         color: '#9ca3af',
         textTransform: 'uppercase',
-        marginBottom: 4,
+        letterSpacing: 0.5,
     },
     fieldLabelCompleted: {
+        fontSize: 12,
+        fontWeight: '600',
+        fontFamily: 'PlusJakartaSans_600SemiBold',
         color: '#d1d5db',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
         textDecorationLine: 'line-through',
     },
     fieldValue: {
         fontSize: 16,
         color: '#1f2937',
+        fontFamily: 'PlusJakartaSans_400Regular',
     },
     fieldValueCompleted: {
+        fontSize: 16,
         color: '#9ca3af',
+        fontFamily: 'PlusJakartaSans_400Regular',
         textDecorationLine: 'line-through',
     },
     deleteButton: {
@@ -641,27 +658,27 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 24,
+        marginBottom: 32,
     },
     modalTitle: {
         fontSize: 24,
         fontWeight: '700',
+        fontFamily: 'PlusJakartaSans_700Bold',
         color: '#1f2937',
     },
     cancelButton: {
-        fontSize: 16,
-        color: '#2563EB',
-        fontWeight: '600',
+        padding: 4,
     },
     modalContent: {
         flex: 1,
     },
     inputGroup: {
-        marginBottom: 20,
+        marginBottom: 24,
     },
     label: {
         fontSize: 14,
         fontWeight: '600',
+        fontFamily: 'PlusJakartaSans_600SemiBold',
         color: '#374151',
         marginBottom: 8,
     },
@@ -673,19 +690,26 @@ const styles = StyleSheet.create({
         padding: 16,
         fontSize: 16,
         color: '#1f2937',
+        fontFamily: 'PlusJakartaSans_400Regular',
     },
     errorContainer: {
+        marginTop: 8,
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 6,
-        marginTop: 6,
+        gap: 4,
     },
     errorText: {
-        fontSize: 13,
         color: '#ef4444',
+        fontSize: 14,
+        fontFamily: 'PlusJakartaSans_400Regular',
     },
     booleanInput: {
-        padding: 12,
+        flexDirection: 'row',
+        gap: 12,
+    },
+    booleanOption: {
+        flex: 1,
+        paddingVertical: 12,
         borderRadius: 12,
         borderWidth: 1,
         alignItems: 'center',
@@ -700,6 +724,7 @@ const styles = StyleSheet.create({
     },
     booleanText: {
         fontWeight: '600',
+        fontFamily: 'PlusJakartaSans_600SemiBold',
         fontSize: 16,
     },
     booleanTextActive: {
@@ -724,16 +749,19 @@ const styles = StyleSheet.create({
     dateText: {
         fontSize: 16,
         color: '#1f2937',
+        fontFamily: 'PlusJakartaSans_400Regular',
     },
     datePlaceholder: {
         fontSize: 16,
         color: '#9ca3af',
+        fontFamily: 'PlusJakartaSans_400Regular',
     },
     fieldHint: {
         fontSize: 12,
         color: '#6b7280',
         marginTop: 6,
         fontStyle: 'italic',
+        fontFamily: 'PlusJakartaSans_400Regular',
     },
     modalOverlay: {
         flex: 1,
@@ -757,6 +785,7 @@ const styles = StyleSheet.create({
     datePickerTitle: {
         fontSize: 20,
         fontWeight: '700',
+        fontFamily: 'PlusJakartaSans_700Bold',
         color: '#1f2937',
         marginBottom: 20,
         textAlign: 'center',
@@ -769,6 +798,7 @@ const styles = StyleSheet.create({
         padding: 16,
         fontSize: 16,
         color: '#1f2937',
+        fontFamily: 'PlusJakartaSans_400Regular',
         marginBottom: 24,
         textAlign: 'center',
     },
@@ -789,13 +819,15 @@ const styles = StyleSheet.create({
         backgroundColor: '#3b82f6',
     },
     datePickerCancelText: {
-        color: '#6b7280',
+        color: '#4b5563',
         fontSize: 16,
         fontWeight: '600',
+        fontFamily: 'PlusJakartaSans_600SemiBold',
     },
     datePickerConfirmText: {
         color: 'white',
         fontSize: 16,
         fontWeight: '600',
+        fontFamily: 'PlusJakartaSans_600SemiBold',
     },
 });
