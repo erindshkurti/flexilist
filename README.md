@@ -66,6 +66,65 @@ flexilist is a modern, cross-platform mobile and web application designed for fl
     npm run android
     ```
 
+## Deployment
+
+### Web Deployment (Firebase Hosting)
+
+This project is configured for deployment to Firebase Hosting.
+
+#### Prerequisites
+
+*   Firebase CLI installed globally:
+    ```bash
+    npm install -g firebase-tools
+    ```
+*   Firebase project created and configured
+
+#### Deployment Steps
+
+1.  **Login to Firebase**:
+    ```bash
+    firebase login
+    ```
+
+2.  **Build and Deploy**:
+    ```bash
+    npm run deploy
+    ```
+    This command builds the web app and deploys it to Firebase Hosting.
+
+3.  **Deploy Only (without build)**:
+    ```bash
+    firebase deploy --only hosting
+    ```
+
+#### Configuration Files
+
+*   `firebase.json`: Hosting configuration (public directory, rewrites, headers)
+*   `.firebaserc`: Firebase project configuration
+
+#### Deployment URL
+
+After deployment, your app will be available at:
+```
+https://[your-project-id].web.app
+```
+
+### Mobile Deployment
+
+For iOS and Android deployment, you'll need to:
+
+1.  **Create a development build**:
+    ```bash
+    npx expo prebuild
+    ```
+
+2.  **Build for production**:
+    *   **iOS**: Use EAS Build or Xcode
+    *   **Android**: Use EAS Build or Android Studio
+
+Refer to [Expo documentation](https://docs.expo.dev/build/introduction/) for detailed mobile deployment instructions.
+
 ## Security Note
 
 This project uses Firebase for backend services. API keys are public by design. Access is secured via **Firestore Security Rules** and **App Check** (recommended for production). Ensure your Google Cloud Console keys are restricted to your specific domains and bundle identifiers (`com.erindshkurti.flexilist`).

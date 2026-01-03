@@ -45,3 +45,6 @@ app-example
 
 # Firebase
 .firebase/
+
+# Documentation artifacts
+docs/
