@@ -1,3 +1,4 @@
+import { ListCard } from '@/components/ListCard';
 import { useAuth } from '@/context/AuthContext';
 import { useLists } from '@/hooks/useLists';
 import { Ionicons } from '@expo/vector-icons';
@@ -55,60 +56,9 @@ export default function HomeScreen() {
       return b.createdAt - a.createdAt;
     });
 
+
   const renderItem = ({ item }: { item: any }) => (
-    <TouchableOpacity
-      onPress={() => router.push(`/list/${item.id}`)}
-      style={styles.listCard}
-      activeOpacity={0.7}
-    >
-      <View style={styles.listCardContent}>
-        <View style={styles.listHeader}>
-
-          <View style={styles.listInfo}>
-            <Text style={styles.listTitle}>{item.title}</Text>
-            {item.description ? (
-              <Text style={styles.listDescription} numberOfLines={1}>{item.description}</Text>
-            ) : null}
-          </View>
-        </View>
-
-        <View style={styles.fieldTags}>
-          {item.fields.slice(0, 3).map((field: any) => (
-            <View key={field.id} style={styles.fieldTag}>
-              <Text style={styles.fieldTagText}>{field.name}</Text>
-            </View>
-          ))}
-          {item.fields.length > 3 && (
-            <View style={styles.fieldTag}>
-              <Text style={styles.fieldTagText}>+{item.fields.length - 3}</Text>
-            </View>
-          )}
-        </View>
-      </View>
-      <View style={styles.listCardActions}>
-        <TouchableOpacity
-          onPress={() => {
-            console.log('Edit button clicked for:', item.title);
-            router.push(`/edit-list/${item.id}`);
-          }}
-          style={styles.editButton}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Ionicons name="create-outline" size={20} color="#3b82f6" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            console.log('Delete button clicked!');
-            handleDeleteList(item.id, item.title);
-          }}
-          style={styles.deleteButton}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Ionicons name="trash-outline" size={20} color="#ef4444" />
-        </TouchableOpacity>
-        <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
-      </View>
-    </TouchableOpacity>
+    <ListCard list={item} onDelete={handleDeleteList} />
   );
 
   return (
@@ -516,89 +466,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
   },
-  listCard: {
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 3,
-  },
-  listCardContent: {
-    flex: 1,
-  },
-  listCardActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  editButton: {
-    padding: 4,
-  },
-  deleteButton: {
-    padding: 4,
-  },
-  deleteButtonAbsolute: {
-    position: 'absolute',
-    right: 60,
-    top: '50%',
-    marginTop: -10,
-    padding: 8,
-    zIndex: 100,
-    backgroundColor: 'white',
-    borderRadius: 8,
-  },
-  listHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  iconBadge: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: '#f0f4ff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  listInfo: {
-    flex: 1,
-  },
-  listTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    fontFamily: 'PlusJakartaSans_700Bold',
-    color: '#1f2937',
-    marginBottom: 2,
-  },
-  listDescription: {
-    fontSize: 14,
-    fontFamily: 'PlusJakartaSans_400Regular',
-    color: '#6b7280',
-  },
-  fieldTags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  fieldTag: {
-    backgroundColor: '#ede9fe',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  fieldTagText: {
-    fontSize: 12,
-    color: '#7c3aed',
-    fontWeight: '600',
-    fontFamily: 'PlusJakartaSans_600SemiBold',
-  },
+
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
