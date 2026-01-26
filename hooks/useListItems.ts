@@ -32,22 +32,37 @@ export const useListItems = (listId: string) => {
     }, [listId]);
 
     const addItem = async (data: Record<string, any>) => {
+        const now = Date.now();
         await addDoc(collection(db, 'lists', listId, 'items'), {
             data,
-            createdAt: Date.now(),
-            updatedAt: Date.now()
+            createdAt: now,
+            updatedAt: now
+        });
+        // Update parent list timestamp
+        await updateDoc(doc(db, 'lists', listId), {
+            updatedAt: now
         });
     };
 
     const updateItem = async (itemId: string, updates: Partial<Omit<ListItem, 'id' | 'listId' | 'createdAt'>>) => {
+        const now = Date.now();
         await updateDoc(doc(db, 'lists', listId, 'items', itemId), {
             ...updates,
-            updatedAt: Date.now()
+            updatedAt: now
+        });
+        // Update parent list timestamp
+        await updateDoc(doc(db, 'lists', listId), {
+            updatedAt: now
         });
     };
 
     const deleteItem = async (itemId: string) => {
+        const now = Date.now();
         await deleteDoc(doc(db, 'lists', listId, 'items', itemId));
+        // Update parent list timestamp
+        await updateDoc(doc(db, 'lists', listId), {
+            updatedAt: now
+        });
     };
 
     return { items, loading, addItem, updateItem, deleteItem };
