@@ -16,7 +16,7 @@ export default function ListDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const [list, setList] = useState<List | null>(null);
     const { items, loading: itemsLoading, addItem, deleteItem, updateItem } = useListItems(id!);
-    const { saveLastRoute } = useUserPreferences();
+    const { saveLastRoute, getListPreference, saveListPreference, loading: prefsLoading } = useUserPreferences();
     const router = useRouter();
     const navigation = useNavigation();
     const [modalVisible, setModalVisible] = useState(false);
@@ -33,6 +33,18 @@ export default function ListDetailScreen() {
     const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null);
 
     const [showCompleted, setShowCompleted] = useState(true);
+    const [hasInitializedPrefs, setHasInitializedPrefs] = useState(false);
+
+    // Initialize display preference from user settings
+    useEffect(() => {
+        if (!prefsLoading && !hasInitializedPrefs && id) {
+            const pref = getListPreference(id);
+            if (pref && pref.hideCompleted !== undefined) {
+                setShowCompleted(!pref.hideCompleted);
+            }
+            setHasInitializedPrefs(true);
+        }
+    }, [prefsLoading, id, getListPreference, hasInitializedPrefs]);
 
     // Handle back navigation - go to home if no history (e.g., after route restoration)
     const handleBack = () => {
@@ -260,7 +272,13 @@ export default function ListDetailScreen() {
                                 />
                             </View>
                             <TouchableOpacity
-                                onPress={() => setShowCompleted(!showCompleted)}
+                                onPress={() => {
+                                    const newValue = !showCompleted;
+                                    setShowCompleted(newValue);
+                                    if (id) {
+                                        saveListPreference(id, { hideCompleted: !newValue });
+                                    }
+                                }}
                                 style={styles.sortButton}
                                 activeOpacity={0.7}
                                 {...(Platform.OS === 'web' ? { title: showCompleted ? "Hide Completed Items" : "Show Completed Items" } as any : {})}

@@ -3,9 +3,14 @@ import { useAuth } from '@/context/AuthContext';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useCallback, useEffect, useState } from 'react';
 
+interface ListPreference {
+    hideCompleted?: boolean;
+}
+
 interface UserPreferences {
     lastRoute?: string;
     lastVisitedAt?: number;
+    listPreferences?: Record<string, ListPreference>;
 }
 
 export const useUserPreferences = () => {
@@ -68,10 +73,44 @@ export const useUserPreferences = () => {
         return preferences?.lastRoute || null;
     }, [preferences]);
 
+    // Save preference for a specific list
+    const saveListPreference = useCallback(async (listId: string, pref: ListPreference) => {
+        if (!user) return;
+
+        try {
+            const docRef = doc(db, 'userPreferences', user.uid);
+            const newListPreferences = {
+                ...(preferences?.listPreferences || {}),
+                [listId]: {
+                    ...(preferences?.listPreferences?.[listId] || {}),
+                    ...pref
+                }
+            };
+
+            await setDoc(docRef, {
+                listPreferences: newListPreferences
+            }, { merge: true });
+
+            setPreferences(prev => ({
+                ...prev,
+                listPreferences: newListPreferences
+            }));
+        } catch (error) {
+            console.error('Error saving list preference:', error);
+        }
+    }, [user?.uid, preferences?.listPreferences]);
+
+    // Get preference for a specific list
+    const getListPreference = useCallback((listId: string): ListPreference | null => {
+        return preferences?.listPreferences?.[listId] || null;
+    }, [preferences]);
+
     return {
         preferences,
         loading,
         saveLastRoute,
-        getLastRoute
+        getLastRoute,
+        saveListPreference,
+        getListPreference
     };
 };
