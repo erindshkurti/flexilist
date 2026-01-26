@@ -29,6 +29,8 @@ export default function ListDetailScreen() {
     const [search, setSearch] = useState('');
     const [sortBy, setSortBy] = useState<'name' | 'created'>('name');
     const [sortMenuVisible, setSortMenuVisible] = useState(false);
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null);
 
     const [showCompleted, setShowCompleted] = useState(true);
 
@@ -124,6 +126,22 @@ export default function ListDetailScreen() {
         setModalVisible(true);
     };
 
+    const handleDeleteItem = (itemId: string, itemName: string) => {
+        setItemToDelete({ id: itemId, name: itemName });
+        setDeleteModalVisible(true);
+    };
+
+    const confirmDeleteItem = async () => {
+        if (!itemToDelete) return;
+        try {
+            await deleteItem(itemToDelete.id);
+            setDeleteModalVisible(false);
+            setItemToDelete(null);
+        } catch (error) {
+            Alert.alert("Error", "Failed to delete item.");
+        }
+    };
+
 
     const renderFieldInput = (field: ListField) => {
         const value = currentItem[field.id];
@@ -202,6 +220,11 @@ export default function ListDetailScreen() {
                 return (b.createdAt || 0) - (a.createdAt || 0);
             }
         });
+
+    const getItemName = (item: any) => {
+        if (!list || list.fields.length === 0) return 'this item';
+        return item.data[list.fields[0].id] || 'Untitled';
+    };
 
     return (
         <TouchableWithoutFeedback onPress={() => setSortMenuVisible(false)}>
@@ -335,7 +358,7 @@ export default function ListDetailScreen() {
                                     </View>
                                 )}
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => deleteItem(item.id)} style={styles.deleteButton}>
+                            <TouchableOpacity onPress={() => handleDeleteItem(item.id, getItemName(item))} style={styles.deleteButton}>
                                 <Ionicons name="trash-outline" size={20} color="#EF4444" />
                             </TouchableOpacity>
                         </View>
@@ -449,6 +472,44 @@ export default function ListDetailScreen() {
                         />
                     )
                 )}
+
+                {/* Delete Confirmation Modal */}
+                <Modal
+                    visible={deleteModalVisible}
+                    transparent={true}
+                    animationType="fade"
+                    onRequestClose={() => setDeleteModalVisible(false)}
+                >
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.deleteModal}>
+                            <View style={styles.deleteModalHeader}>
+                                <Ionicons name="warning-outline" size={48} color="#ef4444" />
+                                <Text style={styles.deleteModalTitle}>Delete Item</Text>
+                            </View>
+                            <Text style={styles.deleteModalMessage}>
+                                Are you sure you want to delete "{itemToDelete?.name}"?{'\n'}
+                                This action cannot be undone.
+                            </Text>
+                            <View style={styles.deleteModalButtons}>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setDeleteModalVisible(false);
+                                        setItemToDelete(null);
+                                    }}
+                                    style={[styles.deleteModalButton, styles.cancelButtonModal]}
+                                >
+                                    <Text style={styles.cancelButtonText}>Cancel</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={confirmDeleteItem}
+                                    style={[styles.deleteModalButton, styles.confirmDeleteButton]}
+                                >
+                                    <Text style={styles.confirmDeleteButtonText}>Delete</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
             </View>
         </TouchableWithoutFeedback>
     );
@@ -873,5 +934,65 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
         fontFamily: 'PlusJakartaSans_600SemiBold',
+    },
+    deleteModal: {
+        backgroundColor: 'white',
+        borderRadius: 24,
+        padding: 32,
+        width: '100%',
+        maxWidth: 400,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.2,
+        shadowRadius: 24,
+        elevation: 10,
+    },
+    deleteModalHeader: {
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    deleteModalTitle: {
+        fontSize: 24,
+        fontWeight: '700',
+        fontFamily: 'PlusJakartaSans_700Bold',
+        color: '#1f2937',
+        marginTop: 12,
+    },
+    deleteModalMessage: {
+        fontSize: 16,
+        fontFamily: 'PlusJakartaSans_400Regular',
+        color: '#6b7280',
+        textAlign: 'center',
+        lineHeight: 24,
+        marginBottom: 32,
+    },
+    deleteModalButtons: {
+        flexDirection: 'row',
+        gap: 12,
+    },
+    deleteModalButton: {
+        flex: 1,
+        paddingVertical: 14,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    cancelButtonModal: {
+        backgroundColor: '#f3f4f6',
+    },
+    cancelButtonText: {
+        fontSize: 16,
+        fontWeight: '600',
+        fontFamily: 'PlusJakartaSans_600SemiBold',
+        color: '#4b5563',
+    },
+    confirmDeleteButton: {
+        backgroundColor: '#ef4444',
+    },
+    confirmDeleteButtonText: {
+        fontSize: 16,
+        fontWeight: '600',
+        fontFamily: 'PlusJakartaSans_600SemiBold',
+        color: 'white',
     },
 });
