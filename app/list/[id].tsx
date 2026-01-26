@@ -27,7 +27,7 @@ export default function ListDetailScreen() {
     const [datePickerField, setDatePickerField] = useState<string | null>(null);
     const [tempDate, setTempDate] = useState(new Date());
     const [search, setSearch] = useState('');
-    const [sortBy, setSortBy] = useState<'name' | 'date'>('date');
+    const [sortBy, setSortBy] = useState<'name' | 'created'>('name');
     const [sortMenuVisible, setSortMenuVisible] = useState(false);
 
     const [showCompleted, setShowCompleted] = useState(true);
@@ -199,7 +199,7 @@ export default function ListDetailScreen() {
                 const bValue = b.data[firstFieldId]?.toString().toLowerCase() || '';
                 return aValue.localeCompare(bValue);
             } else {
-                return b.createdAt - a.createdAt;
+                return (b.createdAt || 0) - (a.createdAt || 0);
             }
         });
 
@@ -264,15 +264,15 @@ export default function ListDetailScreen() {
                                     <Text style={styles.dropdownTitle}>Sort by</Text>
 
                                     <TouchableOpacity
-                                        style={[styles.dropdownItem, sortBy === 'date' && styles.dropdownItemActive]}
+                                        style={[styles.dropdownItem, sortBy === 'created' && styles.dropdownItemActive]}
                                         onPress={() => {
-                                            setSortBy('date');
+                                            setSortBy('created');
                                             setSortMenuVisible(false);
                                         }}
                                     >
-                                        <Ionicons name="time-outline" size={20} color={sortBy === 'date' ? '#2563EB' : '#4b5563'} />
-                                        <Text style={[styles.dropdownText, sortBy === 'date' && styles.dropdownTextActive]}>Date Created</Text>
-                                        {sortBy === 'date' && <Ionicons name="checkmark" size={16} color="#2563EB" style={{ marginLeft: 'auto' }} />}
+                                        <Ionicons name="time-outline" size={20} color={sortBy === 'created' ? '#2563EB' : '#4b5563'} />
+                                        <Text style={[styles.dropdownText, sortBy === 'created' && styles.dropdownTextActive]}>Date Created</Text>
+                                        {sortBy === 'created' && <Ionicons name="checkmark" size={16} color="#2563EB" style={{ marginLeft: 'auto' }} />}
                                     </TouchableOpacity>
 
                                     <TouchableOpacity
