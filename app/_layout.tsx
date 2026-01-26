@@ -7,6 +7,7 @@ import '../global.css';
 
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
 import {
   PlusJakartaSans_400Regular,
   PlusJakartaSans_500Medium,
@@ -16,7 +17,7 @@ import {
   useFonts,
 } from '@expo-google-fonts/plus-jakarta-sans';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
 export const unstable_settings = {
@@ -29,8 +30,10 @@ SplashScreen.preventAutoHideAsync();
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const { user, loading } = useAuth();
+  const { getLastRoute, loading: prefsLoading } = useUserPreferences();
   const router = useRouter();
   const segments = useSegments();
+  const hasRestoredRoute = useRef(false);
 
   const [fontsLoaded] = useFonts({
     PlusJakartaSans_400Regular,
@@ -48,16 +51,31 @@ function RootLayoutNav() {
   }, [fontsLoaded]);
 
   useEffect(() => {
-    if (loading || !fontsLoaded) return;
+    if (loading || !fontsLoaded || prefsLoading) return;
 
     const inLoginGroup = segments[0] === 'login';
+    const inTabsGroup = segments[0] === '(tabs)';
 
     if (!user && !inLoginGroup) {
       router.replace('/login');
     } else if (user && inLoginGroup) {
-      router.replace('/(tabs)');
+      // User just logged in - restore last visited route
+      const lastRoute = getLastRoute();
+      if (lastRoute && lastRoute !== '/(tabs)') {
+        router.replace(lastRoute as any);
+      } else {
+        router.replace('/(tabs)');
+      }
+      hasRestoredRoute.current = true;
+    } else if (user && !hasRestoredRoute.current && inTabsGroup) {
+      // User is logged in and on home page - try to restore route
+      const lastRoute = getLastRoute();
+      if (lastRoute && lastRoute !== '/(tabs)') {
+        router.replace(lastRoute as any);
+      }
+      hasRestoredRoute.current = true;
     }
-  }, [user, loading, segments, fontsLoaded]);
+  }, [user, loading, segments, fontsLoaded, prefsLoading]);
 
   if (loading || !fontsLoaded) {
     return (

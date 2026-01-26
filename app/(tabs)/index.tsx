@@ -18,6 +18,9 @@ export default function HomeScreen() {
   const [listToDelete, setListToDelete] = useState<{ id: string; title: string } | null>(null);
   const router = useRouter();
 
+  // Note: We intentionally don't save '/(tabs)' here because it would
+  // overwrite the saved route before restoration logic can read it.
+
   const handleSignOut = async () => {
     try {
       await signOut();

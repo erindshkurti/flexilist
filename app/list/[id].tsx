@@ -1,9 +1,11 @@
 import { Button } from '@/components/Button';
 import { db } from '@/config/firebase';
 import { useListItems } from '@/hooks/useListItems';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { List, ListField } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { doc, getDoc } from 'firebase/firestore';
@@ -14,7 +16,9 @@ export default function ListDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const [list, setList] = useState<List | null>(null);
     const { items, loading: itemsLoading, addItem, deleteItem, updateItem } = useListItems(id!);
+    const { saveLastRoute } = useUserPreferences();
     const router = useRouter();
+    const navigation = useNavigation();
     const [modalVisible, setModalVisible] = useState(false);
     const [currentItem, setCurrentItem] = useState<Record<string, any>>({});
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -27,6 +31,25 @@ export default function ListDetailScreen() {
     const [sortMenuVisible, setSortMenuVisible] = useState(false);
 
     const [showCompleted, setShowCompleted] = useState(true);
+
+    // Handle back navigation - go to home if no history (e.g., after route restoration)
+    const handleBack = () => {
+        // Save home route so closing browser after going back remembers dashboard
+        saveLastRoute('/(tabs)');
+
+        if (navigation.canGoBack()) {
+            router.back();
+        } else {
+            router.replace('/(tabs)');
+        }
+    };
+
+    // Save the current route for session persistence
+    useEffect(() => {
+        if (id) {
+            saveLastRoute(`/list/${id}`);
+        }
+    }, [id, saveLastRoute]);
 
     useEffect(() => {
         const fetchList = async () => {
@@ -192,7 +215,7 @@ export default function ListDetailScreen() {
                 >
                     <View style={styles.headerContent}>
                         <View style={styles.titleRow}>
-                            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
                                 <Ionicons name="arrow-back" size={24} color="#1f2937" />
                             </TouchableOpacity>
                             <View>
