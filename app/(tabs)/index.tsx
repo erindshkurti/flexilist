@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: 20,
-    paddingTop: 24,
+    paddingTop: 40,
     maxWidth: 840,
     width: '100%',
     alignSelf: 'center',
