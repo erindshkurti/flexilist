@@ -738,7 +738,6 @@ const styles = StyleSheet.create({
     },
     itemCardCompleted: {
         backgroundColor: '#f3f4f6',
-        opacity: 0.7,
     },
     checkbox: {
         marginRight: 12,
