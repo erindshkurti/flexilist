@@ -393,15 +393,17 @@ export default function ListDetailScreen() {
                 )}
 
                 <Modal visible={modalVisible} animationType="slide" transparent={true} presentationStyle="overFullScreen">
-                    <View style={[styles.addItemModalOverlay, { paddingTop: insets.top }]}>
-                        <View style={styles.modalContainer}>
+                    <View style={styles.addItemModalOverlay}>
+                        <View style={[styles.headerWrapper, { paddingTop: insets.top }]}>
                             <View style={styles.modalHeader}>
                                 <Text style={styles.modalTitle}>{editingId ? 'Edit Item' : 'Add Item'}</Text>
                                 <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.cancelButton}>
                                     <Text style={styles.cancelButtonTextMain}>Cancel</Text>
                                 </TouchableOpacity>
                             </View>
+                        </View>
 
+                        <View style={styles.modalContainer}>
                             <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
                                 {list.fields.map((field, index) => (
                                     <View key={field.id} style={styles.inputGroup}>
@@ -787,25 +789,28 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#ffffff',
     },
+    headerWrapper: {
+        backgroundColor: '#f9fafb',
+        borderBottomWidth: 1,
+        borderBottomColor: '#f3f4f6',
+        borderBottomLeftRadius: 32,
+        borderBottomRightRadius: 32,
+    },
     modalContainer: {
         flex: 1,
-        paddingHorizontal: 24,
     },
     modalHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        paddingTop: 24,
         paddingHorizontal: 24,
         paddingBottom: 20,
-        backgroundColor: '#f9fafb',
-        borderBottomWidth: 1,
-        borderBottomColor: '#f3f4f6',
-        marginBottom: 4,
     },
     modalContent: {
         flex: 1,
         paddingHorizontal: 24,
-        paddingTop: 20,
+        paddingTop: 24,
     },
     modalTitle: {
         fontSize: 24,
@@ -885,6 +890,7 @@ const styles = StyleSheet.create({
     },
     modalFooter: {
         paddingTop: 16,
+        paddingHorizontal: 24,
         paddingBottom: 12,
     },
     dateInput: {
