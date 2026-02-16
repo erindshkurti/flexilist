@@ -1,4 +1,5 @@
 import { ListCard } from '@/components/ListCard';
+import { SwipeableItem } from '@/components/SwipeableItem';
 import { useAuth } from '@/context/AuthContext';
 import { useLists } from '@/hooks/useLists';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +11,11 @@ import { Alert, FlatList, Image, Modal, Platform, StyleSheet, Text, TextInput, T
 export default function HomeScreen() {
   const { lists, loading, deleteList } = useLists();
   const { user, signOut } = useAuth();
+  const router = useRouter();
+
+  const handleEditList = (listId: string) => {
+    router.push(`/edit-list/${listId}`);
+  };
   const [search, setSearch] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [sortBy, setSortBy] = useState<'name' | 'created' | 'modified'>('modified');
@@ -17,7 +23,7 @@ export default function HomeScreen() {
   const [profileMenuVisible, setProfileMenuVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [listToDelete, setListToDelete] = useState<{ id: string; title: string } | null>(null);
-  const router = useRouter();
+  /* Removed duplicate router declaration */
 
   // Note: We intentionally don't save '/(tabs)' here because it would
   // overwrite the saved route before restoration logic can read it.
@@ -64,8 +70,19 @@ export default function HomeScreen() {
     });
 
 
+  /* Removed duplicate import and function */
+
   const renderItem = ({ item }: { item: any }) => (
-    <ListCard list={item} onDelete={handleDeleteList} />
+    <View style={{ marginBottom: 16, overflow: 'visible' }}>
+      <SwipeableItem
+        onEdit={() => handleEditList(item.id)}
+        onDelete={() => handleDeleteList(item.id, item.title)}
+        marginBottom={0}
+        borderRadius={20}
+      >
+        <ListCard list={item} onDelete={handleDeleteList} style={{ marginBottom: 0 }} />
+      </SwipeableItem>
+    </View>
   );
 
   return (

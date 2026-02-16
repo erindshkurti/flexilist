@@ -3,14 +3,15 @@ import { List } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 interface ListCardProps {
     list: List;
     onDelete: (id: string, title: string) => void;
+    style?: StyleProp<ViewStyle>;
 }
 
-export const ListCard = ({ list, onDelete }: ListCardProps) => {
+export const ListCard = ({ list, onDelete, style }: ListCardProps) => {
     const router = useRouter();
     const { items, loading } = useListItems(list.id);
 
@@ -24,7 +25,7 @@ export const ListCard = ({ list, onDelete }: ListCardProps) => {
     return (
         <TouchableOpacity
             onPress={() => router.push(`/list/${list.id}`)}
-            style={styles.listCard}
+            style={[styles.listCard, style]}
             activeOpacity={0.7}
         >
             <View style={styles.listCardContent}>
@@ -99,9 +100,12 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.08,
         shadowRadius: 12,
         elevation: 3,
+        borderWidth: 1,
+        borderColor: '#f9fafb',
     },
     listCardContent: {
         flex: 1,
+        paddingRight: 16,
     },
     listHeader: {
         flexDirection: 'row',

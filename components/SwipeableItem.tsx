@@ -1,16 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useRef } from 'react';
 import { Animated, StyleSheet, Text } from 'react-native';
-import { RectButton } from 'react-native-gesture-handler';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { RectButton, Swipeable } from 'react-native-gesture-handler';
 
 interface SwipeableItemProps {
     children: React.ReactNode;
     onEdit: () => void;
     onDelete: () => void;
+    marginBottom?: number;
+    borderRadius?: number;
 }
 
-export const SwipeableItem = ({ children, onEdit, onDelete }: SwipeableItemProps) => {
+export const SwipeableItem = ({ children, onEdit, onDelete, marginBottom = 12, borderRadius = 16 }: SwipeableItemProps) => {
     const swipeableRef = useRef<Swipeable>(null);
 
     const renderLeftActions = (progress: Animated.AnimatedInterpolation<number>, dragX: Animated.AnimatedInterpolation<number>) => {
@@ -20,7 +21,7 @@ export const SwipeableItem = ({ children, onEdit, onDelete }: SwipeableItemProps
         });
 
         return (
-            <RectButton style={styles.leftAction} onPress={() => {
+            <RectButton style={[styles.leftAction, { marginBottom, borderRadius, borderTopRightRadius: 0, borderBottomRightRadius: 0 }]} onPress={() => {
                 swipeableRef.current?.close();
                 onEdit();
             }}>
@@ -45,7 +46,7 @@ export const SwipeableItem = ({ children, onEdit, onDelete }: SwipeableItemProps
         });
 
         return (
-            <RectButton style={styles.rightAction} onPress={() => {
+            <RectButton style={[styles.rightAction, { marginBottom, borderRadius, borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }]} onPress={() => {
                 swipeableRef.current?.close();
                 onDelete();
             }}>
@@ -73,6 +74,8 @@ export const SwipeableItem = ({ children, onEdit, onDelete }: SwipeableItemProps
             rightThreshold={30}
             overshootLeft={false}
             overshootRight={false}
+            containerStyle={{ overflow: 'visible' }}
+            childrenContainerStyle={{ overflow: 'visible' }}
         >
             {children}
         </Swipeable>
