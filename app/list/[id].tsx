@@ -553,6 +553,9 @@ const styles = StyleSheet.create({
         paddingTop: 60,
         paddingBottom: 24,
         paddingHorizontal: 20,
+        backgroundColor: '#f9fafb',
+        borderBottomWidth: 1,
+        borderBottomColor: '#f3f4f6',
         borderBottomLeftRadius: 32,
         borderBottomRightRadius: 32,
         zIndex: 100, // Ensure header (and dropdowns) stack above list
@@ -792,8 +795,17 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        paddingHorizontal: 24,
         paddingBottom: 20,
+        backgroundColor: '#f9fafb',
+        borderBottomWidth: 1,
+        borderBottomColor: '#f3f4f6',
         marginBottom: 4,
+    },
+    modalContent: {
+        flex: 1,
+        paddingHorizontal: 24,
+        paddingTop: 20,
     },
     modalTitle: {
         fontSize: 24,
@@ -809,9 +821,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#4b5563',
         fontFamily: 'PlusJakartaSans_600SemiBold',
-    },
-    modalContent: {
-        flex: 1,
     },
     inputGroup: {
         marginBottom: 24,
