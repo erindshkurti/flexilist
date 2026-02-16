@@ -281,7 +281,6 @@ export default function ListDetailScreen() {
                                 }}
                                 style={styles.sortButton}
                                 activeOpacity={0.7}
-                                {...(Platform.OS === 'web' ? { title: showCompleted ? "Hide Completed Items" : "Show Completed Items" } as any : {})}
                             >
                                 <Ionicons
                                     name={showCompleted ? "eye-outline" : "eye-off-outline"}
@@ -299,38 +298,7 @@ export default function ListDetailScreen() {
                             >
                                 <Ionicons name="options-outline" size={24} color="#1f2937" />
                             </TouchableOpacity>
-
-                            {sortMenuVisible && (
-                                <View style={styles.sortDropdown}>
-                                    <Text style={styles.dropdownTitle}>Sort by</Text>
-
-                                    <TouchableOpacity
-                                        style={[styles.dropdownItem, sortBy === 'created' && styles.dropdownItemActive]}
-                                        onPress={() => {
-                                            setSortBy('created');
-                                            setSortMenuVisible(false);
-                                        }}
-                                    >
-                                        <Ionicons name="time-outline" size={20} color={sortBy === 'created' ? '#2563EB' : '#4b5563'} />
-                                        <Text style={[styles.dropdownText, sortBy === 'created' && styles.dropdownTextActive]}>Date Created</Text>
-                                        {sortBy === 'created' && <Ionicons name="checkmark" size={16} color="#2563EB" style={{ marginLeft: 'auto' }} />}
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity
-                                        style={[styles.dropdownItem, sortBy === 'name' && styles.dropdownItemActive]}
-                                        onPress={() => {
-                                            setSortBy('name');
-                                            setSortMenuVisible(false);
-                                        }}
-                                    >
-                                        <Ionicons name="text-outline" size={20} color={sortBy === 'name' ? '#2563EB' : '#4b5563'} />
-                                        <Text style={[styles.dropdownText, sortBy === 'name' && styles.dropdownTextActive]}>Alphabetical</Text>
-                                        {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#2563EB" style={{ marginLeft: 'auto' }} />}
-                                    </TouchableOpacity>
-                                </View>
-                            )}
                         </View>
-
                     </View>
                 </LinearGradient>
 
@@ -356,14 +324,12 @@ export default function ListDetailScreen() {
                             >
                                 {list.fields.length > 0 && (
                                     <View style={styles.itemRow}>
-                                        {/* First field as main text */}
                                         <Text style={[styles.itemMainText, item.completed && styles.itemMainTextCompleted]}>
                                             {list.fields[0].type === 'date'
                                                 ? (item.data[list.fields[0].id] || 'No date')
                                                 : item.data[list.fields[0].id] || 'Untitled'}
                                         </Text>
 
-                                        {/* Remaining fields as labels */}
                                         {list.fields.length > 1 && list.fields.slice(1).map(field => (
                                             item.data[field.id] && (
                                                 <View key={field.id} style={styles.labelChip}>
@@ -389,6 +355,40 @@ export default function ListDetailScreen() {
                 >
                     <Ionicons name="add" size={28} color="white" />
                 </TouchableOpacity>
+
+                {/* Root-Level Dropdown for perfect z-index on iOS */}
+                {sortMenuVisible && (
+                    <View
+                        style={styles.sortDropdown}
+                        onStartShouldSetResponder={() => true}
+                    >
+                        <Text style={styles.dropdownTitle}>Sort by</Text>
+
+                        <TouchableOpacity
+                            style={[styles.dropdownItem, sortBy === 'created' && styles.dropdownItemActive]}
+                            onPress={() => {
+                                setSortBy('created');
+                                setSortMenuVisible(false);
+                            }}
+                        >
+                            <Ionicons name="time-outline" size={20} color={sortBy === 'created' ? '#1f2937' : '#4b5563'} />
+                            <Text style={[styles.dropdownText, sortBy === 'created' && styles.dropdownTextActive]}>Date Created</Text>
+                            {sortBy === 'created' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[styles.dropdownItem, sortBy === 'name' && styles.dropdownItemActive]}
+                            onPress={() => {
+                                setSortBy('name');
+                                setSortMenuVisible(false);
+                            }}
+                        >
+                            <Ionicons name="text-outline" size={20} color={sortBy === 'name' ? '#1f2937' : '#4b5563'} />
+                            <Text style={[styles.dropdownText, sortBy === 'name' && styles.dropdownTextActive]}>Alphabetical</Text>
+                            {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
+                        </TouchableOpacity>
+                    </View>
+                )}
 
                 <Modal visible={modalVisible} animationType="slide" transparent={true}>
                     <View style={styles.modalContainer}>
@@ -604,17 +604,21 @@ const styles = StyleSheet.create({
     },
     sortDropdown: {
         position: 'absolute',
-        top: 60,
-        right: 0,
+        top: 204, // Aligned with the sort button in the header
+        right: 20,
         backgroundColor: 'white',
         borderRadius: 16,
         padding: 8,
         width: 200,
+        zIndex: 99999,
         borderWidth: 1,
         borderColor: '#f3f4f6',
-        shadowOpacity: 0,
-        elevation: 0,
-        zIndex: 1000,
+        // Premium Shadow
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.15,
+        shadowRadius: 24,
+        elevation: 20,
     },
     dropdownTitle: {
         fontSize: 12,
@@ -634,16 +638,16 @@ const styles = StyleSheet.create({
         gap: 12,
     },
     dropdownItemActive: {
-        backgroundColor: '#eff6ff',
+        backgroundColor: '#f3f4f6',
     },
     dropdownText: {
-        fontSize: 16,
+        fontSize: 14,
         color: '#4b5563',
         fontWeight: '500',
         fontFamily: 'PlusJakartaSans_500Medium',
     },
     dropdownTextActive: {
-        color: '#2563EB',
+        color: '#1f2937',
         fontWeight: '600',
         fontFamily: 'PlusJakartaSans_600SemiBold',
     },
