@@ -11,9 +11,10 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { doc, getDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { Alert, FlatList, Modal, Platform, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ListDetailScreen() {
+    const insets = useSafeAreaInsets();
     const { id } = useLocalSearchParams<{ id: string }>();
     const [list, setList] = useState<List | null>(null);
     const { items, loading: itemsLoading, addItem, deleteItem, updateItem } = useListItems(id!);
@@ -392,7 +393,7 @@ export default function ListDetailScreen() {
                 )}
 
                 <Modal visible={modalVisible} animationType="slide" transparent={true} presentationStyle="overFullScreen">
-                    <SafeAreaView style={styles.modalSafeArea}>
+                    <View style={[styles.addItemModalOverlay, { paddingTop: insets.top }]}>
                         <View style={styles.modalContainer}>
                             <View style={styles.modalHeader}>
                                 <Text style={styles.modalTitle}>{editingId ? 'Edit Item' : 'Add Item'}</Text>
@@ -418,11 +419,11 @@ export default function ListDetailScreen() {
                                 ))}
                             </ScrollView>
 
-                            <View style={styles.modalFooter}>
+                            <View style={[styles.modalFooter, { paddingBottom: Math.max(insets.bottom, 12) }]}>
                                 <Button title="Save Item" onPress={handleSaveItem} />
                             </View>
                         </View>
-                    </SafeAreaView>
+                    </View>
                 </Modal>
 
                 {/* Date Picker Modal */}
@@ -779,22 +780,20 @@ const styles = StyleSheet.create({
         shadowRadius: 12,
         elevation: 8,
     },
-    modalSafeArea: {
+    addItemModalOverlay: {
         flex: 1,
         backgroundColor: '#ffffff',
     },
     modalContainer: {
         flex: 1,
-        backgroundColor: '#ffffff',
         paddingHorizontal: 24,
-        paddingBottom: 24,
     },
     modalHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 20,
-        marginBottom: 12,
+        paddingBottom: 20,
+        marginBottom: 4,
     },
     modalTitle: {
         fontSize: 24,
@@ -877,6 +876,7 @@ const styles = StyleSheet.create({
     },
     modalFooter: {
         paddingTop: 16,
+        paddingBottom: 12,
     },
     dateInput: {
         backgroundColor: '#f9fafb',

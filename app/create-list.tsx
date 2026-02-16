@@ -6,9 +6,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function CreateListScreen() {
+    const insets = useSafeAreaInsets();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [fields, setFields] = useState<ListField[]>([
@@ -245,9 +246,9 @@ export default function CreateListScreen() {
                 </View>
             </Modal>
 
-            <SafeAreaView style={styles.footer} edges={['bottom']}>
+            <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 12) }]}>
                 <Button title="Create List" onPress={handleCreate} loading={loading} />
-            </SafeAreaView>
+            </View>
         </View>
     );
 }
