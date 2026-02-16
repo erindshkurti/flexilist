@@ -28,6 +28,7 @@ export default function ListDetailScreen() {
     const [datePickerVisible, setDatePickerVisible] = useState(false);
     const [datePickerField, setDatePickerField] = useState<string | null>(null);
     const [tempDate, setTempDate] = useState(new Date());
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [search, setSearch] = useState('');
     const [sortBy, setSortBy] = useState<'name' | 'created'>('name');
     const [sortMenuVisible, setSortMenuVisible] = useState(false);
@@ -268,14 +269,15 @@ export default function ListDetailScreen() {
                             </View>
                         </View>
 
-                        {/* Search and Sort Bar */}
                         <View style={styles.searchSortContainer}>
-                            <View style={styles.searchBar}>
-                                <Ionicons name="search" size={20} color="#9ca3af" />
+                            <View style={[styles.searchBar, isSearchFocused && styles.searchBarFocused]}>
+                                <Ionicons name="search" size={20} color={isSearchFocused ? "#1f2937" : "#9ca3af"} />
                                 <TextInput
                                     placeholder="Search items..."
                                     value={search}
                                     onChangeText={setSearch}
+                                    onFocus={() => setIsSearchFocused(true)}
+                                    onBlur={() => setIsSearchFocused(false)}
                                     style={styles.searchInput}
                                     placeholderTextColor="#9ca3af"
                                 />
@@ -622,6 +624,14 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.05,
         shadowRadius: 4,
         elevation: 1,
+        borderWidth: 1,
+        borderColor: 'transparent',
+    },
+    searchBarFocused: {
+        borderColor: '#1f2937',
+        backgroundColor: '#ffffff',
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
     },
     searchInput: {
         flex: 1,
@@ -630,6 +640,11 @@ const styles = StyleSheet.create({
         paddingVertical: 14,
         paddingHorizontal: 6,
         fontFamily: 'PlusJakartaSans_500Medium',
+        ...Platform.select({
+            web: {
+                outlineStyle: 'none',
+            } as any,
+        }),
     },
     sortButton: {
         width: 44,
