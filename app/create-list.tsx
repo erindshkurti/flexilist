@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CreateListScreen() {
     const [title, setTitle] = useState('');
@@ -244,9 +245,9 @@ export default function CreateListScreen() {
                 </View>
             </Modal>
 
-            <View style={styles.footer}>
+            <SafeAreaView style={styles.footer} edges={['bottom']}>
                 <Button title="Create List" onPress={handleCreate} loading={loading} />
-            </View>
+            </SafeAreaView>
         </View>
     );
 }
@@ -508,7 +509,9 @@ const styles = StyleSheet.create({
         fontFamily: 'PlusJakartaSans_600SemiBold',
     },
     footer: {
-        padding: 20,
+        paddingHorizontal: 20,
+        paddingTop: 12,
+        paddingBottom: 12, // SafeAreaView will add more on iOS
         borderTopWidth: 1,
         borderTopColor: '#e5e7eb',
         backgroundColor: '#ffffff',
