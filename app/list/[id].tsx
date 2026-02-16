@@ -1,4 +1,5 @@
 import { Button } from '@/components/Button';
+import { SwipeableItem } from '@/components/SwipeableItem';
 import { db } from '@/config/firebase';
 import { useListItems } from '@/hooks/useListItems';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
@@ -318,45 +319,47 @@ export default function ListDetailScreen() {
                     keyExtractor={item => item.id}
                     contentContainerStyle={styles.listContent}
                     renderItem={({ item }) => (
-                        <View style={[styles.itemCard, item.completed && styles.itemCardCompleted]}>
-                            <TouchableOpacity
-                                onPress={() => toggleComplete(item.id, item.completed || false)}
-                                style={styles.checkbox}
-                            >
-                                <Ionicons
-                                    name={item.completed ? "checkbox" : "square-outline"}
-                                    size={24}
-                                    color={item.completed ? "#10b981" : "#9ca3af"}
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => openEditModal(item)}
-                                style={styles.itemContent}
-                            >
-                                {list.fields.length > 0 && (
-                                    <View style={styles.itemRow}>
-                                        <Text style={[styles.itemMainText, item.completed && styles.itemMainTextCompleted]}>
-                                            {list.fields[0].type === 'date'
-                                                ? (item.data[list.fields[0].id] || 'No date')
-                                                : item.data[list.fields[0].id] || 'Untitled'}
-                                        </Text>
+                        <SwipeableItem
+                            onEdit={() => openEditModal(item)}
+                            onDelete={() => handleDeleteItem(item.id, getItemName(item))}
+                        >
+                            <View style={[styles.itemCard, item.completed && styles.itemCardCompleted]}>
+                                <TouchableOpacity
+                                    onPress={() => toggleComplete(item.id, item.completed || false)}
+                                    style={styles.checkbox}
+                                >
+                                    <Ionicons
+                                        name={item.completed ? "checkbox" : "square-outline"}
+                                        size={24}
+                                        color={item.completed ? "#10b981" : "#9ca3af"}
+                                    />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => openEditModal(item)}
+                                    style={styles.itemContent}
+                                >
+                                    {list.fields.length > 0 && (
+                                        <View style={styles.itemRow}>
+                                            <Text style={[styles.itemMainText, item.completed && styles.itemMainTextCompleted]}>
+                                                {list.fields[0].type === 'date'
+                                                    ? (item.data[list.fields[0].id] || 'No date')
+                                                    : item.data[list.fields[0].id] || 'Untitled'}
+                                            </Text>
 
-                                        {list.fields.length > 1 && list.fields.slice(1).map(field => (
-                                            item.data[field.id] && (
-                                                <View key={field.id} style={styles.labelChip}>
-                                                    <Text style={[styles.labelText, item.completed && styles.labelTextCompleted]}>
-                                                        {field.name}: {item.data[field.id]}
-                                                    </Text>
-                                                </View>
-                                            )
-                                        ))}
-                                    </View>
-                                )}
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => handleDeleteItem(item.id, getItemName(item))} style={styles.deleteButton}>
-                                <Ionicons name="trash-outline" size={20} color="#EF4444" />
-                            </TouchableOpacity>
-                        </View>
+                                            {list.fields.length > 1 && list.fields.slice(1).map(field => (
+                                                item.data[field.id] && (
+                                                    <View key={field.id} style={styles.labelChip}>
+                                                        <Text style={[styles.labelText, item.completed && styles.labelTextCompleted]}>
+                                                            {field.name}: {item.data[field.id]}
+                                                        </Text>
+                                                    </View>
+                                                )
+                                            ))}
+                                        </View>
+                                    )}
+                                </TouchableOpacity>
+                            </View>
+                        </SwipeableItem>
                     )}
                 />
 
