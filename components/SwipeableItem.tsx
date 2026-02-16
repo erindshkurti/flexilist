@@ -88,6 +88,8 @@ const styles = StyleSheet.create({
         paddingLeft: 20,
         marginBottom: 12,
         borderRadius: 16,
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: 0,
         marginRight: -16, // pull under the item slightly
     },
     rightAction: {
@@ -98,6 +100,8 @@ const styles = StyleSheet.create({
         paddingRight: 20,
         marginBottom: 12,
         borderRadius: 16,
+        borderTopLeftRadius: 0,
+        borderBottomLeftRadius: 0,
         marginLeft: -16, // pull under the item slightly
     },
     actionText: {
