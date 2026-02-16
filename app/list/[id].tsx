@@ -218,12 +218,19 @@ export default function ListDetailScreen() {
     const firstFieldId = list.fields[0]?.id;
     const filteredAndSortedItems = items
         .filter(item => {
-            // Hide completed items if toggle is off
+            if (!firstFieldId) return true;
+            const value = item.data[firstFieldId]?.toString().toLowerCase() || '';
+            const matchesSearch = search ? value.includes(search.toLowerCase()) : true;
+
+            // If searching, show all matching items regardless of completion status
+            if (search) {
+                return matchesSearch;
+            }
+
+            // Otherwise, respect the "hide completed" toggle
             if (!showCompleted && item.completed) return false;
 
-            if (!search || !firstFieldId) return true;
-            const value = item.data[firstFieldId]?.toString().toLowerCase() || '';
-            return value.includes(search.toLowerCase());
+            return true;
         })
         .sort((a, b) => {
             if (sortBy === 'name' && firstFieldId) {
