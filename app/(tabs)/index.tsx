@@ -202,9 +202,9 @@ export default function HomeScreen() {
                   setFilterMenuVisible(false);
                 }}
               >
-                <Ionicons name="calendar-outline" size={20} color={sortBy === 'modified' ? '#2563EB' : '#4b5563'} />
+                <Ionicons name="calendar-outline" size={20} color={sortBy === 'modified' ? '#1f2937' : '#4b5563'} />
                 <Text style={[styles.dropdownText, sortBy === 'modified' && styles.dropdownTextActive]}>Date Modified</Text>
-                {sortBy === 'modified' && <Ionicons name="checkmark" size={16} color="#2563EB" style={{ marginLeft: 'auto' }} />}
+                {sortBy === 'modified' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -214,9 +214,9 @@ export default function HomeScreen() {
                   setFilterMenuVisible(false);
                 }}
               >
-                <Ionicons name="time-outline" size={20} color={sortBy === 'created' ? '#2563EB' : '#4b5563'} />
+                <Ionicons name="time-outline" size={20} color={sortBy === 'created' ? '#1f2937' : '#4b5563'} />
                 <Text style={[styles.dropdownText, sortBy === 'created' && styles.dropdownTextActive]}>Date Created</Text>
-                {sortBy === 'created' && <Ionicons name="checkmark" size={16} color="#2563EB" style={{ marginLeft: 'auto' }} />}
+                {sortBy === 'created' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -226,9 +226,9 @@ export default function HomeScreen() {
                   setFilterMenuVisible(false);
                 }}
               >
-                <Ionicons name="text-outline" size={20} color={sortBy === 'name' ? '#2563EB' : '#4b5563'} />
+                <Ionicons name="text-outline" size={20} color={sortBy === 'name' ? '#1f2937' : '#4b5563'} />
                 <Text style={[styles.dropdownText, sortBy === 'name' && styles.dropdownTextActive]}>Alphabetical</Text>
-                {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#2563EB" style={{ marginLeft: 'auto' }} />}
+                {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
               </TouchableOpacity>
             </View>
           )}
@@ -476,16 +476,16 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   dropdownItemActive: {
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#f3f4f6',
   },
   dropdownText: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'PlusJakartaSans_500Medium',
     color: '#4b5563',
     fontWeight: '500',
   },
   dropdownTextActive: {
-    color: '#2563EB',
+    color: '#1f2937',
     fontWeight: '600',
     fontFamily: 'PlusJakartaSans_600SemiBold',
   },
