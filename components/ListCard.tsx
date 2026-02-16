@@ -160,14 +160,14 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     fieldTag: {
-        backgroundColor: '#ede9fe',
+        backgroundColor: '#f3f4f6',
         paddingHorizontal: 12,
         paddingVertical: 6,
         borderRadius: 8,
     },
     fieldTagText: {
         fontSize: 12,
-        color: '#7c3aed',
+        color: '#4b5563',
         fontWeight: '600',
         fontFamily: 'PlusJakartaSans_600SemiBold',
     },
