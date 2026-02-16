@@ -151,7 +151,7 @@ export default function CreateListScreen() {
                                             onPress={() => setInfoModalVisible(true)}
                                             style={styles.infoIcon}
                                         >
-                                            <Ionicons name="information-circle" size={16} color="#3b82f6" />
+                                            <Ionicons name="information-circle" size={16} color="#6b7280" />
                                         </TouchableOpacity>
                                     )}
                                 </View>
@@ -206,7 +206,7 @@ export default function CreateListScreen() {
                                                         field.type === type && styles.typeDropdownTextActive
                                                     ]}>{type}</Text>
                                                     {field.type === type && (
-                                                        <Ionicons name="checkmark" size={16} color="#2563EB" />
+                                                        <Ionicons name="checkmark" size={16} color="#1f2937" />
                                                     )}
                                                 </TouchableOpacity>
                                             ))}
@@ -228,7 +228,7 @@ export default function CreateListScreen() {
                 <View style={styles.modalOverlay}>
                     <View style={styles.infoModal}>
                         <View style={styles.infoModalHeader}>
-                            <Ionicons name="information-circle" size={32} color="#3b82f6" />
+                            <Ionicons name="information-circle" size={32} color="#1f2937" />
                             <Text style={styles.infoModalTitle}>Primary Field</Text>
                         </View>
                         <Text style={styles.infoModalMessage}>
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
         borderBottomColor: '#f3f4f6',
     },
     typeDropdownItemActive: {
-        backgroundColor: '#eff6ff',
+        backgroundColor: '#f3f4f6',
     },
     typeDropdownText: {
         fontSize: 14,
@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
         fontFamily: 'PlusJakartaSans_400Regular',
     },
     typeDropdownTextActive: {
-        color: '#2563EB',
+        color: '#1f2937',
         fontWeight: '600',
         fontFamily: 'PlusJakartaSans_600SemiBold',
     },
@@ -495,7 +495,7 @@ const styles = StyleSheet.create({
         fontFamily: 'PlusJakartaSans_400Regular',
     },
     infoModalButton: {
-        backgroundColor: '#3b82f6',
+        backgroundColor: '#1f2937',
         paddingVertical: 14,
         paddingHorizontal: 24,
         borderRadius: 12,

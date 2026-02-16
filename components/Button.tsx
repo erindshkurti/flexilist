@@ -13,28 +13,28 @@ interface ButtonProps {
 export const Button = ({ onPress, title, loading, variant = 'primary', className }: ButtonProps) => {
     const baseStyle = "p-4 rounded-xl items-center justify-center";
     const variants = {
-        primary: "bg-blue-600 active:bg-blue-700",
+        primary: "bg-[#1f2937] active:bg-[#111827]",
         secondary: "bg-gray-200 active:bg-gray-300 dark:bg-gray-800",
-        outline: "border-2 border-blue-600 bg-transparent",
+        outline: "border-2 border-[#1f2937] bg-transparent",
         google: "bg-white"
     };
     const textVariants = {
         primary: "text-white font-semibold text-lg",
         secondary: "text-black dark:text-white font-semibold text-lg",
-        outline: "text-blue-600 font-semibold text-lg",
+        outline: "text-[#1f2937] font-semibold text-lg",
         google: "text-gray-700 font-semibold text-lg"
     };
 
     const inlineStyles = {
         primary: {
-            backgroundColor: '#2563EB',
+            backgroundColor: '#1f2937',
             padding: 16,
             borderRadius: 12,
             alignItems: 'center' as const,
             justifyContent: 'center' as const,
-            shadowColor: '#2563EB',
+            shadowColor: '#000',
             shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
+            shadowOpacity: 0.2,
             shadowRadius: 8,
             elevation: 4,
         },
@@ -47,7 +47,7 @@ export const Button = ({ onPress, title, loading, variant = 'primary', className
         },
         outline: {
             borderWidth: 2,
-            borderColor: '#2563EB',
+            borderColor: '#1f2937',
             backgroundColor: 'transparent',
             padding: 16,
             borderRadius: 12,
@@ -74,7 +74,7 @@ export const Button = ({ onPress, title, loading, variant = 'primary', className
     const textInlineStyles = {
         primary: { color: 'white', fontWeight: '600' as const, fontSize: 17 },
         secondary: { color: 'black', fontWeight: '600' as const, fontSize: 17 },
-        outline: { color: '#2563EB', fontWeight: '600' as const, fontSize: 17 },
+        outline: { color: '#1f2937', fontWeight: '600' as const, fontSize: 17 },
         google: { color: '#1f2937', fontWeight: '600' as const, fontSize: 17, marginLeft: 12 }
     };
 
@@ -90,7 +90,7 @@ export const Button = ({ onPress, title, loading, variant = 'primary', className
             activeOpacity={0.8}
         >
             {loading ? (
-                <ActivityIndicator color={effectiveVariant === 'google' ? '#2563EB' : effectiveVariant === 'outline' ? '#2563EB' : 'white'} />
+                <ActivityIndicator color={effectiveVariant === 'google' ? '#1f2937' : effectiveVariant === 'outline' ? '#1f2937' : 'white'} />
             ) : (
                 <>
                     {effectiveVariant === 'google' && (

@@ -856,8 +856,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     booleanActive: {
-        backgroundColor: '#eff6ff',
-        borderColor: '#3b82f6',
+        backgroundColor: '#f3f4f6',
+        borderColor: '#1f2937',
     },
     booleanInactive: {
         backgroundColor: '#f9fafb',
@@ -869,7 +869,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     booleanTextActive: {
-        color: '#1d4ed8',
+        color: '#1f2937',
     },
     booleanTextInactive: {
         color: '#6b7280',
@@ -957,7 +957,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#f3f4f6',
     },
     datePickerConfirmButton: {
-        backgroundColor: '#3b82f6',
+        backgroundColor: '#1f2937',
     },
     datePickerCancelText: {
         color: '#4b5563',
