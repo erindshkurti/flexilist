@@ -46,11 +46,13 @@ This guide will walk you through setting up Firebase Authentication for the Flex
 2. Open the `.env` file and fill in your Firebase credentials from Step 2:
    ```env
    EXPO_PUBLIC_FIREBASE_API_KEY=AIza...
+   EXPO_PUBLIC_FIREBASE_API_KEY_IOS=AIza...
    EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
    EXPO_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
    EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
    EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
-   EXPO_PUBLIC_FIREBASE_APP_ID=1:123456789:web:abc123
+   EXPO_PUBLIC_FIREBASE_APP_ID=1:701865353940:web:abc123
+   EXPO_PUBLIC_FIREBASE_APP_ID_IOS=1:701865353940:ios:abc123
    ```
 
 3. **Important**: The `.env` file is already in `.gitignore` and will NOT be committed to Git
