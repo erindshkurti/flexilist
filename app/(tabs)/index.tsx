@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 22,
     borderWidth: 2,
-    borderColor: '#22c55e',
+    borderColor: '#f3f4f6', // Neutral light gray
   },
   profilePlaceholder: {
     backgroundColor: '#6366f1',
