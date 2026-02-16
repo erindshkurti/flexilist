@@ -5,12 +5,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, FlatList, Image, Modal, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, FlatList, Image, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
 export default function HomeScreen() {
   const { lists, loading, deleteList } = useLists();
   const { user, signOut } = useAuth();
   const [search, setSearch] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [sortBy, setSortBy] = useState<'name' | 'created' | 'modified'>('modified');
   const [filterMenuVisible, setFilterMenuVisible] = useState(false);
   const [profileMenuVisible, setProfileMenuVisible] = useState(false);
@@ -112,12 +113,14 @@ export default function HomeScreen() {
             </View>
 
             <View style={styles.searchContainer}>
-              <View style={styles.searchBar}>
-                <Ionicons name="search" size={20} color="#9ca3af" />
+              <View style={[styles.searchBar, isSearchFocused && styles.searchBarFocused]}>
+                <Ionicons name="search" size={20} color={isSearchFocused ? "#1f2937" : "#9ca3af"} />
                 <TextInput
                   placeholder="Search lists..."
                   value={search}
                   onChangeText={setSearch}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
                   style={styles.searchInput}
                   placeholderTextColor="#9ca3af"
                 />
@@ -430,6 +433,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 1,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  searchBarFocused: {
+    borderColor: '#1f2937',
+    backgroundColor: '#ffffff',
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   searchInput: {
     flex: 1,
@@ -437,6 +448,12 @@ const styles = StyleSheet.create({
     color: '#1f2937',
     paddingVertical: 14,
     paddingHorizontal: 6,
+    fontFamily: 'PlusJakartaSans_500Medium',
+    ...Platform.select({
+      web: {
+        outlineStyle: 'none',
+      } as any,
+    }),
   },
   sortButton: {
     width: 44,
