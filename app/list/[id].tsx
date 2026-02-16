@@ -424,77 +424,96 @@ export default function ListDetailScreen() {
                             <View style={[styles.modalFooter, { paddingBottom: Math.max(insets.bottom, 12) }]}>
                                 <Button title="Save Item" onPress={handleSaveItem} />
                             </View>
-                        </View>
-                    </View>
-                </Modal>
 
-                {/* Date Picker Modal */}
-                {datePickerVisible && (
-                    Platform.OS === 'web' ? (
-                        <Modal
-                            visible={datePickerVisible}
-                            transparent={true}
-                            animationType="fade"
-                            onRequestClose={() => setDatePickerVisible(false)}
-                        >
-                            <View style={styles.modalOverlay}>
-                                <View style={styles.datePickerModal}>
-                                    <Text style={styles.datePickerTitle}>Select Date</Text>
-                                    <input
-                                        type="date"
-                                        value={tempDate.toISOString().split('T')[0]}
-                                        onChange={(e) => {
-                                            const date = new Date(e.target.value);
-                                            if (!isNaN(date.getTime())) {
-                                                setTempDate(date);
-                                            }
-                                        }}
-                                        style={{
-                                            width: '100%',
-                                            padding: 16,
-                                            fontSize: 16,
-                                            borderRadius: 12,
-                                            border: '1px solid #e5e7eb',
-                                            marginBottom: 24,
-                                        }}
-                                    />
-                                    <View style={styles.datePickerButtons}>
-                                        <TouchableOpacity
-                                            onPress={() => setDatePickerVisible(false)}
-                                            style={[styles.datePickerButton, styles.datePickerCancelButton]}
-                                        >
-                                            <Text style={styles.datePickerCancelText}>Cancel</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            onPress={() => {
+                            {/* Native Date Picker Bottom Sheet (Rendered Inside Modal) */}
+                            {datePickerVisible && Platform.OS !== 'web' && (
+                                <View style={styles.datePickerCtxOverlay}>
+                                    <View style={[styles.datePickerSheet, { paddingBottom: Math.max(insets.bottom, 20) }]}>
+                                        <View style={styles.datePickerToolbar}>
+                                            <TouchableOpacity onPress={() => setDatePickerVisible(false)}>
+                                                <Text style={styles.datePickerCancelText}>Cancel</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => {
                                                 if (datePickerField) {
                                                     const formattedDate = tempDate.toISOString().split('T')[0];
                                                     setCurrentItem({ ...currentItem, [datePickerField]: formattedDate });
                                                 }
                                                 setDatePickerVisible(false);
+                                            }}>
+                                                <Text style={styles.datePickerConfirmText}>Confirm</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        <DateTimePicker
+                                            value={tempDate}
+                                            mode="date"
+                                            display="spinner"
+                                            onChange={(event, selectedDate) => {
+                                                if (selectedDate) {
+                                                    setTempDate(selectedDate);
+                                                }
                                             }}
-                                            style={[styles.datePickerButton, styles.datePickerConfirmButton]}
-                                        >
-                                            <Text style={styles.datePickerConfirmText}>Confirm</Text>
-                                        </TouchableOpacity>
+                                            style={{ height: 200 }}
+                                            textColor="#1f2937"
+                                        />
                                     </View>
                                 </View>
+                            )}
+                        </View>
+                    </View>
+                </Modal>
+
+                {/* Date Picker Modal (Web Only) */}
+                {datePickerVisible && Platform.OS === 'web' && (
+                    <Modal
+                        visible={datePickerVisible}
+                        transparent={true}
+                        animationType="fade"
+                        onRequestClose={() => setDatePickerVisible(false)}
+                    >
+                        <View style={styles.modalOverlay}>
+                            <View style={styles.datePickerModal}>
+                                <Text style={styles.datePickerTitle}>Select Date</Text>
+                                <input
+                                    type="date"
+                                    value={tempDate.toISOString().split('T')[0]}
+                                    onChange={(e) => {
+                                        const date = new Date(e.target.value);
+                                        if (!isNaN(date.getTime())) {
+                                            setTempDate(date);
+                                        }
+                                    }}
+                                    style={{
+                                        width: '100%',
+                                        padding: 16,
+                                        fontSize: 16,
+                                        borderRadius: 12,
+                                        border: '1px solid #e5e7eb',
+                                        marginBottom: 24,
+                                    }}
+                                />
+                                <View style={styles.datePickerButtons}>
+                                    <TouchableOpacity
+                                        onPress={() => setDatePickerVisible(false)}
+                                        style={[styles.datePickerButton, styles.datePickerCancelButton]}
+                                    >
+                                        <Text style={styles.datePickerCancelText}>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            if (datePickerField) {
+                                                const formattedDate = tempDate.toISOString().split('T')[0];
+                                                setCurrentItem({ ...currentItem, [datePickerField]: formattedDate });
+                                            }
+                                            setDatePickerVisible(false);
+                                        }}
+                                        style={[styles.datePickerButton, styles.datePickerConfirmButton]}
+                                    >
+                                        <Text style={styles.datePickerConfirmText}>Confirm</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-                        </Modal>
-                    ) : (
-                        <DateTimePicker
-                            value={tempDate}
-                            mode="date"
-                            display="default"
-                            onChange={(event, selectedDate) => {
-                                if (event.type === 'set' && selectedDate && datePickerField) {
-                                    const formattedDate = selectedDate.toISOString().split('T')[0];
-                                    setCurrentItem({ ...currentItem, [datePickerField]: formattedDate });
-                                }
-                                setDatePickerVisible(false);
-                            }}
-                        />
-                    )
+                        </View>
+                    </Modal>
                 )}
 
                 {/* Delete Confirmation Modal */}
@@ -908,6 +927,38 @@ const styles = StyleSheet.create({
         color: '#1f2937',
         fontFamily: 'PlusJakartaSans_400Regular',
     },
+    datePickerCtxOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'flex-end',
+        zIndex: 1000,
+    },
+    datePickerSheet: {
+        backgroundColor: 'white',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+    },
+    datePickerToolbar: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f3f4f6',
+    },
+    datePickerCancelText: {
+        fontSize: 16,
+        color: '#ef4444',
+        fontWeight: '600',
+    },
+    datePickerConfirmText: {
+        fontSize: 16,
+        color: '#1f2937',
+        fontWeight: '600',
+    },
     datePlaceholder: {
         fontSize: 16,
         color: '#9ca3af',
@@ -974,18 +1025,6 @@ const styles = StyleSheet.create({
     },
     datePickerConfirmButton: {
         backgroundColor: '#1f2937',
-    },
-    datePickerCancelText: {
-        color: '#4b5563',
-        fontSize: 16,
-        fontWeight: '600',
-        fontFamily: 'PlusJakartaSans_600SemiBold',
-    },
-    datePickerConfirmText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: '600',
-        fontFamily: 'PlusJakartaSans_600SemiBold',
     },
     deleteModal: {
         backgroundColor: 'white',
