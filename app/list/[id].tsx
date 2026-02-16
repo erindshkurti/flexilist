@@ -10,7 +10,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { doc, getDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { Alert, FlatList, Modal, Platform, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, FlatList, Modal, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
 export default function ListDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -390,36 +390,38 @@ export default function ListDetailScreen() {
                     </View>
                 )}
 
-                <Modal visible={modalVisible} animationType="slide" transparent={true}>
-                    <View style={styles.modalContainer}>
-                        <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>{editingId ? 'Edit Item' : 'Add Item'}</Text>
-                            <TouchableOpacity onPress={() => setModalVisible(false)}>
-                                <Text style={styles.cancelButton}>Cancel</Text>
-                            </TouchableOpacity>
-                        </View>
+                <Modal visible={modalVisible} animationType="slide" transparent={true} presentationStyle="overFullScreen">
+                    <SafeAreaView style={styles.modalSafeArea}>
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalHeader}>
+                                <Text style={styles.modalTitle}>{editingId ? 'Edit Item' : 'Add Item'}</Text>
+                                <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.cancelButton}>
+                                    <Text style={styles.cancelButtonTextMain}>Cancel</Text>
+                                </TouchableOpacity>
+                            </View>
 
-                        <ScrollView style={styles.modalContent}>
-                            {list.fields.map((field, index) => (
-                                <View key={field.id} style={styles.inputGroup}>
-                                    <Text style={styles.label}>
-                                        {field.name}{(index === 0 || field.required) && ' *'}
-                                    </Text>
-                                    {renderFieldInput(field)}
-                                    {fieldErrors[field.id] && (
-                                        <View style={styles.errorContainer}>
-                                            <Ionicons name="alert-circle" size={14} color="#ef4444" />
-                                            <Text style={styles.errorText}>{fieldErrors[field.id]}</Text>
-                                        </View>
-                                    )}
-                                </View>
-                            ))}
-                        </ScrollView>
+                            <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
+                                {list.fields.map((field, index) => (
+                                    <View key={field.id} style={styles.inputGroup}>
+                                        <Text style={styles.label}>
+                                            {field.name}{(index === 0 || field.required) && ' *'}
+                                        </Text>
+                                        {renderFieldInput(field)}
+                                        {fieldErrors[field.id] && (
+                                            <View style={styles.errorContainer}>
+                                                <Ionicons name="alert-circle" size={14} color="#ef4444" />
+                                                <Text style={styles.errorText}>{fieldErrors[field.id]}</Text>
+                                            </View>
+                                        )}
+                                    </View>
+                                ))}
+                            </ScrollView>
 
-                        <View style={styles.modalFooter}>
-                            <Button title="Save Item" onPress={handleSaveItem} />
+                            <View style={styles.modalFooter}>
+                                <Button title="Save Item" onPress={handleSaveItem} />
+                            </View>
                         </View>
-                    </View>
+                    </SafeAreaView>
                 </Modal>
 
                 {/* Date Picker Modal */}
@@ -776,16 +778,22 @@ const styles = StyleSheet.create({
         shadowRadius: 12,
         elevation: 8,
     },
+    modalSafeArea: {
+        flex: 1,
+        backgroundColor: '#ffffff',
+    },
     modalContainer: {
         flex: 1,
         backgroundColor: '#ffffff',
-        padding: 24,
+        paddingHorizontal: 24,
+        paddingBottom: 24,
     },
     modalHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 32,
+        paddingVertical: 20,
+        marginBottom: 12,
     },
     modalTitle: {
         fontSize: 24,
@@ -794,7 +802,13 @@ const styles = StyleSheet.create({
         color: '#1f2937',
     },
     cancelButton: {
-        padding: 4,
+        paddingVertical: 8,
+        paddingHorizontal: 4,
+    },
+    cancelButtonTextMain: {
+        fontSize: 16,
+        color: '#4b5563',
+        fontFamily: 'PlusJakartaSans_600SemiBold',
     },
     modalContent: {
         flex: 1,
