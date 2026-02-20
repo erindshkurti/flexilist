@@ -1,6 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { ActivityIndicator, Text, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Image, Text, TouchableOpacity } from 'react-native';
 
 interface ButtonProps {
     onPress: () => void;
@@ -94,7 +93,7 @@ export const Button = ({ onPress, title, loading, variant = 'primary', className
             ) : (
                 <>
                     {effectiveVariant === 'google' && (
-                        <Ionicons name="logo-google" size={24} color="#4285F4" />
+                        <Image source={require('../assets/images/google-icon.png')} style={{ width: 24, height: 24 }} />
                     )}
                     <Text className={textVariants[effectiveVariant]} style={textInlineStyles[effectiveVariant]}>{title}</Text>
                 </>
