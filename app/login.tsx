@@ -51,7 +51,7 @@ export default function LoginScreen() {
                                 source={require('../assets/images/logo.png')}
                                 style={styles.logo}
                             />
-                            <Text style={styles.title}>flexilist</Text>
+                            <Text style={styles.title}>FlexiList</Text>
                         </View>
                         <Text style={styles.subtitle}>Track anything, your way.</Text>
                     </View>

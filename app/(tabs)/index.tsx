@@ -104,7 +104,7 @@ export default function HomeScreen() {
                   source={require('../../assets/images/logo.png')}
                   style={{ width: 40, height: 40, marginRight: 12 }}
                 />
-                <Text style={styles.headerTitle}>flexilist</Text>
+                <Text style={styles.headerTitle}>FlexiList</Text>
               </View>
               <View style={styles.headerRight}>
                 <TouchableOpacity
