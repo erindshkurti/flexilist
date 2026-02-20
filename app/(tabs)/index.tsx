@@ -269,7 +269,7 @@ export default function HomeScreen() {
               <Text style={styles.deleteModalTitle}>Delete List</Text>
             </View>
             <Text style={styles.deleteModalMessage}>
-              Are you sure you want to delete "{listToDelete?.title}"?{'\n'}
+              Are you sure you want to delete &quot;{listToDelete?.title}&quot;?{'\n'}
               This action cannot be undone.
             </Text>
             <View style={styles.deleteModalButtons}>

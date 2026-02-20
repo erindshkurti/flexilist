@@ -542,7 +542,7 @@ export default function ListDetailScreen() {
                                 <Text style={styles.deleteModalTitle}>Delete Item</Text>
                             </View>
                             <Text style={styles.deleteModalMessage}>
-                                Are you sure you want to delete "{itemToDelete?.name}"?{'\n'}
+                                Are you sure you want to delete &quot;{itemToDelete?.name}&quot;?{'\n'}
                                 This action cannot be undone.
                             </Text>
                             <View style={styles.deleteModalButtons}>
