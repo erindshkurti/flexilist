@@ -1,25 +1,28 @@
 # FlexiList
 
-FlexiList is a modern, cross-platform mobile and web application for flexible and secure list tracking. Create custom lists with dynamic fields (text, number, date, etc.) to track *anything* — grocery lists, daily tasks, project milestones, inventory — exactly the way you want.
+FlexiList is a modern, cross-platform application for flexible list management. Create custom lists with dynamic fields (text, number, date, boolean) to track anything — groceries, tasks, inventory, projects — exactly the way you want.
 
 ## Features
 
-- **Custom List Schemas** — define exactly what data to track per list
+- **Custom List Schemas** — define exactly what fields to track per list
 - **Cross-Platform** — iOS, Android, and Web
 - **Secure Authentication** — Google Sign-In via Firebase Auth
 - **Cloud Sync** — real-time sync with Firestore
-- **Modern UI/UX** — clean, minimal design with smooth animations and swipe actions
-- **Smart Filtering** — search, sort, and toggle completed items
+- **Swipe Actions** — swipe to edit or delete lists and items
+- **Smart Filtering** — search, sort (by date modified, date created, or alphabetical), and toggle completed items
+- **Per-List Preferences** — hide-completed state persists per list
+- **Modern UI** — card-based design with shadows, gradients, custom typography, and smooth interactions
 
 ## Tech Stack
 
 | Layer | Technology |
 |---|---|
-| Framework | React Native + Expo |
+| Framework | React Native + Expo (SDK 54) |
 | Language | TypeScript |
 | Navigation | Expo Router |
-| Styling | NativeWind (Tailwind CSS) |
+| Styling | React Native StyleSheet |
 | Backend | Firebase (Firestore + Auth) |
+| Gestures | react-native-gesture-handler |
 
 ## Getting Started
 
@@ -52,6 +55,8 @@ EXPO_PUBLIC_FIREBASE_APP_ID_IOS=...
 
 Get values from [Firebase Console](https://console.firebase.google.com/) → Project Settings → Your apps.
 
+For detailed Firebase setup instructions, see [docs/firebase-setup.md](./docs/firebase-setup.md).
+
 ### Running Locally
 
 ```bash
@@ -70,29 +75,25 @@ npx expo run:android
 ### Web (Firebase Hosting)
 
 #### Prerequisites
-- Firebase CLI installed globally:
-  ```bash
-  npm install -g firebase-tools
-  ```
+- Firebase CLI: `npm install -g firebase-tools`
 - Firebase project created and configured
 
 #### Deploy
 
-1. **Login to Firebase**:
-   ```bash
-   firebase login
-   ```
+```bash
+# Login to Firebase
+firebase login
 
-2. **Build and deploy**:
-   ```bash
-   npm run deploy
-   ```
-   Builds the web app and deploys to Firebase Hosting in one step.
+# Build + deploy (includes privacy policy page)
+npm run deploy
+```
 
-3. **Deploy only** (skip rebuild):
-   ```bash
-   firebase deploy --only hosting
-   ```
+The `deploy` script builds the web app, copies the privacy policy HTML, and deploys everything to Firebase Hosting.
+
+**Deploy only** (skip rebuild):
+```bash
+firebase deploy --only hosting
+```
 
 #### Config Files
 - `firebase.json` — hosting config (public dir, rewrites, headers)
@@ -105,7 +106,7 @@ https://flexilist-5a873.web.app
 
 ### iOS App Store (EAS)
 
-See [docs/DEPLOYMENT_GUIDE.md](./docs/DEPLOYMENT_GUIDE.md) for the full step-by-step guide.
+See [docs/deployment-guide.md](./docs/deployment-guide.md) for the full step-by-step guide.
 
 **Quick reference:**
 ```bash
@@ -118,6 +119,14 @@ eas submit --platform ios --latest
 
 > ⚠️ Push Firebase secrets to EAS before building:
 > `eas secret:push --scope project --env-file .env`
+
+## Documentation
+
+| Document | Description |
+|---|---|
+| [firebase-setup.md](./docs/firebase-setup.md) | Firebase Auth setup guide |
+| [deployment-guide.md](./docs/deployment-guide.md) | iOS App Store deployment via EAS |
+| [walkthrough.md](./docs/walkthrough.md) | Full feature walkthrough and project structure |
 
 ## Security
 
