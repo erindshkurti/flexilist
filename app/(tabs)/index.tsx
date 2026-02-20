@@ -126,6 +126,30 @@ export default function HomeScreen() {
                     </View>
                   )}
                 </TouchableOpacity>
+
+                {/* Profile dropdown - positioned relative to headerRight */}
+                {profileMenuVisible && (
+                  <View
+                    style={styles.profileMenuCard}
+                    onStartShouldSetResponder={() => true}
+                  >
+                    <View style={styles.profileHeader}>
+                      <Text style={styles.profileName} numberOfLines={1}>{user?.displayName || 'User'}</Text>
+                      <Text style={styles.profileEmail} numberOfLines={1}>{user?.email}</Text>
+                    </View>
+                    <View style={styles.menuDivider} />
+                    <TouchableOpacity
+                      style={styles.menuItem}
+                      onPress={() => {
+                        setProfileMenuVisible(false);
+                        handleSignOut();
+                      }}
+                    >
+                      <Ionicons name="log-out-outline" size={20} color="#ef4444" />
+                      <Text style={[styles.menuText, { color: '#ef4444' }]}>Sign Out</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
               </View>
             </View>
 
@@ -142,16 +166,63 @@ export default function HomeScreen() {
                   placeholderTextColor="#9ca3af"
                 />
               </View>
-              <TouchableOpacity
-                onPress={(e) => {
-                  e.stopPropagation();
-                  setFilterMenuVisible(!filterMenuVisible);
-                  setProfileMenuVisible(false);
-                }}
-                style={styles.sortButton}
-              >
-                <Ionicons name="options-outline" size={24} color="#1f2937" />
-              </TouchableOpacity>
+              <View style={styles.sortButtonWrapper}>
+                <TouchableOpacity
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setFilterMenuVisible(!filterMenuVisible);
+                    setProfileMenuVisible(false);
+                  }}
+                  style={styles.sortButton}
+                >
+                  <Ionicons name="options-outline" size={24} color="#1f2937" />
+                </TouchableOpacity>
+
+                {filterMenuVisible && (
+                  <View
+                    style={styles.dropdownMenu}
+                    onStartShouldSetResponder={() => true}
+                  >
+                    <Text style={styles.dropdownTitle}>Sort by</Text>
+
+                    <TouchableOpacity
+                      style={[styles.dropdownItem, sortBy === 'modified' && styles.dropdownItemActive]}
+                      onPress={() => {
+                        setSortBy('modified');
+                        setFilterMenuVisible(false);
+                      }}
+                    >
+                      <Ionicons name="calendar-outline" size={20} color={sortBy === 'modified' ? '#1f2937' : '#4b5563'} />
+                      <Text style={[styles.dropdownText, sortBy === 'modified' && styles.dropdownTextActive]}>Date Modified</Text>
+                      {sortBy === 'modified' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[styles.dropdownItem, sortBy === 'created' && styles.dropdownItemActive]}
+                      onPress={() => {
+                        setSortBy('created');
+                        setFilterMenuVisible(false);
+                      }}
+                    >
+                      <Ionicons name="time-outline" size={20} color={sortBy === 'created' ? '#1f2937' : '#4b5563'} />
+                      <Text style={[styles.dropdownText, sortBy === 'created' && styles.dropdownTextActive]}>Date Created</Text>
+                      {sortBy === 'created' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[styles.dropdownItem, sortBy === 'name' && styles.dropdownItemActive]}
+                      onPress={() => {
+                        setSortBy('name');
+                        setFilterMenuVisible(false);
+                      }}
+                    >
+                      <Ionicons name="text-outline" size={20} color={sortBy === 'name' ? '#1f2937' : '#4b5563'} />
+                      <Text style={[styles.dropdownText, sortBy === 'name' && styles.dropdownTextActive]}>Alphabetical</Text>
+                      {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
             </View>
           </LinearGradient>
 
@@ -184,74 +255,7 @@ export default function HomeScreen() {
             <Ionicons name="add" size={28} color="white" />
           </TouchableOpacity>
 
-          {/* Root-Level Dropdowns for perfect z-index on iOS */}
-          {profileMenuVisible && (
-            <View
-              style={styles.profileMenu}
-              onStartShouldSetResponder={() => true}
-            >
-              <View style={styles.profileHeader}>
-                <Text style={styles.profileName} numberOfLines={1}>{user?.displayName || 'User'}</Text>
-                <Text style={styles.profileEmail} numberOfLines={1}>{user?.email}</Text>
-              </View>
-              <View style={styles.menuDivider} />
-              <TouchableOpacity
-                style={styles.menuItem}
-                onPress={() => {
-                  setProfileMenuVisible(false);
-                  handleSignOut();
-                }}
-              >
-                <Ionicons name="log-out-outline" size={20} color="#ef4444" />
-                <Text style={[styles.menuText, { color: '#ef4444' }]}>Sign Out</Text>
-              </TouchableOpacity>
-            </View>
-          )}
 
-          {filterMenuVisible && (
-            <View
-              style={styles.dropdownMenu}
-              onStartShouldSetResponder={() => true}
-            >
-              <Text style={styles.dropdownTitle}>Sort by</Text>
-
-              <TouchableOpacity
-                style={[styles.dropdownItem, sortBy === 'modified' && styles.dropdownItemActive]}
-                onPress={() => {
-                  setSortBy('modified');
-                  setFilterMenuVisible(false);
-                }}
-              >
-                <Ionicons name="calendar-outline" size={20} color={sortBy === 'modified' ? '#1f2937' : '#4b5563'} />
-                <Text style={[styles.dropdownText, sortBy === 'modified' && styles.dropdownTextActive]}>Date Modified</Text>
-                {sortBy === 'modified' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.dropdownItem, sortBy === 'created' && styles.dropdownItemActive]}
-                onPress={() => {
-                  setSortBy('created');
-                  setFilterMenuVisible(false);
-                }}
-              >
-                <Ionicons name="time-outline" size={20} color={sortBy === 'created' ? '#1f2937' : '#4b5563'} />
-                <Text style={[styles.dropdownText, sortBy === 'created' && styles.dropdownTextActive]}>Date Created</Text>
-                {sortBy === 'created' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.dropdownItem, sortBy === 'name' && styles.dropdownItemActive]}
-                onPress={() => {
-                  setSortBy('name');
-                  setFilterMenuVisible(false);
-                }}
-              >
-                <Ionicons name="text-outline" size={20} color={sortBy === 'name' ? '#1f2937' : '#4b5563'} />
-                <Text style={[styles.dropdownText, sortBy === 'name' && styles.dropdownTextActive]}>Alphabetical</Text>
-                {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
-              </TouchableOpacity>
-            </View>
-          )}
         </View>
       </TouchableWithoutFeedback>
 
@@ -363,12 +367,25 @@ const styles = StyleSheet.create({
   profileMenu: {
     position: 'absolute',
     top: 114,
-    right: 20,
+    right: 0,
+    width: '100%',
+    maxWidth: 800,
+    alignSelf: 'center',
+    // The menu itself should be a small card aligned to the right
+    // We use a nested approach: this outer wrapper positions within the content column
+    backgroundColor: 'transparent',
+    zIndex: 99999,
+    alignItems: 'flex-end',
+    paddingRight: 20,
+  },
+  profileMenuCard: {
+    position: 'absolute',
+    top: 52,
+    right: 0,
     backgroundColor: 'white',
     borderRadius: 16,
     width: 220,
     padding: 8,
-    zIndex: 99999,
     borderWidth: 1,
     borderColor: '#f3f4f6',
     shadowColor: '#000',
@@ -376,6 +393,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 24,
     elevation: 20,
+    zIndex: 99999,
   },
   profileHeader: {
     padding: 12,
@@ -472,6 +490,11 @@ const styles = StyleSheet.create({
       } as any,
     }),
   },
+  sortButtonWrapper: {
+    position: 'relative',
+    zIndex: 3000,
+    overflow: 'visible',
+  },
   sortButton: {
     width: 44,
     height: 44,
@@ -480,8 +503,8 @@ const styles = StyleSheet.create({
   },
   dropdownMenu: {
     position: 'absolute',
-    top: 194,
-    right: 20,
+    top: 52,
+    right: 0,
     backgroundColor: 'white',
     borderRadius: 16,
     padding: 8,

@@ -300,16 +300,51 @@ export default function ListDetailScreen() {
                                     color="#1f2937"
                                 />
                             </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={(e) => {
-                                    e.stopPropagation();
-                                    setSortMenuVisible(!sortMenuVisible);
-                                }}
-                                style={styles.sortButton}
-                                activeOpacity={0.7}
-                            >
-                                <Ionicons name="options-outline" size={24} color="#1f2937" />
-                            </TouchableOpacity>
+                            <View style={styles.sortButtonWrapper}>
+                                <TouchableOpacity
+                                    onPress={(e) => {
+                                        e.stopPropagation();
+                                        setSortMenuVisible(!sortMenuVisible);
+                                    }}
+                                    style={styles.sortButton}
+                                    activeOpacity={0.7}
+                                >
+                                    <Ionicons name="options-outline" size={24} color="#1f2937" />
+                                </TouchableOpacity>
+
+                                {sortMenuVisible && (
+                                    <View
+                                        style={styles.sortDropdown}
+                                        onStartShouldSetResponder={() => true}
+                                    >
+                                        <Text style={styles.dropdownTitle}>Sort by</Text>
+
+                                        <TouchableOpacity
+                                            style={[styles.dropdownItem, sortBy === 'created' && styles.dropdownItemActive]}
+                                            onPress={() => {
+                                                setSortBy('created');
+                                                setSortMenuVisible(false);
+                                            }}
+                                        >
+                                            <Ionicons name="time-outline" size={20} color={sortBy === 'created' ? '#1f2937' : '#4b5563'} />
+                                            <Text style={[styles.dropdownText, sortBy === 'created' && styles.dropdownTextActive]}>Date Created</Text>
+                                            {sortBy === 'created' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity
+                                            style={[styles.dropdownItem, sortBy === 'name' && styles.dropdownItemActive]}
+                                            onPress={() => {
+                                                setSortBy('name');
+                                                setSortMenuVisible(false);
+                                            }}
+                                        >
+                                            <Ionicons name="text-outline" size={20} color={sortBy === 'name' ? '#1f2937' : '#4b5563'} />
+                                            <Text style={[styles.dropdownText, sortBy === 'name' && styles.dropdownTextActive]}>Alphabetical</Text>
+                                            {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                            </View>
                         </View>
                     </View>
                 </LinearGradient>
@@ -370,39 +405,7 @@ export default function ListDetailScreen() {
                     <Ionicons name="add" size={28} color="white" />
                 </TouchableOpacity>
 
-                {/* Root-Level Dropdown for perfect z-index on iOS */}
-                {sortMenuVisible && (
-                    <View
-                        style={styles.sortDropdown}
-                        onStartShouldSetResponder={() => true}
-                    >
-                        <Text style={styles.dropdownTitle}>Sort by</Text>
 
-                        <TouchableOpacity
-                            style={[styles.dropdownItem, sortBy === 'created' && styles.dropdownItemActive]}
-                            onPress={() => {
-                                setSortBy('created');
-                                setSortMenuVisible(false);
-                            }}
-                        >
-                            <Ionicons name="time-outline" size={20} color={sortBy === 'created' ? '#1f2937' : '#4b5563'} />
-                            <Text style={[styles.dropdownText, sortBy === 'created' && styles.dropdownTextActive]}>Date Created</Text>
-                            {sortBy === 'created' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={[styles.dropdownItem, sortBy === 'name' && styles.dropdownItemActive]}
-                            onPress={() => {
-                                setSortBy('name');
-                                setSortMenuVisible(false);
-                            }}
-                        >
-                            <Ionicons name="text-outline" size={20} color={sortBy === 'name' ? '#1f2937' : '#4b5563'} />
-                            <Text style={[styles.dropdownText, sortBy === 'name' && styles.dropdownTextActive]}>Alphabetical</Text>
-                            {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
-                        </TouchableOpacity>
-                    </View>
-                )}
 
                 <Modal visible={modalVisible} animationType="slide" transparent={true} presentationStyle="overFullScreen">
                     <View style={styles.addItemModalOverlay}>
@@ -649,6 +652,11 @@ const styles = StyleSheet.create({
             } as any,
         }),
     },
+    sortButtonWrapper: {
+        position: 'relative',
+        zIndex: 3000,
+        overflow: 'visible',
+    },
     sortButton: {
         width: 44,
         height: 44,
@@ -657,8 +665,8 @@ const styles = StyleSheet.create({
     },
     sortDropdown: {
         position: 'absolute',
-        top: 204, // Aligned with the sort button in the header
-        right: 20,
+        top: 52,
+        right: 0,
         backgroundColor: 'white',
         borderRadius: 16,
         padding: 8,
