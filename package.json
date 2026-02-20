@@ -17,11 +17,11 @@
     "@expo-google-fonts/plus-jakarta-sans": "^0.4.2",
     "@expo/vector-icons": "^15.0.3",
     "@react-native-async-storage/async-storage": "2.2.0",
-    "@react-native-community/datetimepicker": "8.4.4",
-    "@react-native-google-signin/google-signin": "^16.0.0",
-    "@react-navigation/bottom-tabs": "^7.4.0",
-    "@react-navigation/elements": "^2.6.3",
-    "@react-navigation/native": "^7.1.8",
+    "@react-native-community/datetimepicker": "^8.4.4",
+    "@react-native-google-signin/google-signin": "^16.1.1",
+    "@react-navigation/bottom-tabs": "^7.14.0",
+    "@react-navigation/elements": "^2.9.5",
+    "@react-navigation/native": "^7.1.28",
     "expo": "~54.0.33",
     "expo-asset": "~12.0.12",
     "expo-constants": "~18.0.10",
@@ -36,13 +36,13 @@
     "expo-symbols": "~1.0.8",
     "expo-system-ui": "~6.0.9",
     "expo-web-browser": "~15.0.10",
-    "firebase": "^12.6.0",
-    "nativewind": "^4.2.1",
+    "firebase": "^12.9.0",
+    "nativewind": "^4.2.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
     "react-native-gesture-handler": "~2.28.0",
-    "react-native-reanimated": "~4.1.1",
+    "react-native-reanimated": "^4.1.6",
     "react-native-safe-area-context": "~5.6.0",
     "react-native-screens": "~4.16.0",
     "react-native-web": "~0.21.0",
@@ -53,8 +53,26 @@
     "@types/react": "~19.1.0",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
-    "firebase-tools": "^15.1.0",
+    "firebase-tools": "^15.7.0",
     "typescript": "~5.9.2"
   },
-  "private": true
+  "private": true,
+  "expo": {
+    "install": {
+      "exclude": [
+        "@react-navigation/bottom-tabs",
+        "@react-navigation/native",
+        "@react-navigation/elements"
+      ]
+    }
+  },
+  "overrides": {
+    "tar": ">=7.5.8",
+    "qs": ">=6.14.1",
+    "minimatch": ">=10.2.1",
+    "glob": ">=10.5.0",
+    "rimraf": ">=6.0.0",
+    "zip-stream": ">=6.0.2",
+    "archiver-utils": ">=5.0.1"
+  }
 }
