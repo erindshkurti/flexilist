@@ -3,8 +3,7 @@ import { List } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
+import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 interface ListCardProps {
     list: List;
@@ -24,47 +23,53 @@ export const ListCard = ({ list, onDelete, style }: ListCardProps) => {
     }, [items, loading]);
 
     return (
-        <TouchableHighlight
-            onPress={() => router.push(`/list/${list.id}`)}
-            style={[styles.listCard, style]}
-            underlayColor="#f3f4f6"
-        >
+        <View style={[styles.listCard, style]}>
             <View style={styles.innerContainer}>
-                <View style={styles.listCardContent}>
-                    <View style={styles.listHeader}>
-                        <View style={styles.listInfo}>
-                            <View style={styles.titleRow}>
-                                <Text style={styles.listTitle}>{list.title}</Text>
-                                {!loading && (
-                                    <View style={styles.countBadge}>
-                                        <Text style={styles.countText}>
-                                            {counts.completed}/{counts.total}
-                                        </Text>
-                                    </View>
-                                )}
+                {/* Main clickable area for navigation */}
+                <TouchableOpacity
+                    onPress={() => router.push(`/list/${list.id}`)}
+                    style={styles.clickableArea}
+                    activeOpacity={0.7}
+                >
+                    <View style={styles.listCardContent}>
+                        <View style={styles.listHeader}>
+                            <View style={styles.listInfo}>
+                                <View style={styles.titleRow}>
+                                    <Text style={styles.listTitle}>{list.title}</Text>
+                                    {!loading && (
+                                        <View style={styles.countBadge}>
+                                            <Text style={styles.countText}>
+                                                {counts.completed}/{counts.total}
+                                            </Text>
+                                        </View>
+                                    )}
+                                </View>
+                                {list.description ? (
+                                    <Text style={styles.listDescription} numberOfLines={1}>{list.description}</Text>
+                                ) : null}
                             </View>
-                            {list.description ? (
-                                <Text style={styles.listDescription} numberOfLines={1}>{list.description}</Text>
-                            ) : null}
+                        </View>
+
+                        <View style={styles.fieldTags}>
+                            {list.fields.slice(0, 3).map((field: any) => (
+                                <View key={field.id} style={styles.fieldTag}>
+                                    <Text style={styles.fieldTagText}>{field.name}</Text>
+                                </View>
+                            ))}
+                            {list.fields.length > 3 && (
+                                <View style={styles.fieldTag}>
+                                    <Text style={styles.fieldTagText}>+{list.fields.length - 3}</Text>
+                                </View>
+                            )}
                         </View>
                     </View>
+                </TouchableOpacity>
 
-                    <View style={styles.fieldTags}>
-                        {list.fields.slice(0, 3).map((field: any) => (
-                            <View key={field.id} style={styles.fieldTag}>
-                                <Text style={styles.fieldTagText}>{field.name}</Text>
-                            </View>
-                        ))}
-                        {list.fields.length > 3 && (
-                            <View style={styles.fieldTag}>
-                                <Text style={styles.fieldTagText}>+{list.fields.length - 3}</Text>
-                            </View>
-                        )}
-                    </View>
-                </View>
+                {/* Separate actions area - NOT nested inside the main touchable */}
                 <View style={styles.listCardActions}>
                     <TouchableOpacity
-                        onPress={() => {
+                        onPress={(e) => {
+                            e.stopPropagation?.();
                             console.log('Edit button clicked for:', list.title);
                             router.push(`/edit-list/${list.id}`);
                         }}
@@ -74,7 +79,8 @@ export const ListCard = ({ list, onDelete, style }: ListCardProps) => {
                         <Ionicons name="create-outline" size={20} color="#3b82f6" />
                     </TouchableOpacity>
                     <TouchableOpacity
-                        onPress={() => {
+                        onPress={(e) => {
+                            e.stopPropagation?.();
                             console.log('Delete button clicked!');
                             onDelete(list.id, list.title);
                         }}
@@ -83,10 +89,18 @@ export const ListCard = ({ list, onDelete, style }: ListCardProps) => {
                     >
                         <Ionicons name="trash-outline" size={20} color="#ef4444" />
                     </TouchableOpacity>
-                    <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+                    <TouchableOpacity
+                        onPress={(e) => {
+                            e.stopPropagation?.();
+                            router.push(`/list/${list.id}`);
+                        }}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                        <Ionicons name="chevron-forward" size={20} color="#9ca3af" style={styles.chevron} />
+                    </TouchableOpacity>
                 </View>
             </View>
-        </TouchableHighlight>
+        </View>
     );
 };
 
@@ -180,4 +194,10 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         fontFamily: 'PlusJakartaSans_600SemiBold',
     },
+    clickableArea: {
+        flex: 1,
+    },
+    chevron: {
+        marginLeft: 4,
+    }
 });
