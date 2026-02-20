@@ -1,130 +1,124 @@
-# flexilist
+# FlexiList
 
-flexilist is a modern, cross-platform mobile and web application designed for flexible and secure list tracking. It allows users to create custom lists with dynamic fields (text, number, date, etc.), ensuring that you can track *anything*—from grocery lists and daily tasks to project milestones and inventory—exactly the way you want.
+FlexiList is a modern, cross-platform mobile and web application for flexible and secure list tracking. Create custom lists with dynamic fields (text, number, date, etc.) to track *anything* — grocery lists, daily tasks, project milestones, inventory — exactly the way you want.
 
 ## Features
 
-*   **Custom List Schemas**: Define exactly what data you want to track for each list (e.g., "Price" as a number, "Due Date" as a date).
-*   **Cross-Platform**: Runs seamlessly on iOS, Android, and the Web.
-*   **Secure Authentication**: Google Sign-In integration powered by Firebase Auth.
-*   **Cloud Sync**: Real-time data synchronization using Firestore.
-*   **Modern UI/UX**: clean, minimal design with glassmorphism elements, gradients, and smooth interactions.
-*   **Smart Filtering**: Search, sort, and toggle visibility of completed items.
+- **Custom List Schemas** — define exactly what data to track per list
+- **Cross-Platform** — iOS, Android, and Web
+- **Secure Authentication** — Google Sign-In via Firebase Auth
+- **Cloud Sync** — real-time sync with Firestore
+- **Modern UI/UX** — clean, minimal design with smooth animations and swipe actions
+- **Smart Filtering** — search, sort, and toggle completed items
 
-## Technology Stack
+## Tech Stack
 
-*   **Framework**: [React Native](https://reactnative.dev/) with [Expo](https://expo.dev/)
-*   **Language**: [TypeScript](https://www.typescriptlang.org/)
-*   **Styling**: [NativeWind](https://www.nativewind.dev/) (Tailwind CSS for React Native)
-*   **Backend / Database**: [Firebase](https://firebase.google.com/) (Firestore & Auth)
-*   **Navigation**: [Expo Router](https://docs.expo.dev/router/introduction/)
+| Layer | Technology |
+|---|---|
+| Framework | React Native + Expo |
+| Language | TypeScript |
+| Navigation | Expo Router |
+| Styling | NativeWind (Tailwind CSS) |
+| Backend | Firebase (Firestore + Auth) |
 
 ## Getting Started
 
 ### Prerequisites
-
-*   Node.js (LTS recommended)
-*   npm or yarn
-*   Expo Go app (for mobile testing)
+- Node.js LTS
+- npm
 
 ### Installation
 
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/your-username/flexilist.git
-    cd flexilist
-    ```
+```bash
+git clone https://github.com/your-username/flexilist.git
+cd flexilist
+npm install
+```
 
-2.  **Install dependencies**:
-    ```bash
-    npm install
-    ```
+### Environment Setup
 
-3.  **Configure Environment**:
-    Create a `.env` file in the root directory with your Firebase config:
-    ```env
-    EXPO_PUBLIC_FIREBASE_API_KEY=your_api_key
-    EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-    EXPO_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-    EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-    EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-    EXPO_PUBLIC_FIREBASE_APP_ID=your_app_id
-    ```
+Create a `.env` file in the root (see `.env.example`):
 
-### Running the App
+```env
+EXPO_PUBLIC_FIREBASE_API_KEY=...
+EXPO_PUBLIC_FIREBASE_API_KEY_IOS=...
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=...
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=...
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
+EXPO_PUBLIC_FIREBASE_APP_ID=...
+EXPO_PUBLIC_FIREBASE_APP_ID_IOS=...
+```
 
-*   **Web**:
-    ```bash
-    npm run web
-    ```
-*   **iOS**:
-    ```bash
-    npm run ios
-    ```
-*   **Android**:
-    ```bash
-    npm run android
-    ```
+Get values from [Firebase Console](https://console.firebase.google.com/) → Project Settings → Your apps.
+
+### Running Locally
+
+```bash
+# Web
+npm run web
+
+# iOS simulator (requires macOS + Xcode)
+npx expo run:ios
+
+# Android emulator
+npx expo run:android
+```
 
 ## Deployment
 
-### Web Deployment (Firebase Hosting)
-
-This project is configured for deployment to Firebase Hosting.
+### Web (Firebase Hosting)
 
 #### Prerequisites
+- Firebase CLI installed globally:
+  ```bash
+  npm install -g firebase-tools
+  ```
+- Firebase project created and configured
 
-*   Firebase CLI installed globally:
-    ```bash
-    npm install -g firebase-tools
-    ```
-*   Firebase project created and configured
+#### Deploy
 
-#### Deployment Steps
+1. **Login to Firebase**:
+   ```bash
+   firebase login
+   ```
 
-1.  **Login to Firebase**:
-    ```bash
-    firebase login
-    ```
+2. **Build and deploy**:
+   ```bash
+   npm run deploy
+   ```
+   Builds the web app and deploys to Firebase Hosting in one step.
 
-2.  **Build and Deploy**:
-    ```bash
-    npm run deploy
-    ```
-    This command builds the web app and deploys it to Firebase Hosting.
+3. **Deploy only** (skip rebuild):
+   ```bash
+   firebase deploy --only hosting
+   ```
 
-3.  **Deploy Only (without build)**:
-    ```bash
-    firebase deploy --only hosting
-    ```
+#### Config Files
+- `firebase.json` — hosting config (public dir, rewrites, headers)
+- `.firebaserc` — Firebase project config
 
-#### Configuration Files
-
-*   `firebase.json`: Hosting configuration (public directory, rewrites, headers)
-*   `.firebaserc`: Firebase project configuration
-
-#### Deployment URL
-
-After deployment, your app will be available at:
+#### Live URL
 ```
-https://[your-project-id].web.app
+https://flexilist-5a873.web.app
 ```
 
-### Mobile Deployment
+### iOS App Store (EAS)
 
-For iOS and Android deployment, you'll need to:
+See [docs/DEPLOYMENT_GUIDE.md](./docs/DEPLOYMENT_GUIDE.md) for the full step-by-step guide.
 
-1.  **Create a development build**:
-    ```bash
-    npx expo prebuild
-    ```
+**Quick reference:**
+```bash
+# Build
+eas build --platform ios --profile production
 
-2.  **Build for production**:
-    *   **iOS**: Use EAS Build or Xcode
-    *   **Android**: Use EAS Build or Android Studio
+# Submit to App Store Connect
+eas submit --platform ios --latest
+```
 
-Refer to [Expo documentation](https://docs.expo.dev/build/introduction/) for detailed mobile deployment instructions.
+> ⚠️ Push Firebase secrets to EAS before building:
+> `eas secret:push --scope project --env-file .env`
 
-## Security Note
+## Security
 
-This project uses Firebase for backend services. API keys are public by design. Access is secured via **Firestore Security Rules** and **App Check** (recommended for production). Ensure your Google Cloud Console keys are restricted to your specific domains and bundle identifiers (`com.erindshkurti.flexilist`).
+API keys in this project are client-side by design. Access is secured via **Firestore Security Rules** — only authenticated users can read/write their own data. Keys are restricted in Google Cloud Console to the bundle ID `com.erindshkurti.flexilist`.
