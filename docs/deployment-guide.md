@@ -26,7 +26,7 @@ eas build:configure --platform ios
 
 ### 3. Push environment variables to EAS
 ```bash
-eas secret:push --scope project --env-file .env
+eas env:push --env-file .env
 ```
 > ⚠️ **Critical** — without this step, the app will crash on launch (Firebase has no credentials).
 
@@ -100,7 +100,7 @@ eas submit --platform ios --latest
 
 | Issue | Fix |
 |---|---|
-| App crashes on launch | Run `eas secret:push --scope project --env-file .env`, then rebuild |
+| App crashes on launch | Run `eas env:push --env-file .env`, then rebuild |
 | API Key prompt during submit | Always answer **Yes** to auto-generate |
 | Expo Go warning during build | Harmless — ignore or set `EAS_BUILD_NO_EXPO_GO_WARNING=true` |
 | Multiple Apple teams | Select the **Individual** team when prompted |

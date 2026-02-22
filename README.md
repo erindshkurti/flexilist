@@ -117,8 +117,21 @@ eas build --platform ios --profile production
 eas submit --platform ios --latest
 ```
 
+### Android Google Play (EAS)
+
+See [docs/android-deployment-guide.md](./docs/android-deployment-guide.md) for the full step-by-step guide.
+
+**Quick reference:**
+```bash
+# Build
+eas build --platform android --profile production
+
+# Submit to Google Play Console
+eas submit --platform android --latest
+```
+
 > ⚠️ Push Firebase secrets to EAS before building:
-> `eas secret:push --scope project --env-file .env`
+> `eas env:push --env-file .env`
 
 ## Documentation
 
@@ -126,6 +139,7 @@ eas submit --platform ios --latest
 |---|---|
 | [firebase-setup.md](./docs/firebase-setup.md) | Firebase Auth setup guide |
 | [deployment-guide.md](./docs/deployment-guide.md) | iOS App Store deployment via EAS |
+| [android-deployment-guide.md](./docs/android-deployment-guide.md) | Google Play Store deployment via EAS |
 | [walkthrough.md](./docs/walkthrough.md) | Full feature walkthrough and project structure |
 
 ## Security

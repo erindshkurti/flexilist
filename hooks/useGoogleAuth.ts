@@ -19,6 +19,7 @@ export const useGoogleAuth = () => {
                     const { GoogleSignin } = require('@react-native-google-signin/google-signin');
                     GoogleSignin.configure({
                         iosClientId: '701865353940-j58jlccnedr3os4cv2du46jleratvh56.apps.googleusercontent.com',
+                        webClientId: '701865353940-0i3bkuu0j8p3qr1mbnok35vikq4ngjck.apps.googleusercontent.com',
                     });
                     await GoogleSignin.hasPlayServices();
                     const response = await GoogleSignin.signIn();
