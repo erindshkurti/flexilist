@@ -554,7 +554,7 @@ const styles = StyleSheet.create({
   },
   filterMenuWrapper: {
     position: 'absolute',
-    top: 194,
+    top: 174,
     left: 0,
     right: 0,
     alignItems: 'center',
