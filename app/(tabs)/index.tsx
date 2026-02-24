@@ -259,456 +259,458 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </View>
           </View>
+        </View>
       )}
 
-          {filterMenuVisible && (
-            <View style={styles.filterMenuWrapper} pointerEvents="box-none">
-              <View style={styles.filterMenuInner} pointerEvents="box-none">
-                <View
-                  style={styles.dropdownMenu}
-                  onStartShouldSetResponder={() => true}
-                >
-                  <Text style={styles.dropdownTitle}>Sort by</Text>
+      {filterMenuVisible && (
+        <View style={styles.filterMenuWrapper} pointerEvents="box-none">
+          <View style={styles.filterMenuInner} pointerEvents="box-none">
+            <View
+              style={styles.dropdownMenu}
+              onStartShouldSetResponder={() => true}
+            >
+              <Text style={styles.dropdownTitle}>Sort by</Text>
 
-                  <TouchableOpacity
-                    style={[styles.dropdownItem, sortBy === 'modified' && styles.dropdownItemActive]}
-                    onPress={() => {
-                      setSortBy('modified');
-                      setFilterMenuVisible(false);
-                    }}
-                  >
-                    <Ionicons name="calendar-outline" size={20} color={sortBy === 'modified' ? '#1f2937' : '#4b5563'} />
-                    <Text style={[styles.dropdownText, sortBy === 'modified' && styles.dropdownTextActive]}>Date Modified</Text>
-                    {sortBy === 'modified' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={[styles.dropdownItem, sortBy === 'created' && styles.dropdownItemActive]}
-                    onPress={() => {
-                      setSortBy('created');
-                      setFilterMenuVisible(false);
-                    }}
-                  >
-                    <Ionicons name="time-outline" size={20} color={sortBy === 'created' ? '#1f2937' : '#4b5563'} />
-                    <Text style={[styles.dropdownText, sortBy === 'created' && styles.dropdownTextActive]}>Date Created</Text>
-                    {sortBy === 'created' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={[styles.dropdownItem, sortBy === 'name' && styles.dropdownItemActive]}
-                    onPress={() => {
-                      setSortBy('name');
-                      setFilterMenuVisible(false);
-                    }}
-                  >
-                    <Ionicons name="text-outline" size={20} color={sortBy === 'name' ? '#1f2937' : '#4b5563'} />
-                    <Text style={[styles.dropdownText, sortBy === 'name' && styles.dropdownTextActive]}>Alphabetical</Text>
-                    {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
-                  </TouchableOpacity>
-                </View>
-              </View>
-      )}
-
-              {/* Delete Confirmation Modal */}
-              <Modal
-                visible={deleteModalVisible}
-                transparent={true}
-                animationType="fade"
-                onRequestClose={() => setDeleteModalVisible(false)}
+              <TouchableOpacity
+                style={[styles.dropdownItem, sortBy === 'modified' && styles.dropdownItemActive]}
+                onPress={() => {
+                  setSortBy('modified');
+                  setFilterMenuVisible(false);
+                }}
               >
-                <View style={styles.modalOverlay}>
-                  <View style={styles.deleteModal}>
-                    <View style={styles.deleteModalHeader}>
-                      <Ionicons name="warning-outline" size={48} color="#ef4444" />
-                      <Text style={styles.deleteModalTitle}>Delete List</Text>
-                    </View>
-                    <Text style={styles.deleteModalMessage}>
-                      Are you sure you want to delete &quot;{listToDelete?.title}&quot;?{'\n'}
-                      This action cannot be undone.
-                    </Text>
-                    <View style={styles.deleteModalButtons}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setDeleteModalVisible(false);
-                          setListToDelete(null);
-                        }}
-                        style={[styles.deleteModalButton, styles.cancelButton]}
-                      >
-                        <Text style={styles.cancelButtonText}>Cancel</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={confirmDelete}
-                        style={[styles.deleteModalButton, styles.confirmDeleteButton]}
-                      >
-                        <Text style={styles.confirmDeleteButtonText}>Delete</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-              </Modal>
-            </>
-          );
+                <Ionicons name="calendar-outline" size={20} color={sortBy === 'modified' ? '#1f2937' : '#4b5563'} />
+                <Text style={[styles.dropdownText, sortBy === 'modified' && styles.dropdownTextActive]}>Date Modified</Text>
+                {sortBy === 'modified' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.dropdownItem, sortBy === 'created' && styles.dropdownItemActive]}
+                onPress={() => {
+                  setSortBy('created');
+                  setFilterMenuVisible(false);
+                }}
+              >
+                <Ionicons name="time-outline" size={20} color={sortBy === 'created' ? '#1f2937' : '#4b5563'} />
+                <Text style={[styles.dropdownText, sortBy === 'created' && styles.dropdownTextActive]}>Date Created</Text>
+                {sortBy === 'created' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.dropdownItem, sortBy === 'name' && styles.dropdownItemActive]}
+                onPress={() => {
+                  setSortBy('name');
+                  setFilterMenuVisible(false);
+                }}
+              >
+                <Ionicons name="text-outline" size={20} color={sortBy === 'name' ? '#1f2937' : '#4b5563'} />
+                <Text style={[styles.dropdownText, sortBy === 'name' && styles.dropdownTextActive]}>Alphabetical</Text>
+                {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        visible={deleteModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setDeleteModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.deleteModal}>
+            <View style={styles.deleteModalHeader}>
+              <Ionicons name="warning-outline" size={48} color="#ef4444" />
+              <Text style={styles.deleteModalTitle}>Delete List</Text>
+            </View>
+            <Text style={styles.deleteModalMessage}>
+              Are you sure you want to delete &quot;{listToDelete?.title}&quot;?{'\n'}
+              This action cannot be undone.
+            </Text>
+            <View style={styles.deleteModalButtons}>
+              <TouchableOpacity
+                onPress={() => {
+                  setDeleteModalVisible(false);
+                  setListToDelete(null);
+                }}
+                style={[styles.deleteModalButton, styles.cancelButton]}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={confirmDelete}
+                style={[styles.deleteModalButton, styles.confirmDeleteButton]}
+              >
+                <Text style={styles.confirmDeleteButtonText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </>
+  );
 }
 
-          const styles = StyleSheet.create({
-            container: {
-            flex: 1,
-          backgroundColor: '#ffffff',
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
   },
-          header: {
-            paddingTop: 60,
-          paddingBottom: 24,
-          paddingHorizontal: 20,
-          backgroundColor: '#f9fafb',
-          borderBottomWidth: 1,
-          borderBottomColor: '#f3f4f6',
-          borderBottomLeftRadius: 32,
-          borderBottomRightRadius: 32,
-          zIndex: 1000,
-          elevation: 10,
-          position: 'relative',
-          overflow: 'visible',
+  header: {
+    paddingTop: 60,
+    paddingBottom: 24,
+    paddingHorizontal: 20,
+    backgroundColor: '#f9fafb',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+    zIndex: 1000,
+    elevation: 10,
+    position: 'relative',
+    overflow: 'visible',
   },
-          headerContent: {
-            flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 24,
-          maxWidth: 800,
-          width: '100%',
-          alignSelf: 'center',
-          zIndex: 2000,
-          overflow: 'visible',
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 24,
+    maxWidth: 800,
+    width: '100%',
+    alignSelf: 'center',
+    zIndex: 2000,
+    overflow: 'visible',
   },
-          titleRow: {
-            flexDirection: 'row',
-          alignItems: 'center',
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-          headerTitle: {
-            fontSize: 32,
-          fontWeight: '800',
-          fontFamily: 'PlusJakartaSans_800ExtraBold',
-          color: '#1f2937',
+  headerTitle: {
+    fontSize: 32,
+    fontWeight: '800',
+    fontFamily: 'PlusJakartaSans_800ExtraBold',
+    color: '#1f2937',
   },
-          headerRight: {
-            position: 'relative',
-          zIndex: 3000,
-          overflow: 'visible',
+  headerRight: {
+    position: 'relative',
+    zIndex: 3000,
+    overflow: 'visible',
   },
-          profileButton: {
-            // No shadow or background - just the circular image
-          },
-          profileImage: {
-            width: 44,
-          height: 44,
-          borderRadius: 22,
-          borderWidth: 2,
-          borderColor: '#f3f4f6', // Neutral light gray
+  profileButton: {
+    // No shadow or background - just the circular image
   },
-          profilePlaceholder: {
-            backgroundColor: '#6366f1',
-          justifyContent: 'center',
-          alignItems: 'center',
+  profileImage: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 2,
+    borderColor: '#f3f4f6', // Neutral light gray
   },
-          profileInitial: {
-            color: 'white',
-          fontSize: 18,
-          fontWeight: '600',
-          fontFamily: 'PlusJakartaSans_600SemiBold',
+  profilePlaceholder: {
+    backgroundColor: '#6366f1',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-          profileMenu: {
-            position: 'absolute',
-          top: 114,
-          left: 0,
-          right: 0,
-          alignItems: 'center',
-          zIndex: 99999,
+  profileInitial: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
+    fontFamily: 'PlusJakartaSans_600SemiBold',
   },
-          profileMenuInner: {
-            width: '100%',
-          maxWidth: 840,
-          alignItems: 'flex-end',
-          paddingHorizontal: 20,
+  profileMenu: {
+    position: 'absolute',
+    top: 114,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    zIndex: 99999,
   },
-          profileMenuCard: {
-            backgroundColor: 'white',
-          borderRadius: 16,
-          width: 220,
-          padding: 8,
-          borderWidth: 1,
-          borderColor: '#f3f4f6',
-          shadowColor: '#000',
-          shadowOffset: {width: 0, height: 12 },
-          shadowOpacity: 0.15,
-          shadowRadius: 24,
-          elevation: 20,
-          zIndex: 99999,
+  profileMenuInner: {
+    width: '100%',
+    maxWidth: 840,
+    alignItems: 'flex-end',
+    paddingHorizontal: 20,
   },
-          profileHeader: {
-            padding: 12,
-          paddingBottom: 8,
+  profileMenuCard: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    width: 220,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: '#f3f4f6',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.15,
+    shadowRadius: 24,
+    elevation: 20,
+    zIndex: 99999,
   },
-          profileName: {
-            fontSize: 16,
-          fontWeight: '700',
-          fontFamily: 'PlusJakartaSans_700Bold',
-          color: '#1f2937',
-          marginBottom: 2,
+  profileHeader: {
+    padding: 12,
+    paddingBottom: 8,
   },
-          profileEmail: {
-            fontSize: 12,
-          fontFamily: 'PlusJakartaSans_400Regular',
-          color: '#6b7280',
+  profileName: {
+    fontSize: 16,
+    fontWeight: '700',
+    fontFamily: 'PlusJakartaSans_700Bold',
+    color: '#1f2937',
+    marginBottom: 2,
   },
-          menuDivider: {
-            height: 1,
-          backgroundColor: '#f3f4f6',
-          marginVertical: 4,
+  profileEmail: {
+    fontSize: 12,
+    fontFamily: 'PlusJakartaSans_400Regular',
+    color: '#6b7280',
   },
-          menuItem: {
-            flexDirection: 'row',
-          alignItems: 'center',
-          padding: 12,
-          borderRadius: 12,
-          gap: 12,
+  menuDivider: {
+    height: 1,
+    backgroundColor: '#f3f4f6',
+    marginVertical: 4,
   },
-          menuText: {
-            fontSize: 15,
-          fontWeight: '500',
-          fontFamily: 'PlusJakartaSans_500Medium',
-          color: '#374151',
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 12,
+    gap: 12,
   },
-          fab: {
-            position: 'absolute',
-          bottom: 24,
-          right: 24,
-          width: 64,
-          height: 64,
-          borderRadius: 32,
-          backgroundColor: '#1f2937',
-          justifyContent: 'center',
-          alignItems: 'center',
-          shadowColor: '#000',
-          shadowOffset: {width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 12,
-          elevation: 8,
+  menuText: {
+    fontSize: 15,
+    fontWeight: '500',
+    fontFamily: 'PlusJakartaSans_500Medium',
+    color: '#374151',
   },
-          searchContainer: {
-            flexDirection: 'row',
-          gap: 12,
-          maxWidth: 800,
-          width: '100%',
-          alignSelf: 'center',
-          zIndex: 102,
-          overflow: 'visible',
+  fab: {
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#1f2937',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
   },
-          searchBar: {
-            flex: 1,
-          flexDirection: 'row',
-          alignItems: 'center',
-          backgroundColor: 'white',
-          borderRadius: 16,
-          paddingHorizontal: 16,
-          paddingVertical: 0,
-          gap: 12,
-          shadowColor: '#000',
-          shadowOffset: {width: 0, height: 1 },
-          shadowOpacity: 0.05,
-          shadowRadius: 4,
-          elevation: 1,
-          borderWidth: 1,
-          borderColor: 'transparent',
+  searchContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    maxWidth: 800,
+    width: '100%',
+    alignSelf: 'center',
+    zIndex: 102,
+    overflow: 'visible',
   },
-          searchBarFocused: {
-            borderColor: '#1f2937',
-          backgroundColor: '#ffffff',
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
+  searchBar: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 0,
+    gap: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
-          searchInput: {
-            flex: 1,
-          fontSize: 16,
-          color: '#1f2937',
-          paddingVertical: 14,
-          paddingHorizontal: 6,
-          fontFamily: 'PlusJakartaSans_500Medium',
-          ...Platform.select({
-            web: {
-            outlineStyle: 'none',
+  searchBarFocused: {
+    borderColor: '#1f2937',
+    backgroundColor: '#ffffff',
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#1f2937',
+    paddingVertical: 14,
+    paddingHorizontal: 6,
+    fontFamily: 'PlusJakartaSans_500Medium',
+    ...Platform.select({
+      web: {
+        outlineStyle: 'none',
       } as any,
     }),
   },
-          sortButtonWrapper: {
-            position: 'relative',
-          zIndex: 3000,
-          overflow: 'visible',
+  sortButtonWrapper: {
+    position: 'relative',
+    zIndex: 3000,
+    overflow: 'visible',
   },
-          sortButton: {
-            width: 44,
-          height: 44,
-          justifyContent: 'center',
-          alignItems: 'center',
+  sortButton: {
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-          filterMenuWrapper: {
-            position: 'absolute',
-          top: 194,
-          left: 0,
-          right: 0,
-          alignItems: 'center',
-          zIndex: 99999,
+  filterMenuWrapper: {
+    position: 'absolute',
+    top: 194,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    zIndex: 99999,
   },
-          filterMenuInner: {
-            width: '100%',
-          maxWidth: 840,
-          alignItems: 'flex-end',
-          paddingHorizontal: 20,
+  filterMenuInner: {
+    width: '100%',
+    maxWidth: 840,
+    alignItems: 'flex-end',
+    paddingHorizontal: 20,
   },
-          dropdownMenu: {
-            backgroundColor: 'white',
-          borderRadius: 16,
-          padding: 8,
-          width: 200,
-          zIndex: 99999,
-          borderWidth: 1,
-          borderColor: '#f3f4f6',
-          shadowColor: '#000',
-          shadowOffset: {width: 0, height: 12 },
-          shadowOpacity: 0.15,
-          shadowRadius: 24,
-          elevation: 20,
+  dropdownMenu: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 8,
+    width: 200,
+    zIndex: 99999,
+    borderWidth: 1,
+    borderColor: '#f3f4f6',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.15,
+    shadowRadius: 24,
+    elevation: 20,
   },
-          dropdownTitle: {
-            fontSize: 12,
-          fontWeight: '600',
-          fontFamily: 'PlusJakartaSans_600SemiBold',
-          color: '#9ca3af',
-          paddingHorizontal: 12,
-          paddingVertical: 8,
-          textTransform: 'uppercase',
-          letterSpacing: 0.5,
+  dropdownTitle: {
+    fontSize: 12,
+    fontWeight: '600',
+    fontFamily: 'PlusJakartaSans_600SemiBold',
+    color: '#9ca3af',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
-          dropdownItem: {
-            flexDirection: 'row',
-          alignItems: 'center',
-          padding: 12,
-          borderRadius: 8,
-          gap: 12,
+  dropdownItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 8,
+    gap: 12,
   },
-          dropdownItemActive: {
-            backgroundColor: '#f3f4f6',
+  dropdownItemActive: {
+    backgroundColor: '#f3f4f6',
   },
-          dropdownText: {
-            fontSize: 14,
-          fontFamily: 'PlusJakartaSans_500Medium',
-          color: '#4b5563',
-          fontWeight: '500',
+  dropdownText: {
+    fontSize: 14,
+    fontFamily: 'PlusJakartaSans_500Medium',
+    color: '#4b5563',
+    fontWeight: '500',
   },
-          dropdownTextActive: {
-            color: '#1f2937',
-          fontWeight: '600',
-          fontFamily: 'PlusJakartaSans_600SemiBold',
+  dropdownTextActive: {
+    color: '#1f2937',
+    fontWeight: '600',
+    fontFamily: 'PlusJakartaSans_600SemiBold',
   },
-          listContainer: {
-            flex: 1,
-          marginTop: -16,
-          position: 'relative',
-          zIndex: -1,
+  listContainer: {
+    flex: 1,
+    marginTop: -16,
+    position: 'relative',
+    zIndex: -1,
   },
-          listContent: {
-            padding: 20,
-          paddingTop: 40,
-          maxWidth: 840,
-          width: '100%',
-          alignSelf: 'center',
+  listContent: {
+    padding: 20,
+    paddingTop: 40,
+    maxWidth: 840,
+    width: '100%',
+    alignSelf: 'center',
   },
-          emptyState: {
-            alignItems: 'center',
-          justifyContent: 'center',
-          paddingVertical: 80,
-          backgroundColor: '#ffffff',
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 80,
+    backgroundColor: '#ffffff',
   },
-          emptyIcon: {
-            marginBottom: 24,
-          opacity: 0.5,
+  emptyIcon: {
+    marginBottom: 24,
+    opacity: 0.5,
   },
-          emptyTitle: {
-            fontSize: 22,
-          fontWeight: '700',
-          fontFamily: 'PlusJakartaSans_700Bold',
-          color: '#1f2937',
-          marginBottom: 8,
+  emptyTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    fontFamily: 'PlusJakartaSans_700Bold',
+    color: '#1f2937',
+    marginBottom: 8,
   },
-          emptySubtitle: {
-            fontSize: 15,
-          fontFamily: 'PlusJakartaSans_400Regular',
-          color: '#6b7280',
+  emptySubtitle: {
+    fontSize: 15,
+    fontFamily: 'PlusJakartaSans_400Regular',
+    color: '#6b7280',
   },
-          modalOverlay: {
-            flex: 1,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 20,
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
-          deleteModal: {
-            backgroundColor: 'white',
-          borderRadius: 24,
-          padding: 32,
-          width: '100%',
-          maxWidth: 400,
-          shadowColor: '#000',
-          shadowOffset: {width: 0, height: 8 },
-          shadowOpacity: 0.2,
-          shadowRadius: 24,
-          elevation: 10,
+  deleteModal: {
+    backgroundColor: 'white',
+    borderRadius: 24,
+    padding: 32,
+    width: '100%',
+    maxWidth: 400,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 24,
+    elevation: 10,
   },
-          deleteModalHeader: {
-            alignItems: 'center',
-          marginBottom: 20,
+  deleteModalHeader: {
+    alignItems: 'center',
+    marginBottom: 20,
   },
-          deleteModalTitle: {
-            fontSize: 24,
-          fontWeight: '700',
-          fontFamily: 'PlusJakartaSans_700Bold',
-          color: '#1f2937',
-          marginTop: 12,
+  deleteModalTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    fontFamily: 'PlusJakartaSans_700Bold',
+    color: '#1f2937',
+    marginTop: 12,
   },
-          deleteModalMessage: {
-            fontSize: 16,
-          fontFamily: 'PlusJakartaSans_400Regular',
-          color: '#6b7280',
-          textAlign: 'center',
-          lineHeight: 24,
-          marginBottom: 32,
+  deleteModalMessage: {
+    fontSize: 16,
+    fontFamily: 'PlusJakartaSans_400Regular',
+    color: '#6b7280',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 32,
   },
-          deleteModalButtons: {
-            flexDirection: 'row',
-          gap: 12,
+  deleteModalButtons: {
+    flexDirection: 'row',
+    gap: 12,
   },
-          deleteModalButton: {
-            flex: 1,
-          paddingVertical: 14,
-          borderRadius: 12,
-          alignItems: 'center',
-          justifyContent: 'center',
+  deleteModalButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-          cancelButton: {
-            backgroundColor: '#f3f4f6',
+  cancelButton: {
+    backgroundColor: '#f3f4f6',
   },
-          cancelButtonText: {
-            fontSize: 16,
-          fontWeight: '600',
-          fontFamily: 'PlusJakartaSans_600SemiBold',
-          color: '#4b5563',
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    fontFamily: 'PlusJakartaSans_600SemiBold',
+    color: '#4b5563',
   },
-          confirmDeleteButton: {
-            backgroundColor: '#ef4444',
+  confirmDeleteButton: {
+    backgroundColor: '#ef4444',
   },
-          confirmDeleteButtonText: {
-            fontSize: 16,
-          fontWeight: '600',
-          fontFamily: 'PlusJakartaSans_600SemiBold',
-          color: 'white',
+  confirmDeleteButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    fontFamily: 'PlusJakartaSans_600SemiBold',
+    color: 'white',
   },
 });
