@@ -62,11 +62,6 @@ export const Button = ({ onPress, title, loading, variant = 'primary', className
             alignItems: 'center' as const,
             justifyContent: 'center' as const,
             flexDirection: 'row' as const,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 8,
-            elevation: 3,
             borderWidth: 1,
             borderColor: '#e5e7eb',
         },
@@ -77,11 +72,6 @@ export const Button = ({ onPress, title, loading, variant = 'primary', className
             alignItems: 'center' as const,
             justifyContent: 'center' as const,
             flexDirection: 'row' as const,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.2,
-            shadowRadius: 8,
-            elevation: 3,
         }
     };
 
