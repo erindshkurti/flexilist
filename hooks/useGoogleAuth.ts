@@ -1,4 +1,3 @@
-import Constants from 'expo-constants';
 import { GoogleAuthProvider, signInWithCredential, signInWithPopup } from 'firebase/auth';
 import { Platform } from 'react-native';
 import { auth } from '../config/firebase';
@@ -10,10 +9,10 @@ export const useGoogleAuth = () => {
                 const provider = new GoogleAuthProvider();
                 await signInWithPopup(auth, provider);
             } else {
-                // Check if running in Expo Go (which doesn't support the native module)
-                if (Constants.appOwnership === 'expo') {
-                    throw new Error("Google Sign-In is not supported in Expo Go. Please use a development build.");
-                }
+                // We rely on the native module import and Error catching below 
+                // to determine if the environment supports Google Sign-In, 
+                // because Constants.appOwnership can be unreliable when connecting 
+                // native dev clients to a local bundler.
 
                 try {
                     const { GoogleSignin } = require('@react-native-google-signin/google-signin');
@@ -23,7 +22,13 @@ export const useGoogleAuth = () => {
                     });
                     await GoogleSignin.hasPlayServices();
                     const response = await GoogleSignin.signIn();
-                    const idToken = response.data?.idToken;
+                    console.log("[DEBUG] Raw GoogleSignin Response:", JSON.stringify(response, null, 2));
+
+                    if (response.type === 'cancelled') {
+                        return; // User intentionally cancelled the login flow, don't show an error
+                    }
+
+                    const idToken = response.data?.idToken || response.idToken;
 
                     if (!idToken) throw new Error("No ID token found");
                     const googleCredential = GoogleAuthProvider.credential(idToken);
