@@ -25,6 +25,7 @@ export const useLists = () => {
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const listsData = snapshot.docs.map(doc => ({
                 id: doc.id,
+                hasPendingWrites: doc.metadata.hasPendingWrites,
                 ...doc.data()
             })) as List[];
             setLists(listsData);

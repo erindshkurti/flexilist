@@ -65,7 +65,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             // 3. Delete user authentication record
             await deleteUser(currentUser);
         } catch (error) {
-            console.error('Account deletion error:', error);
             throw error;
         }
     };

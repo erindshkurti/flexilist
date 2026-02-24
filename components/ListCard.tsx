@@ -13,7 +13,9 @@ interface ListCardProps {
 
 export const ListCard = ({ list, onDelete, style }: ListCardProps) => {
     const router = useRouter();
-    const { items, loading } = useListItems(list.id);
+    // Prevent eager subcollection queries on optimistic UI lists until the server confirms the write
+    // This solves the Firebase `insufficient permissions` offline cache bug on iOS
+    const { items, loading } = useListItems(list.hasPendingWrites ? '' : list.id);
 
     const counts = useMemo(() => {
         if (loading || !items) return { total: 0, completed: 0 };

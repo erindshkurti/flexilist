@@ -9,16 +9,10 @@ service cloud.firestore {
                        request.resource.data.userId == request.auth.uid;
     }
       
-    // Allow users to read/write items in lists
+    // Allow users to read/write items ONLY in their own lists
     match /lists/{listId}/items/{itemId} {
-      // Secure fallback: Since listIds are unguessable UUIDs, possession of the listId grants access, 
-      // but to be safe we ALSO allow access if the item specifically has the user's ID stamped on it 
-      // (new items) or if the parent list is verified (web clients only, graceful degrade for iOS).
-      allow read, write: if request.auth != null && (
-        (resource != null && resource.data.userId == request.auth.uid) || 
-        (request.resource != null && request.resource.data.userId == request.auth.uid) ||
-        get(/databases/$(database)/documents/lists/$(listId)).data.userId == request.auth.uid
-      );
+      allow read, write: if request.auth != null && 
+        get(/databases/$(database)/documents/lists/$(listId)).data.userId == request.auth.uid;
     }
     
     // Allow authenticated users to read/write their own preferences

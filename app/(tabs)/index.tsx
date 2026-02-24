@@ -51,7 +51,8 @@ export default function HomeScreen() {
               await deleteAccount();
               router.replace('/login');
             } catch (error: any) {
-              if (error.code === 'auth/requires-recent-login' || error.message?.includes('requires-recent-login')) {
+              const errorMessage = error?.message || String(error);
+              if (error?.code === 'auth/requires-recent-login' || errorMessage.includes('requires-recent-login')) {
                 Alert.alert(
                   "Session Expired",
                   "For your security, please sign in again to delete your account.",
@@ -60,7 +61,7 @@ export default function HomeScreen() {
                   ]
                 );
               } else {
-                Alert.alert("Error", error.message || "Failed to delete account. Please try again later.");
+                Alert.alert("Error", errorMessage || "Failed to delete account. Please try again later.");
               }
             }
           }
