@@ -1,4 +1,5 @@
 import { Button } from '@/components/Button';
+import { useAppleAuth } from '@/hooks/useAppleAuth';
 import { useGoogleAuth } from '@/hooks/useGoogleAuth';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -6,9 +7,17 @@ import { Alert, Image, Platform, StyleSheet, Text, View } from 'react-native';
 
 export default function LoginScreen() {
     const { signIn } = useGoogleAuth();
+    const { signIn: appleSignIn, isAvailable: isAppleAvailable } = useAppleAuth();
     const [loading, setLoading] = useState(false);
+    const [appleLoading, setAppleLoading] = useState(false);
+    const [showApple, setShowApple] = useState(false);
     const router = useRouter();
     const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
+
+    useEffect(() => {
+        // Check Apple Sign-In availability on mount
+        isAppleAvailable().then(setShowApple);
+    }, []);
 
     useEffect(() => {
         if (Platform.OS === 'web') {
@@ -32,6 +41,18 @@ export default function LoginScreen() {
             Alert.alert("Login Failed", error.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleAppleSignIn = async () => {
+        setAppleLoading(true);
+        try {
+            await appleSignIn();
+            router.replace('/(tabs)');
+        } catch (error: any) {
+            Alert.alert("Login Failed", error.message);
+        } finally {
+            setAppleLoading(false);
         }
     };
 
@@ -62,6 +83,15 @@ export default function LoginScreen() {
                         <Text style={styles.cardSubtitle}>Sign in to continue to your lists</Text>
 
                         <View style={styles.buttonContainer}>
+                            {showApple && (
+                                <View style={{ marginBottom: 12 }}>
+                                    <Button
+                                        title="Sign in with Apple"
+                                        onPress={handleAppleSignIn}
+                                        loading={appleLoading}
+                                    />
+                                </View>
+                            )}
                             <Button
                                 title="Sign in with Google"
                                 onPress={handleSignIn}
@@ -71,7 +101,7 @@ export default function LoginScreen() {
                     </View>
 
                     {/* Footer */}
-                    <Text style={styles.footer}>Secure authentication powered by Google</Text>
+                    <Text style={styles.footer}>Secure authentication powered by Google & Apple</Text>
                 </View>
             </View>
         </View>
