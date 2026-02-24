@@ -10,7 +10,7 @@ import { Alert, FlatList, Image, Modal, Platform, StyleSheet, Text, TextInput, T
 
 export default function HomeScreen() {
   const { lists, loading, deleteList } = useLists();
-  const { user, signOut } = useAuth();
+  const { user, signOut, deleteAccount } = useAuth();
   const router = useRouter();
 
   const handleEditList = (listId: string) => {
@@ -35,6 +35,38 @@ export default function HomeScreen() {
     } catch (error: any) {
       Alert.alert('Sign Out Failed', error.message);
     }
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      "Delete Account",
+      "Are you sure you want to permanently delete your account and all your lists? This action cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteAccount();
+              router.replace('/login');
+            } catch (error: any) {
+              if (error.code === 'auth/requires-recent-login' || error.message?.includes('requires-recent-login')) {
+                Alert.alert(
+                  "Session Expired",
+                  "For your security, please sign in again to delete your account.",
+                  [
+                    { text: "OK", onPress: () => handleSignOut() }
+                  ]
+                );
+              } else {
+                Alert.alert("Error", error.message || "Failed to delete account. Please try again later.");
+              }
+            }
+          }
+        }
+      ]
+    );
   };
 
   const handleDeleteList = (listId: string, listTitle: string) => {
@@ -208,8 +240,19 @@ export default function HomeScreen() {
               handleSignOut();
             }}
           >
-            <Ionicons name="log-out-outline" size={20} color="#ef4444" />
-            <Text style={[styles.menuText, { color: '#ef4444' }]}>Sign Out</Text>
+            <Ionicons name="log-out-outline" size={20} color="#6b7280" />
+            <Text style={[styles.menuText, { color: '#4b5563' }]}>Sign Out</Text>
+          </TouchableOpacity>
+          <View style={styles.menuDivider} />
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => {
+              setProfileMenuVisible(false);
+              handleDeleteAccount();
+            }}
+          >
+            <Ionicons name="trash-outline" size={20} color="#ef4444" />
+            <Text style={[styles.menuText, { color: '#ef4444' }]}>Delete Account</Text>
           </TouchableOpacity>
         </View>
       )}

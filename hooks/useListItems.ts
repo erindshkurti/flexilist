@@ -1,9 +1,11 @@
 import { db } from '@/config/firebase';
+import { useAuth } from '@/context/AuthContext';
 import { ListItem } from '@/types';
 import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
 export const useListItems = (listId: string) => {
+    const { user } = useAuth();
     const [items, setItems] = useState<ListItem[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -32,9 +34,11 @@ export const useListItems = (listId: string) => {
     }, [listId]);
 
     const addItem = async (data: Record<string, any>) => {
+        if (!user) throw new Error("Must be logged in to add items");
         const now = Date.now();
         await addDoc(collection(db, 'lists', listId, 'items'), {
             data,
+            userId: user.uid,
             createdAt: now,
             updatedAt: now
         });
