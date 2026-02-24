@@ -2,7 +2,7 @@
   "expo": {
     "name": "FlexiList",
     "slug": "flexilist",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "flexilist",
@@ -12,6 +12,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.erindshkurti.flexilist",
       "usesAppleSignIn": true,
+      "buildNumber": "2",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
