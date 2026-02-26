@@ -84,7 +84,7 @@ export const SwipeableItem = ({ children, onEdit, onDelete, marginBottom = 12, b
 
 const styles = StyleSheet.create({
     leftAction: {
-        minWidth: 100,
+        minWidth: 120,
         backgroundColor: '#3b82f6', // blue-500
         justifyContent: 'center',
         alignItems: 'flex-start', // Align content to the left side
@@ -93,10 +93,10 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         borderTopRightRadius: 0,
         borderBottomRightRadius: 0,
-        marginRight: -16, // pull under the item slightly
+        marginRight: -36, // pull under the item further
     },
     rightAction: {
-        minWidth: 100,
+        minWidth: 120,
         backgroundColor: '#ef4444', // red-500
         justifyContent: 'center',
         alignItems: 'flex-end',
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         borderTopLeftRadius: 0,
         borderBottomLeftRadius: 0,
-        marginLeft: -16, // pull under the item slightly
+        marginLeft: -36, // pull under the item further
     },
     actionText: {
         alignItems: 'center',
