@@ -101,7 +101,9 @@ export default function LoginScreen() {
                     </View>
 
                     {/* Footer */}
-                    <Text style={styles.footer}>Secure authentication powered by Google & Apple</Text>
+                    <Text style={styles.footer}>
+                        Secure authentication powered by Google{Platform.OS === 'ios' ? ' & Apple' : ''}
+                    </Text>
                 </View>
             </View>
         </View>
