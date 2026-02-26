@@ -367,7 +367,6 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
     zIndex: 1000,
-    elevation: 10,
     position: 'relative',
     overflow: 'visible',
   },
