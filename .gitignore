@@ -45,6 +45,8 @@ app-example
 
 # Firebase
 .firebase/
+google-services.json
+GoogleService-Info.plist
 
 # Local task tracking
 TODO.md
