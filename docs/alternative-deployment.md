@@ -48,15 +48,34 @@ This creates the `/ios` and `/android` directories.
 
 ## 3. Build the Binary Locally
 
-### For Android (APK)
+There are two ways to build locally. Using **EAS Local** is recommended because it manages your signing keys for you and ensures Play Store/App Store compatibility without consuming cloud credits.
+
+### Option A: EAS Local (Recommended)
+This uses your local machine's power but EAS's credential management. **It does NOT consume EAS cloud build credits.**
+
+**For Android (AAB):**
+```bash
+eas build --platform android --profile production --local --output=./android/app/build/outputs/bundle/release/app-release.aab
+```
+
+**For iOS (IPA):**
+```bash
+eas build --platform ios --profile production --local --output=./ios/build/FlexiList.ipa
+```
+
+---
+
+### Option B: Manual Native Build
+Use this if you want total control and don't want to use EAS at all. Note that you must manage your own keystores and signing certificates.
+
+**For Android (APK):**
 ```bash
 cd android
 ./gradlew assembleRelease
 ```
 Output: `android/app/build/outputs/apk/release/app-release.apk`
 
-### For iOS (IPA)
-Building for iOS requires Apple Developer certificates (configured in Xcode).
+**For iOS (IPA):**
 ```bash
 # Using Expo CLI to trigger the local Xcode build
 npx expo run:ios --configuration Release
