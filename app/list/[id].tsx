@@ -18,7 +18,7 @@ export default function ListDetailScreen() {
     const insets = useSafeAreaInsets();
     const { id } = useLocalSearchParams<{ id: string }>();
     const [list, setList] = useState<List | null>(null);
-    const { items, loading: itemsLoading, addItem, deleteItem, updateItem } = useListItems(id!);
+    const { items, addItem, deleteItem, updateItem } = useListItems(id!);
     const { saveLastRoute, getListPreference, saveListPreference, loading: prefsLoading } = useUserPreferences();
     const router = useRouter();
     const navigation = useNavigation();
@@ -116,7 +116,7 @@ export default function ListDetailScreen() {
             setCurrentItem({});
             setEditingId(null);
             setFieldErrors({});
-        } catch (error) {
+        } catch {
             Alert.alert("Error", "Failed to save item.");
         }
     };
@@ -124,8 +124,8 @@ export default function ListDetailScreen() {
     const toggleComplete = async (itemId: string, currentCompleted: boolean) => {
         try {
             await updateItem(itemId, { completed: !currentCompleted });
-        } catch (error) {
-            console.error('Error toggling item completion:', error);
+        } catch (_error) {
+            console.error('Error toggling item completion:', _error);
         }
     };
 
@@ -153,7 +153,7 @@ export default function ListDetailScreen() {
             await deleteItem(itemToDelete.id);
             setDeleteModalVisible(false);
             setItemToDelete(null);
-        } catch (error) {
+        } catch {
             Alert.alert("Error", "Failed to delete item.");
         }
     };
@@ -200,7 +200,7 @@ export default function ListDetailScreen() {
                     keyboardType={field.type === 'number' ? 'numeric' : 'default'}
                     style={styles.input}
                 />
-                {field.type === 'number' && value && value !== '' && !/^\d*\.?\d*$/.test(value.toString()) && (
+                {field.type === 'number' && hasNumberError && (
                     <View style={styles.errorContainer}>
                         <Ionicons name="alert-circle" size={14} color="#ef4444" />
                         <Text style={styles.errorText}>Only numbers are allowed</Text>

@@ -17,7 +17,7 @@ export default function LoginScreen() {
     useEffect(() => {
         // Check Apple Sign-In availability on mount
         isAppleAvailable().then(setShowApple);
-    }, []);
+    }, [isAppleAvailable]);
 
     useEffect(() => {
         if (Platform.OS === 'web') {

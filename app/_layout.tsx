@@ -77,7 +77,7 @@ function RootLayoutNav() {
       }
       hasRestoredRoute.current = true;
     }
-  }, [user, loading, segments, fontsLoaded, prefsLoading]);
+  }, [user, loading, segments, fontsLoaded, prefsLoading, getLastRoute, router]);
 
   if (loading || !fontsLoaded) {
     return (
