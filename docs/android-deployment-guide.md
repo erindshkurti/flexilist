@@ -1,160 +1,140 @@
-# FlexiList — Google Play Store Deployment Guide
+# FlexiList — Android Deployment Guide
 
-## Prerequisites
+This guide covers everything you need to build and deploy FlexiList to the Google Play Store.
 
-| Requirement | Details |
-|---|---|
-| Google Play Developer Account | One-time $25 fee at [play.google.com/console](https://play.google.com/console/signup) |
-| Expo Account | Create free at [expo.dev/signup](https://expo.dev/signup) |
-| EAS CLI | `npm install -g eas-cli` |
 
----
+## 1. One-Time Environment Setup
 
-## One-Time Setup
+Your local machine must be configured once with the necessary native build tools.
 
-### 1. Login to EAS
+### General Requirements
+- **Expo Account**: Create at [expo.dev](https://expo.dev/)
+- **EAS CLI**: 
+  ```bash
+  npm install -g eas-cli
+  ```
+- **Login**: 
+  ```bash
+  eas login
+  ```
+
+### Android-Specific Tools
+- **JDK 17**: 
+  ```bash
+  brew install openjdk@17
+  ```
+- **Android SDK**: Ensure `ANDROID_HOME` is in your `~/.zshrc`:
+  ```bash
+  export ANDROID_HOME=$HOME/Library/Android/sdk
+  export PATH=$PATH:$ANDROID_HOME/emulator
+  export PATH=$PATH:$ANDROID_HOME/platform-tools
+  ```
+
+
+## 2. Configuration & Credentials
+
+### Firebase & Environment Variables
+- **Push Secrets**: 
+  ```bash
+  eas env:push --env-file .env
+  ```
+  > [!IMPORTANT]
+  > The app will crash if Firebase credentials are not pushed.
+
+### Google Sign-In Setup
+1. Get the `webClientId` from Firebase Console (Authentication → Sign-in method → Google).
+2. Update `hooks/useGoogleAuth.ts` and `app.config.js`.
+3. Add your local SHA-1 and the Play Store upload key to the Firebase project.
+
+### Google Play Service Account (Automation)
+1. Create a service account in Google Cloud (`eas-submit`) with **Service Account User** role.
+2. Link it in Play Console under **Settings** → **API access**.
+3. Grant it **Release manager** permissions.
+4. Save the JSON key as `play-store-key.json` (add to `.gitignore`!) and reference it in `eas.json`.
+
+
+## 3. Building the App
+
+### The "Prebuild" Process
+If you are building locally, you must first generate the native `android` folder:
 ```bash
-eas login
+npx expo prebuild --platform android
 ```
 
-### 2. Push environment variables to EAS
+### Option A: EAS Local Build (Recommended & Free)
+Builds on your computer using EAS credentials. **Does not consume EAS cloud build credits.**
 ```bash
-eas env:push --env-file .env
+eas build --platform android --profile production --local --output=./android/app/build/outputs/bundle/release/app-release.aab
 ```
-> ⚠️ **Critical** — without this step, the app will crash on launch (Firebase has no credentials).
 
-### 3. Verify secrets are set
-```bash
-eas env:list --environment production
-```
-All 8 `EXPO_PUBLIC_FIREBASE_*` variables should appear.
-
-### 4. Configure Google Sign-In for Android
-
-Google Sign-In on Android requires a `webClientId` (the **Web client** OAuth ID from Firebase, not the Android one).
-
-1. Go to [Firebase Console](https://console.firebase.google.com/) → **Authentication** → **Sign-in method** → **Google**
-2. Expand the **Web SDK configuration** section
-3. Copy the **Web client ID** (looks like `701865353940-xxxxxxxx.apps.googleusercontent.com`)
-4. Add it to `hooks/useGoogleAuth.ts` in the `GoogleSignin.configure()` call:
-   ```ts
-   GoogleSignin.configure({
-       iosClientId: '...',
-       webClientId: '<your-web-client-id>',  // ← Add this
-   });
-   ```
-5. Also add it to the plugin config in `app.json`:
-   ```json
-   ["@react-native-google-signin/google-signin", {
-       "iosClientId": "...",
-       "iosUrlScheme": "...",
-       "webClientId": "<your-web-client-id>"
-   }]
-   ```
-
-### 5. Create a Google Play Service Account (for automated submission)
-
-This lets EAS submit builds to Play Console automatically:
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/) → **IAM & Admin** → **Service Accounts**
-2. Select the Firebase project (`flexilist-5a873`)
-3. **Create Service Account**:
-   - Name: `eas-submit`
-   - Role: **Service Account User**
-4. Click the new account → **Keys** → **Add Key** → **Create new key** → JSON
-5. Download the JSON file
-6. In [Google Play Console](https://play.google.com/console) → **Settings** → **API access**:
-   - Link the Google Cloud project
-   - Grant the service account **Release manager** permission
-7. Provide the JSON path when EAS prompts, or set it in `eas.json`:
-   ```json
-   "submit": {
-     "production": {
-       "android": {
-         "serviceAccountKeyPath": "./play-store-key.json"
-       }
-     }
-   }
-   ```
-> ⚠️ Add `play-store-key.json` to `.gitignore` — this file contains private credentials.
-
----
-
-## Building
-
-### Production Build
+### Option B: EAS Cloud Build
+Builds on Expo's servers.
 ```bash
 eas build --platform android --profile production
 ```
 
-When prompted:
-- **Generate a new Android Keystore?** → **Yes** (first time only — EAS stores it securely)
+### Option C: Manual Native Build
+Use this if you want total control and don't want to use EAS at all. Note that you must manage your own keystores and signing certificates.
 
-Build takes ~10–20 minutes on EAS servers. You'll get an `.aab` (Android App Bundle) download link when done.
-
----
-
-## Submitting to Google Play
-
-### First-time: Create the app listing
-
-1. Go to [Google Play Console](https://play.google.com/console)
-2. **Create app**:
-   - App name: `FlexiList`
-   - Default language: English
-   - App type: App
-   - Free or Paid: Free
-3. Complete the **Dashboard checklist**:
-   - Privacy policy URL (use `https://flexilist-5a873.web.app/privacy-policy.html`)
-   - App category: Productivity
-   - Content rating questionnaire
-   - Target audience
-   - Store listing: description, screenshots, feature graphic
-4. **Create a release** in **Production** → **Create new release**
-5. **Upload your first `.aab` manually** (Play Console requires the very first upload to be manual)
-
-### After first upload: Use EAS Submit
-
+**Android (APK):**
 ```bash
-eas submit --platform android --latest
+cd android
+./gradlew assembleRelease
+```
+Output: `android/app/build/outputs/apk/release/app-release.apk`
+
+**Android (App Bundle - .aab):**
+```bash
+cd android
+./gradlew bundleRelease
+```
+Output: `android/app/build/outputs/bundle/release/app-release.aab`
+
+
+## 4. Testing & Distribution
+
+### Internal Testing (Bypass Review)
+This is the fastest way to share with your team.
+```bash
+eas submit --platform android --latest --track internal
 ```
 
-This uploads the latest `.aab` from your EAS build directly to Play Console.
+### Beta Testing (Testing Tracks)
+| Track | Purpose | Review |
+|---|---|---|
+| **Internal** | Fast team sharing (100 testers) | **Instant** |
+| **Closed** | Formal beta group | 3–7 days |
 
----
+**Note**: Testers must accept the "Join on Android" link before they can download the app.
 
-## Subsequent Releases
+### Firebase App Distribution (Alternative)
+If you want to share an APK/AAB with testers without going through the Play Store Console:
+1. Go to [Firebase Console](https://console.firebase.google.com/) → **App Distribution**.
+2. Select your Android app.
+3. Drag and drop your `.apk` or `.aab` file via the web UI.
 
-```bash
-# 1. Build
-eas build --platform android --profile production
 
-# 2. Submit
-eas submit --platform android --latest
-```
+## 5. Summary: Build Options Compared
 
-`versionCode` auto-increments via `"autoIncrement": true` in `eas.json`.
+| Feature | Local Build (EAS Local) | EAS Build (Cloud) | Manual CLI Build |
+|---|---|---|---|
+| **Cost** | **Free (Forever)** | $ (Free tier is 30 builds/mo) | **Free (Forever)** |
+| **Requirements** | JDK/SDK on your Mac | Zero local setup | JDK/SDK on your Mac |
+| **Effort** | One-time local setup | Fully automated | Manual key management |
 
----
 
-## Store Listing Assets
+## 6. Production Release
 
-| Asset | Spec |
-|---|---|
-| App icon | 512 × 512 PNG (no alpha) |
-| Feature graphic | 1024 × 500 PNG or JPG |
-| Phone screenshots | Min 2, 16:9 or 9:16, 320–3840px |
-| Short description | Max 80 characters |
-| Full description | Max 4000 characters |
+1. In the [Play Console](https://play.google.com/console), go to **Production** → **Create new release**.
+2. Select your build from the library or use:
+   ```bash
+   eas submit --platform android --latest
+   ```
+3. Complete the dashboard checklist (Store listing, app content, targeting).
+4. Click **Review & Start rollout**.
 
----
 
-## Common Issues
+## 7. Troubleshooting
 
-| Issue | Fix |
-|---|---|
-| App crashes on launch | Run `eas env:push --env-file .env`, then rebuild |
-| Google Sign-In fails | Ensure `webClientId` is set in `GoogleSignin.configure()` |
-| "App not reviewed yet" | First review takes 3–7 days; subsequent updates are faster |
-| Build rejected for Play Integrity | Ensure `edgeToEdgeEnabled` and target SDK are up to date in `app.json` |
-| Keystore lost | EAS manages keystores remotely — run `eas credentials` to manage |
+- **Signing Key Mismatch**: Always use `eas build --local`. Manual `./gradlew` builds use local debug keys that the Play Store will reject.
+- **Developer Error**: Check if your machine's SHA-1 fingerprint is added to Firebase.

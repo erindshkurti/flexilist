@@ -1,106 +1,25 @@
-# FlexiList — App Store Deployment Guide
+# FlexiList — Deployment Hub
 
-## Prerequisites
+Choose a platform-specific guide to begin your deployment process.
 
-| Requirement | Details |
-|---|---|
-| Apple Developer Account | Individual enrollment at [developer.apple.com/enroll](https://developer.apple.com/programs/enroll) — $99/year |
-| Expo Account | Create free at [expo.dev/signup](https://expo.dev/signup) |
-| EAS CLI | `sudo npm install -g eas-cli` |
+### 📱 [iOS Deployment Guide](file:///Users/eshkurti/Development/Antigravity/flexilist/docs/ios-deployment-guide.md)
+Complete setup for Apple App Store, TestFlight, and local IPA builds.
 
----
+### 🤖 [Android Deployment Guide](file:///Users/eshkurti/Development/Antigravity/flexilist/docs/android-deployment-guide.md)
+Complete setup for Google Play Store, Testing Tracks, and local signed AAB builds.
 
-## One-Time Setup
+### 💻 [Web Deployment Guide](file:///Users/eshkurti/Development/Antigravity/flexilist/docs/web-deployment-guide.md)
+Instructions for Firebase Hosting deployment.
 
-### 1. Login to EAS
-```bash
-eas login
-```
 
-### 2. Configure EAS project
-```bash
-eas build:configure --platform ios
-```
-- Answer **Y** when asked to create an EAS project
-- This generates `eas.json`
+## Shared Deployment Tasks (Important!)
 
-### 3. Push environment variables to EAS
+Before deploying to **any** platform, you must ensure your environment variables are synchronized with EAS:
+
 ```bash
 eas env:push --env-file .env
-```
-> ⚠️ **Critical** — without this step, the app will crash on launch (Firebase has no credentials).
-
-### 4. Verify secrets are set
-```bash
 eas env:list --environment production
 ```
-All 8 `EXPO_PUBLIC_FIREBASE_*` variables should appear.
 
----
-
-## Building
-
-### Production Build
-```bash
-eas build --platform ios --profile production
-```
-
-When prompted:
-- **Log in to Apple account?** → Yes
-- **Apple ID** → your developer Apple ID email
-- **Select Team** → choose your **Individual** personal team
-- **Generate Distribution Certificate?** → Yes
-- **Generate Provisioning Profile?** → Yes
-
-Build takes ~15–25 minutes on EAS servers. You'll get a `.ipa` download link when done.
-
----
-
-## Submitting to App Store Connect
-
-```bash
-eas submit --platform ios --latest
-```
-
-When prompted:
-- **Generate a new App Store Connect API Key?** → **Yes** (EAS handles it automatically)
-
----
-
-## App Store Connect Setup
-
-1. Go to [appstoreconnect.apple.com](https://appstoreconnect.apple.com)
-2. **My Apps → + → New App**
-   - Bundle ID: `com.erindshkurti.flexilist`
-   - SKU: `flexilist`
-3. Fill in the listing:
-   - App description, keywords, screenshots
-   - Privacy policy URL (required)
-4. Under **Build**, click **+** and select the uploaded build
-5. Click **Submit for Review** (Apple review: 1–3 days)
-
----
-
-## Subsequent Releases
-
-For every new release:
-```bash
-# 1. Build
-eas build --platform ios --profile production
-
-# 2. Submit
-eas submit --platform ios --latest
-```
-
-`buildNumber` auto-increments via `"autoIncrement": true` in `eas.json`.
-
----
-
-## Common Issues
-
-| Issue | Fix |
-|---|---|
-| App crashes on launch | Run `eas env:push --env-file .env`, then rebuild |
-| API Key prompt during submit | Always answer **Yes** to auto-generate |
-| Expo Go warning during build | Harmless — ignore or set `EAS_BUILD_NO_EXPO_GO_WARNING=true` |
-| Multiple Apple teams | Select the **Individual** team when prompted |
+> [!CAUTION]
+> If you skip this, your production builds will crash on launch because the Firebase SDK will have no API keys.
