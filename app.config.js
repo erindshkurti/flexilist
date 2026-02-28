@@ -10,7 +10,7 @@ try {
 export default {
     "expo": {
         "name": "FlexiList",
-        "slug": "flexilist",
+        "slug": "com.erindshkurti.flexilist",
         "version": "1.0.1",
         "orientation": "portrait",
         "icon": "./assets/images/logo.png",
@@ -69,8 +69,7 @@ export default {
                     "webClientId": "701865353940-0i3bkuu0j8p3qr1mbnok35vikq4ngjck.apps.googleusercontent.com"
                 }
             ],
-            "expo-apple-authentication",
-            "./plugins/withAndroidNamespace.js"
+            "expo-apple-authentication"
         ],
         "experiments": {
             "typedRoutes": true,
