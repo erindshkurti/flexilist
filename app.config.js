@@ -69,7 +69,8 @@ export default {
                     "webClientId": "701865353940-0i3bkuu0j8p3qr1mbnok35vikq4ngjck.apps.googleusercontent.com"
                 }
             ],
-            "expo-apple-authentication"
+            "expo-apple-authentication",
+            "./plugins/withAndroidNamespace.js"
         ],
         "experiments": {
             "typedRoutes": true,
