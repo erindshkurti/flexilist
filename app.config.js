@@ -1,3 +1,12 @@
+import fs from 'fs';
+
+let buildNumber = 9;
+try {
+    buildNumber = JSON.parse(fs.readFileSync('./build-number.json', 'utf8')).buildNumber;
+} catch (e) {
+    console.warn("Could not read build-number.json, defaulting to 9");
+}
+
 export default {
     "expo": {
         "name": "FlexiList",
@@ -12,18 +21,22 @@ export default {
             "supportsTablet": true,
             "bundleIdentifier": "com.erindshkurti.flexilist",
             "usesAppleSignIn": true,
-            "buildNumber": "2",
+            "buildNumber": buildNumber.toString(),
             "infoPlist": {
                 "ITSAppUsesNonExemptEncryption": false
             }
         },
         "android": {
+            "versionCode": buildNumber,
             "adaptiveIcon": {
                 "backgroundColor": "#E6F4FE",
                 "foregroundImage": "./assets/images/logo.png"
             },
             "package": "com.erindshkurti.flexilist",
             "googleServicesFile": process.env.GOOGLE_SERVICES_JSON || "./google-services.json",
+            "buildFeatures": {
+                "BuildConfig": true
+            },
             "edgeToEdgeEnabled": true,
             "predictiveBackGestureEnabled": false
         },
