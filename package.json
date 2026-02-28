@@ -12,6 +12,7 @@
     "deploy": "npm run build:web && cp public/privacy-policy.html dist/privacy-policy.html && npx firebase deploy",
     "lint": "expo lint",
     "eas-build-pre-install": "node scripts/bump-version.js",
+    "build:apk": "node scripts/bump-version.js && rm -rf android && npx expo prebuild --platform android --no-install && export $(grep -v '^#' .env | xargs) && cd android && ./gradlew assembleRelease -Pandroid.injected.signing.store.file=$(pwd)/../production.jks -Pandroid.injected.signing.store.password=$ANDROID_KEYSTORE_PASSWORD -Pandroid.injected.signing.key.alias=$ANDROID_KEY_ALIAS -Pandroid.injected.signing.key.password=$ANDROID_KEY_PASSWORD",
     "build:android": "node scripts/bump-version.js && rm -rf android && npx expo prebuild --platform android --no-install && export $(grep -v '^#' .env | xargs) && cd android && ./gradlew bundleRelease -Pandroid.injected.signing.store.file=$(pwd)/../production.jks -Pandroid.injected.signing.store.password=$ANDROID_KEYSTORE_PASSWORD -Pandroid.injected.signing.key.alias=$ANDROID_KEY_ALIAS -Pandroid.injected.signing.key.password=$ANDROID_KEY_PASSWORD"
   },
   "dependencies": {
