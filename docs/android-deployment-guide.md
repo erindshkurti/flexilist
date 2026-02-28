@@ -74,19 +74,17 @@ eas build --platform android --profile production
 ```
 
 ### Option C: Manual Native Build
-Use this if you want total control and don't want to use EAS at all. Note that you must manage your own keystores and signing certificates.
+Use this if you want total control and don't want to use EAS at all. These commands automatically bump the version, regenerate the native folder, and sign the build using your local credentials.
 
 **Android (APK):**
 ```bash
-cd android
-./gradlew assembleRelease
+npm run build:apk
 ```
 Output: `android/app/build/outputs/apk/release/app-release.apk`
 
 **Android (App Bundle - .aab):**
 ```bash
-cd android
-./gradlew bundleRelease
+npm run build:android
 ```
 Output: `android/app/build/outputs/bundle/release/app-release.aab`
 
