@@ -30,7 +30,7 @@ export default {
             "versionCode": buildNumber,
             "adaptiveIcon": {
                 "backgroundColor": "#E6F4FE",
-                "foregroundImage": "./assets/images/logo.png"
+                "foregroundImage": "./assets/images/adaptive-icon-foreground.png"
             },
             "package": "com.erindshkurti.flexilist",
             "googleServicesFile": process.env.GOOGLE_SERVICES_JSON || "./google-services.json",
@@ -49,7 +49,7 @@ export default {
             [
                 "expo-splash-screen",
                 {
-                    "image": "./assets/images/splash-icon.png",
+                    "image": "./assets/images/logo.png",
                     "imageWidth": 200,
                     "resizeMode": "contain",
                     "backgroundColor": "#ffffff",

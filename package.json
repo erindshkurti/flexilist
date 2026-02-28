@@ -12,8 +12,8 @@
     "deploy": "npm run build:web && cp public/privacy-policy.html dist/privacy-policy.html && npx firebase deploy",
     "lint": "expo lint",
     "eas-build-pre-install": "node scripts/bump-version.js",
-    "build:apk": "node scripts/bump-version.js && rm -rf android && npx expo prebuild --platform android --no-install && export $(grep -v '^#' .env | xargs) && cd android && ./gradlew assembleRelease -Pandroid.injected.signing.store.file=$(pwd)/../production.jks -Pandroid.injected.signing.store.password=$ANDROID_KEYSTORE_PASSWORD -Pandroid.injected.signing.key.alias=$ANDROID_KEY_ALIAS -Pandroid.injected.signing.key.password=$ANDROID_KEY_PASSWORD",
-    "build:android": "node scripts/bump-version.js && rm -rf android && npx expo prebuild --platform android --no-install && export $(grep -v '^#' .env | xargs) && cd android && ./gradlew bundleRelease -Pandroid.injected.signing.store.file=$(pwd)/../production.jks -Pandroid.injected.signing.store.password=$ANDROID_KEYSTORE_PASSWORD -Pandroid.injected.signing.key.alias=$ANDROID_KEY_ALIAS -Pandroid.injected.signing.key.password=$ANDROID_KEY_PASSWORD"
+    "build:apk": "export EXPO_USE_COMMUNITY_AUTOLINKING=1 && node scripts/bump-version.js && rm -rf android && npx expo prebuild --platform android --no-install && export $(grep -v '^#' .env | xargs) && cd android && ./gradlew assembleRelease -Pandroid.injected.signing.store.file=$(pwd)/../production.jks -Pandroid.injected.signing.store.password=$ANDROID_KEYSTORE_PASSWORD -Pandroid.injected.signing.key.alias=$ANDROID_KEY_ALIAS -Pandroid.injected.signing.key.password=$ANDROID_KEY_PASSWORD",
+    "build:android": "export EXPO_USE_COMMUNITY_AUTOLINKING=1 && node scripts/bump-version.js && rm -rf android && npx expo prebuild --platform android --no-install && export $(grep -v '^#' .env | xargs) && cd android && ./gradlew bundleRelease -Pandroid.injected.signing.store.file=$(pwd)/../production.jks -Pandroid.injected.signing.store.password=$ANDROID_KEYSTORE_PASSWORD -Pandroid.injected.signing.key.alias=$ANDROID_KEY_ALIAS -Pandroid.injected.signing.key.password=$ANDROID_KEY_PASSWORD"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
@@ -56,10 +56,12 @@
     "tailwindcss": "^3.4.18"
   },
   "devDependencies": {
+    "@react-native-community/cli": "^20.1.2",
     "@types/react": "~19.1.0",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
     "firebase-tools": "^15.7.0",
+    "sharp": "^0.34.5",
     "typescript": "~5.9.2"
   },
   "private": true,

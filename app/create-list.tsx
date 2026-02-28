@@ -87,7 +87,7 @@ export default function CreateListScreen() {
                 colors={['#ffffff', '#f9fafb']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                style={styles.header}
+                style={[styles.header, { paddingTop: Math.max(insets.top + 20, 60) }]}
             >
                 <View style={styles.headerContent}>
                     <View style={styles.titleRow}>

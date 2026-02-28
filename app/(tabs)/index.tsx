@@ -5,10 +5,13 @@ import { useLists } from '@/hooks/useLists';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { Alert, FlatList, Image, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
   const { lists, loading, deleteList } = useLists();
   const { user, signOut, deleteAccount } = useAuth();
   const router = useRouter();
@@ -120,6 +123,7 @@ export default function HomeScreen() {
 
   return (
     <>
+      <StatusBar style="dark" />
       <TouchableWithoutFeedback onPress={() => {
         setFilterMenuVisible(false);
         setProfileMenuVisible(false);
@@ -129,13 +133,14 @@ export default function HomeScreen() {
             colors={['#ffffff', '#f9fafb']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.header}
+            style={[styles.header, { paddingTop: Math.max(insets.top + 20, 60) }]}
           >
             <View style={styles.headerContent}>
               <View style={styles.titleRow}>
                 <Image
                   source={require('../../assets/images/logo.png')}
                   style={{ width: 40, height: 40, marginRight: 12 }}
+                  resizeMode="contain"
                 />
                 <Text style={styles.headerTitle}>FlexiList</Text>
               </View>

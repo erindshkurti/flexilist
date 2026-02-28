@@ -8,8 +8,10 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { doc, getDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { Alert, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function EditListScreen() {
+    const insets = useSafeAreaInsets();
     const { id } = useLocalSearchParams();
     const { updateList } = useLists();
     const [title, setTitle] = useState('');
@@ -116,7 +118,7 @@ export default function EditListScreen() {
                 colors={['#ffffff', '#f9fafb']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                style={styles.header}
+                style={[styles.header, { paddingTop: Math.max(insets.top + 20, 60) }]}
             >
                 <View style={styles.headerContent}>
                     <View style={styles.titleRow}>
