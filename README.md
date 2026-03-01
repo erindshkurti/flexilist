@@ -101,7 +101,7 @@ See [docs/ios-deployment-guide.md](./docs/ios-deployment-guide.md) for the full 
 **Quick reference:**
 ```bash
 # EAS local build (free, recommended)
-eas build --platform ios --profile production --local
+npm run build:eas:ios
 
 # EAS cloud build
 eas build --platform ios --profile production
@@ -117,7 +117,7 @@ See [docs/android-deployment-guide.md](./docs/android-deployment-guide.md) for t
 **Quick reference:**
 ```bash
 # EAS local build (free, recommended)
-eas build --platform android --profile production --local
+npm run build:eas:android
 
 # EAS cloud build
 eas build --platform android --profile production

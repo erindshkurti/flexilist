@@ -64,8 +64,9 @@ npx expo prebuild --platform android
 ### Option A: EAS Local Build (Recommended & Free)
 Builds on your computer using EAS credentials. **Does not consume EAS cloud build credits.**
 ```bash
-eas build --platform android --profile production --local --output=./android/app/build/outputs/bundle/release/app-release.aab
+npm run build:eas:android
 ```
+This bumps the build number, then runs `eas build --local` with the correct output path.
 
 ### Option B: EAS Cloud Build
 Builds on Expo's servers.

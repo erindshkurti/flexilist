@@ -55,8 +55,9 @@ npx expo prebuild --platform ios
 ### Option A: EAS Local Build (Recommended & Free)
 Builds on your computer using EAS credentials. **Does not consume EAS cloud build credits.**
 ```bash
-eas build --platform ios --profile production --local --output=./ios/build/FlexiList.ipa
+npm run build:eas:ios
 ```
+This bumps the build number, then runs `eas build --local`.
 
 ### Option B: EAS Cloud Build
 Builds on Expo's servers. Useful if you don't want to manage local toolchains.
