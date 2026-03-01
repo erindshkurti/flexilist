@@ -82,4 +82,7 @@ This runs `expo export`, copies the privacy policy HTML, and deploys to Firebase
 **Live URL:** https://flexilist-5a873.web.app
 
 ### iOS (App Store via EAS)
-See [deployment-guide.md](./deployment-guide.md) for full instructions.
+See [ios-deployment-guide.md](./ios-deployment-guide.md) for full instructions.
+
+### Android (Google Play via EAS)
+See [android-deployment-guide.md](./android-deployment-guide.md) for full instructions.

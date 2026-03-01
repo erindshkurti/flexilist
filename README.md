@@ -45,12 +45,14 @@ Create a `.env` file in the root (see `.env.example`):
 ```env
 EXPO_PUBLIC_FIREBASE_API_KEY=...
 EXPO_PUBLIC_FIREBASE_API_KEY_IOS=...
+EXPO_PUBLIC_FIREBASE_API_KEY_ANDROID=...
 EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=...
 EXPO_PUBLIC_FIREBASE_PROJECT_ID=...
 EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=...
 EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
 EXPO_PUBLIC_FIREBASE_APP_ID=...
 EXPO_PUBLIC_FIREBASE_APP_ID_IOS=...
+EXPO_PUBLIC_FIREBASE_APP_ID_ANDROID=...
 ```
 
 Get values from [Firebase Console](https://console.firebase.google.com/) → Project Settings → Your apps.
@@ -72,45 +74,36 @@ npx expo run:android
 
 ## Deployment
 
+See the [Deployment Hub](./docs/deployment-guide.md) for an overview of all platforms.
+
+> ⚠️ Push Firebase secrets to EAS before building:
+> `eas env:push --env-file .env`
+
 ### Web (Firebase Hosting)
 
-#### Prerequisites
-- Firebase CLI: `npm install -g firebase-tools`
-- Firebase project created and configured
-
-#### Deploy
-
-```bash
-# Login to Firebase
-firebase login
-
-# Build + deploy (includes privacy policy page)
-npm run deploy
-```
-
-The `deploy` script builds the web app, copies the privacy policy HTML, and deploys everything to Firebase Hosting.
-
-**Deploy only** (skip rebuild):
-```bash
-firebase deploy --only hosting
-```
-
-#### Config Files
-- `firebase.json` — hosting config (public dir, rewrites, headers)
-- `.firebaserc` — Firebase project config
-
-#### Live URL
-```
-https://flexilist-5a873.web.app
-```
-
-### iOS App Store (EAS)
-
-See [docs/deployment-guide.md](./docs/deployment-guide.md) for the full step-by-step guide.
+See [docs/web-deployment-guide.md](./docs/web-deployment-guide.md) for the full setup guide.
 
 **Quick reference:**
 ```bash
-# Build
+# Build + deploy (includes privacy policy page)
+npm run deploy
+
+# Deploy only (skip rebuild)
+firebase deploy --only hosting
+```
+
+**Live URL:** https://flexilist-5a873.web.app
+
+### iOS App Store (EAS)
+
+See [docs/ios-deployment-guide.md](./docs/ios-deployment-guide.md) for the full step-by-step guide.
+
+**Quick reference:**
+```bash
+# EAS local build (free, recommended)
+eas build --platform ios --profile production --local
+
+# EAS cloud build
 eas build --platform ios --profile production
 
 # Submit to App Store Connect
@@ -123,23 +116,34 @@ See [docs/android-deployment-guide.md](./docs/android-deployment-guide.md) for t
 
 **Quick reference:**
 ```bash
-# Build
+# EAS local build (free, recommended)
+eas build --platform android --profile production --local
+
+# EAS cloud build
 eas build --platform android --profile production
 
 # Submit to Google Play Console
 eas submit --platform android --latest
 ```
 
-> ⚠️ Push Firebase secrets to EAS before building:
-> `eas env:push --env-file .env`
+**Local signed builds (no EAS):**
+```bash
+# APK (for direct install / Firebase App Distribution)
+npm run build:apk
+
+# AAB (for Play Store)
+npm run build:android
+```
 
 ## Documentation
 
 | Document | Description |
 |---|---|
 | [firebase-setup.md](./docs/firebase-setup.md) | Firebase Auth setup guide |
-| [deployment-guide.md](./docs/deployment-guide.md) | iOS App Store deployment via EAS |
-| [android-deployment-guide.md](./docs/android-deployment-guide.md) | Google Play Store deployment via EAS |
+| [deployment-guide.md](./docs/deployment-guide.md) | Deployment hub — links to all platform guides |
+| [ios-deployment-guide.md](./docs/ios-deployment-guide.md) | iOS App Store deployment (EAS + local builds) |
+| [android-deployment-guide.md](./docs/android-deployment-guide.md) | Google Play Store deployment (EAS + local builds) |
+| [web-deployment-guide.md](./docs/web-deployment-guide.md) | Firebase Hosting deployment |
 | [walkthrough.md](./docs/walkthrough.md) | Full feature walkthrough and project structure |
 
 ## Security
