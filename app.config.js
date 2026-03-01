@@ -10,9 +10,9 @@ try {
 export default {
     "expo": {
         "name": "FlexiList",
-        "slug": "com.erindshkurti.flexilist",
+        "slug": "flexilist",
         "version": "1.0.1",
-        "orientation": "portrait",
+        "orientation": "default",
         "icon": "./assets/images/logo.png",
         "scheme": "flexilist",
         "userInterfaceStyle": "automatic",
