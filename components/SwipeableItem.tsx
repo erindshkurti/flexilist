@@ -21,10 +21,14 @@ export const SwipeableItem = ({ children, onEdit, onDelete, marginBottom = 12, b
         });
 
         return (
-            <RectButton style={[styles.leftAction, { marginBottom, borderRadius, borderTopRightRadius: 0, borderBottomRightRadius: 0 }]} onPress={() => {
-                swipeableRef.current?.close();
-                onEdit();
-            }}>
+            <RectButton
+                shouldActivateOnStart={true}
+                style={[styles.leftAction, { marginBottom, borderRadius, borderTopRightRadius: 0, borderBottomRightRadius: 0 }]}
+                onPress={() => {
+                    swipeableRef.current?.close();
+                    onEdit();
+                }}
+            >
                 <Animated.View
                     style={[
                         styles.actionText,
@@ -46,10 +50,14 @@ export const SwipeableItem = ({ children, onEdit, onDelete, marginBottom = 12, b
         });
 
         return (
-            <RectButton style={[styles.rightAction, { marginBottom, borderRadius, borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }]} onPress={() => {
-                swipeableRef.current?.close();
-                onDelete();
-            }}>
+            <RectButton
+                shouldActivateOnStart={true}
+                style={[styles.rightAction, { marginBottom, borderRadius, borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }]}
+                onPress={() => {
+                    swipeableRef.current?.close();
+                    onDelete();
+                }}
+            >
                 <Animated.View
                     style={[
                         styles.actionText,

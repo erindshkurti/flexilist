@@ -109,7 +109,7 @@ export default function HomeScreen() {
   /* Removed duplicate import and function */
 
   const renderItem = ({ item }: { item: any }) => (
-    <View style={{ marginBottom: 16, zIndex: -1 }}>
+    <View style={{ marginBottom: 16 }}>
       <SwipeableItem
         onEdit={() => handleEditList(item.id)}
         onDelete={() => handleDeleteList(item.id, item.title)}
@@ -619,7 +619,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: -16,
     position: 'relative',
-    zIndex: -1,
+    zIndex: 1,
   },
   listContent: {
     padding: 20,
