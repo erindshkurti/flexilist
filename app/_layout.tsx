@@ -82,6 +82,7 @@ function RootLayoutNav() {
   if (loading || !fontsLoaded) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <StatusBar style="auto" />
         <ActivityIndicator size="large" />
       </View>
     );
