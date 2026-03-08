@@ -1,3 +1,4 @@
+import { withAppBuildGradle } from '@expo/config-plugins';
 import fs from 'fs';
 
 let buildNumber = 9;
@@ -7,7 +8,7 @@ try {
     console.warn("Could not read build-number.json, defaulting to 9");
 }
 
-export default {
+const baseConfig = {
     "expo": {
         "name": "FlexiList",
         "slug": "flexilist",
@@ -82,4 +83,34 @@ export default {
             }
         }
     }
+};
+
+const withFixEntryPointPackageName = (config) => {
+    return withAppBuildGradle(config, (config) => {
+        const buildGradle = config.modResults.contents;
+        const taskInjection = `
+// [INJECTED BY EXPO CONFIG PLUGIN: fix-entry-point-package-name]
+project.afterEvaluate {
+    tasks.all { task ->
+        if (task.name.startsWith("generateReactNativeEntryPoint")) {
+            task.doLast {
+                def entryPointFile = file("\${project.buildDir}/generated/autolinking/src/main/java/com/facebook/react/ReactNativeApplicationEntryPoint.java")
+                if (entryPointFile.exists()) {
+                    def content = entryPointFile.text
+                    def updatedContent = content.replaceAll("if \\\\(com\\\\.flexilist\\\\.BuildConfig", "if (com.erindshkurti.flexilist.BuildConfig")
+                    entryPointFile.write(updatedContent)
+                    println "Fixed package name in ReactNativeApplicationEntryPoint.java"
+                }
+            }
+        }
+    }
 }
+`;
+        if (!buildGradle.includes("fix-entry-point-package-name")) {
+            config.modResults.contents = buildGradle + "\\n" + taskInjection;
+        }
+        return config;
+    });
+};
+
+export default (config) => withFixEntryPointPackageName(baseConfig);
