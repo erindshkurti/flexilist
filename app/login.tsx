@@ -2,7 +2,6 @@ import { Button } from '@/components/Button';
 import { useAppleAuth } from '@/hooks/useAppleAuth';
 import { useGoogleAuth } from '@/hooks/useGoogleAuth';
 import { useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, Platform, StyleSheet, Text, View } from 'react-native';
 
@@ -64,7 +63,6 @@ export default function LoginScreen() {
 
     return (
         <View style={styles.container}>
-            <StatusBar style="dark" />
             <View style={[styles.gradient, gradientStyle as any]}>
                 <View style={styles.content}>
                     {/* Title Section with Icon */}

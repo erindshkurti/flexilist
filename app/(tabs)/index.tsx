@@ -5,7 +5,6 @@ import { useLists } from '@/hooks/useLists';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { Alert, FlatList, Image, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
@@ -123,7 +122,6 @@ export default function HomeScreen() {
 
   return (
     <>
-      <StatusBar style="dark" />
       <TouchableWithoutFeedback onPress={() => {
         setFilterMenuVisible(false);
         setProfileMenuVisible(false);
