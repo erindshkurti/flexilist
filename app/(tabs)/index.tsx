@@ -4,10 +4,9 @@ import { useAuth } from '@/context/AuthContext';
 import { useLists } from '@/hooks/useLists';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useFocusEffect, useRouter } from 'expo-router';
-import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
-import React, { useCallback, useState } from 'react';
-import { Alert, FlatList, Image, Modal, Platform, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { Alert, FlatList, Image, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function HomeScreen() {
@@ -26,17 +25,6 @@ export default function HomeScreen() {
   const [profileMenuVisible, setProfileMenuVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [listToDelete, setListToDelete] = useState<{ id: string; title: string } | null>(null);
-
-  useFocusEffect(
-    useCallback(() => {
-      // Force status bar to dark content when this screen is focused
-      if (Platform.OS === 'android') {
-        StatusBar.setBarStyle('dark-content');
-        StatusBar.setBackgroundColor('transparent');
-        StatusBar.setTranslucent(true);
-      }
-    }, [])
-  );
 
   // Note: We intentionally don't save '/(tabs)' here because it would
   // overwrite the saved route before restoration logic can read it.
@@ -133,7 +121,6 @@ export default function HomeScreen() {
 
   return (
     <>
-      <ExpoStatusBar style="dark" />
       <TouchableWithoutFeedback onPress={() => {
         setFilterMenuVisible(false);
         setProfileMenuVisible(false);

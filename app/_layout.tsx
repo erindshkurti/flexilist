@@ -82,7 +82,7 @@ function RootLayoutNav() {
   if (loading || !fontsLoaded) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <StatusBar style="auto" />
+        <StatusBar style="dark" />
         <ActivityIndicator size="large" />
       </View>
     );
@@ -98,7 +98,7 @@ function RootLayoutNav() {
         <Stack.Screen name="list/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="edit-list/[id]" options={{ headerShown: false }} />
       </Stack>
-      <StatusBar style="auto" />
+      <StatusBar style="dark" />
     </ThemeProvider>
   );
 }

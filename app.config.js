@@ -107,10 +107,15 @@ project.afterEvaluate {
 }
 `;
         if (!buildGradle.includes("fix-entry-point-package-name")) {
-            config.modResults.contents = buildGradle + "\\n" + taskInjection;
+            config.modResults.contents = buildGradle + "\n" + taskInjection;
         }
         return config;
     });
 };
 
-export default (config) => withFixEntryPointPackageName(baseConfig);
+export default ({ config }) => {
+    return withFixEntryPointPackageName({
+        ...config,
+        ...baseConfig.expo
+    });
+};
