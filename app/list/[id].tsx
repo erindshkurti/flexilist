@@ -8,10 +8,10 @@ import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { doc, getDoc } from 'firebase/firestore';
-import React, { useEffect, useState } from 'react';
-import { Alert, FlatList, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, FlatList, Modal, Platform, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ListDetailScreen() {
@@ -38,6 +38,16 @@ export default function ListDetailScreen() {
 
     const [showCompleted, setShowCompleted] = useState(true);
     const [hasInitializedPrefs, setHasInitializedPrefs] = useState(false);
+
+    useFocusEffect(
+        useCallback(() => {
+            if (Platform.OS === 'android') {
+                StatusBar.setBarStyle('dark-content');
+                StatusBar.setBackgroundColor('transparent');
+                StatusBar.setTranslucent(true);
+            }
+        }, [])
+    );
 
     // Initialize display preference from user settings
     useEffect(() => {
@@ -252,6 +262,7 @@ export default function ListDetailScreen() {
     return (
         <TouchableWithoutFeedback onPress={() => setSortMenuVisible(false)}>
             <View style={styles.container}>
+                <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
                 <LinearGradient
                     colors={['#ffffff', '#f9fafb']}
                     start={{ x: 0, y: 0 }}

@@ -1,3 +1,4 @@
+import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Platform, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,6 +13,7 @@ export const ScreenLayout = ({ children, className }: ScreenLayoutProps) => {
 
     return (
         <Container className={`flex-1 bg-white dark:bg-black ${className}`}>
+            <StatusBar style="auto" />
             <View className="flex-1 px-4 py-2">
                 {children}
             </View>
