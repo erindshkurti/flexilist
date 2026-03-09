@@ -18,7 +18,7 @@ export default function ListDetailScreen() {
     const insets = useSafeAreaInsets();
     const { id } = useLocalSearchParams<{ id: string }>();
     const [list, setList] = useState<List | null>(null);
-    const { items, addItem, deleteItem, updateItem } = useListItems(id!);
+    const { items, addItem, deleteItem, updateItem, uncheckAllItems } = useListItems(id!);
     const { saveLastRoute, getListPreference, saveListPreference, loading: prefsLoading } = useUserPreferences();
     const router = useRouter();
     const navigation = useNavigation();
@@ -35,6 +35,16 @@ export default function ListDetailScreen() {
     const [sortMenuVisible, setSortMenuVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null);
+    const [uncheckModalVisible, setUncheckModalVisible] = useState(false);
+
+    const handleConfirmUncheckAll = async () => {
+        try {
+            await uncheckAllItems();
+            setUncheckModalVisible(false);
+        } catch {
+            Alert.alert("Error", "Failed to uncheck items.");
+        }
+    };
 
     const [showCompleted, setShowCompleted] = useState(true);
     const [hasInitializedPrefs, setHasInitializedPrefs] = useState(false);
@@ -404,6 +414,23 @@ export default function ListDetailScreen() {
                                     <Text style={[styles.dropdownText, sortBy === 'name' && styles.dropdownTextActive]}>Alphabetical</Text>
                                     {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
                                 </TouchableOpacity>
+
+                                {items.some(item => item.completed) && (
+                                    <>
+                                        <View style={styles.dropdownDivider} />
+                                        <Text style={styles.dropdownTitle}>Actions</Text>
+                                        <TouchableOpacity
+                                            style={styles.dropdownItem}
+                                            onPress={() => {
+                                                setSortMenuVisible(false);
+                                                setUncheckModalVisible(true);
+                                            }}
+                                        >
+                                            <Ionicons name="refresh-outline" size={20} color="#4b5563" />
+                                            <Text style={styles.dropdownText}>Uncheck All</Text>
+                                        </TouchableOpacity>
+                                    </>
+                                )}
                             </View>
                         </View>
                     </View>
@@ -570,6 +597,40 @@ export default function ListDetailScreen() {
                         </View>
                     </View>
                 </Modal>
+
+                {/* Uncheck All Confirmation Modal */}
+                <Modal
+                    visible={uncheckModalVisible}
+                    transparent={true}
+                    animationType="fade"
+                    onRequestClose={() => setUncheckModalVisible(false)}
+                >
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.deleteModal}>
+                            <View style={styles.deleteModalHeader}>
+                                <Ionicons name="refresh-circle-outline" size={48} color="#10b981" />
+                                <Text style={styles.deleteModalTitle}>Uncheck All</Text>
+                            </View>
+                            <Text style={styles.deleteModalMessage}>
+                                Are you sure you want to uncheck all completed items?
+                            </Text>
+                            <View style={styles.deleteModalButtons}>
+                                <TouchableOpacity
+                                    onPress={() => setUncheckModalVisible(false)}
+                                    style={[styles.deleteModalButton, styles.cancelButtonModal]}
+                                >
+                                    <Text style={styles.cancelButtonText}>Cancel</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={handleConfirmUncheckAll}
+                                    style={[styles.deleteModalButton, { backgroundColor: '#10b981' }]}
+                                >
+                                    <Text style={styles.confirmDeleteButtonText}>Uncheck</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
             </View>
         </TouchableWithoutFeedback>
     );
@@ -724,6 +785,12 @@ const styles = StyleSheet.create({
         color: '#1f2937',
         fontWeight: '600',
         fontFamily: 'PlusJakartaSans_600SemiBold',
+    },
+    dropdownDivider: {
+        height: 1,
+        backgroundColor: '#f3f4f6',
+        marginVertical: 4,
+        marginHorizontal: 8,
     },
     headerTitle: {
         fontSize: 28,

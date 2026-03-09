@@ -1,7 +1,7 @@
 import { db } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
 import { ListItem } from '@/types';
-import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc, writeBatch } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
 export const useListItems = (listId: string) => {
@@ -69,5 +69,24 @@ export const useListItems = (listId: string) => {
         });
     };
 
-    return { items, loading, addItem, updateItem, deleteItem };
+    const uncheckAllItems = async () => {
+        const completedItems = items.filter(item => item.completed);
+        if (completedItems.length === 0) return;
+
+        const batch = writeBatch(db);
+        const now = Date.now();
+
+        completedItems.forEach(item => {
+            const itemRef = doc(db, 'lists', listId, 'items', item.id);
+            batch.update(itemRef, { completed: false, updatedAt: now });
+        });
+
+        // Update parent list timestamp
+        const listRef = doc(db, 'lists', listId);
+        batch.update(listRef, { updatedAt: now });
+
+        await batch.commit();
+    };
+
+    return { items, loading, addItem, updateItem, deleteItem, uncheckAllItems };
 };
