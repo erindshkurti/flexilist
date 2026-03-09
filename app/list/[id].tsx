@@ -381,59 +381,62 @@ export default function ListDetailScreen() {
                     <Ionicons name="add" size={28} color="white" />
                 </TouchableOpacity>
 
-                {/* Root-Level Dropdown for perfect z-index on iOS */}
+                {/* Root-Level Dropdown for perfect z-index on iOS and Android */}
                 {sortMenuVisible && (
-                    <View style={styles.sortMenuWrapper} pointerEvents="box-none">
-                        <View style={styles.sortMenuInner} pointerEvents="box-none">
-                            <View
-                                style={styles.sortDropdown}
-                                onStartShouldSetResponder={() => true}
-                            >
-                                <Text style={styles.dropdownTitle}>Sort by</Text>
+                    <Modal visible={true} transparent={true} animationType="fade" onRequestClose={() => setSortMenuVisible(false)}>
+                        <TouchableWithoutFeedback onPress={() => setSortMenuVisible(false)}>
+                            <View style={styles.sortMenuModalOverlay}>
+                                <TouchableWithoutFeedback>
+                                    <View
+                                        style={styles.sortDropdownModal}
+                                    >
+                                        <Text style={styles.dropdownTitle}>Sort by</Text>
 
-                                <TouchableOpacity
-                                    style={[styles.dropdownItem, sortBy === 'created' && styles.dropdownItemActive]}
-                                    onPress={() => {
-                                        setSortBy('created');
-                                        setSortMenuVisible(false);
-                                    }}
-                                >
-                                    <Ionicons name="time-outline" size={20} color={sortBy === 'created' ? '#1f2937' : '#4b5563'} />
-                                    <Text style={[styles.dropdownText, sortBy === 'created' && styles.dropdownTextActive]}>Date Created</Text>
-                                    {sortBy === 'created' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={[styles.dropdownItem, sortBy === 'name' && styles.dropdownItemActive]}
-                                    onPress={() => {
-                                        setSortBy('name');
-                                        setSortMenuVisible(false);
-                                    }}
-                                >
-                                    <Ionicons name="text-outline" size={20} color={sortBy === 'name' ? '#1f2937' : '#4b5563'} />
-                                    <Text style={[styles.dropdownText, sortBy === 'name' && styles.dropdownTextActive]}>Alphabetical</Text>
-                                    {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
-                                </TouchableOpacity>
-
-                                {items.some(item => item.completed) && (
-                                    <>
-                                        <View style={styles.dropdownDivider} />
-                                        <Text style={styles.dropdownTitle}>Actions</Text>
                                         <TouchableOpacity
-                                            style={styles.dropdownItem}
+                                            style={[styles.dropdownItem, sortBy === 'created' && styles.dropdownItemActive]}
                                             onPress={() => {
+                                                setSortBy('created');
                                                 setSortMenuVisible(false);
-                                                setUncheckModalVisible(true);
                                             }}
                                         >
-                                            <Ionicons name="refresh-outline" size={20} color="#4b5563" />
-                                            <Text style={styles.dropdownText}>Uncheck All</Text>
+                                            <Ionicons name="time-outline" size={20} color={sortBy === 'created' ? '#1f2937' : '#4b5563'} />
+                                            <Text style={[styles.dropdownText, sortBy === 'created' && styles.dropdownTextActive]}>Date Created</Text>
+                                            {sortBy === 'created' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
                                         </TouchableOpacity>
-                                    </>
-                                )}
+
+                                        <TouchableOpacity
+                                            style={[styles.dropdownItem, sortBy === 'name' && styles.dropdownItemActive]}
+                                            onPress={() => {
+                                                setSortBy('name');
+                                                setSortMenuVisible(false);
+                                            }}
+                                        >
+                                            <Ionicons name="text-outline" size={20} color={sortBy === 'name' ? '#1f2937' : '#4b5563'} />
+                                            <Text style={[styles.dropdownText, sortBy === 'name' && styles.dropdownTextActive]}>Alphabetical</Text>
+                                            {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
+                                        </TouchableOpacity>
+
+                                        {items.some(item => item.completed) && (
+                                            <>
+                                                <View style={styles.dropdownDivider} />
+                                                <Text style={styles.dropdownTitle}>Actions</Text>
+                                                <TouchableOpacity
+                                                    style={styles.dropdownItem}
+                                                    onPress={() => {
+                                                        setSortMenuVisible(false);
+                                                        setUncheckModalVisible(true);
+                                                    }}
+                                                >
+                                                    <Ionicons name="refresh-outline" size={20} color="#4b5563" />
+                                                    <Text style={styles.dropdownText}>Uncheck All</Text>
+                                                </TouchableOpacity>
+                                            </>
+                                        )}
+                                    </View>
+                                </TouchableWithoutFeedback>
                             </View>
-                        </View>
-                    </View>
+                        </TouchableWithoutFeedback>
+                    </Modal>
                 )}
 
                 <Modal visible={modalVisible} animationType="slide" transparent={true} presentationStyle="overFullScreen">
@@ -791,6 +794,26 @@ const styles = StyleSheet.create({
         backgroundColor: '#f3f4f6',
         marginVertical: 4,
         marginHorizontal: 8,
+    },
+    sortMenuModalOverlay: {
+        flex: 1,
+        backgroundColor: 'transparent',
+    },
+    sortDropdownModal: {
+        position: 'absolute',
+        top: Math.max(Platform.OS === 'ios' ? 100 : 80, 100) + 70, // Rough estimate below header
+        right: 20,
+        backgroundColor: 'white',
+        borderRadius: 16,
+        padding: 8,
+        width: 200,
+        borderWidth: 1,
+        borderColor: '#f3f4f6',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.15,
+        shadowRadius: 24,
+        elevation: 20,
     },
     headerTitle: {
         fontSize: 28,
