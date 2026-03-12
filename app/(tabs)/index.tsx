@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, FlatList, Image, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, FlatList, Image, Modal, Platform, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function HomeScreen() {
@@ -121,11 +121,7 @@ export default function HomeScreen() {
 
   return (
     <>
-      <TouchableWithoutFeedback onPress={() => {
-        setFilterMenuVisible(false);
-        setProfileMenuVisible(false);
-      }}>
-        <View style={styles.container}>
+      <View style={styles.container}>
           <LinearGradient
             colors={['#ffffff', '#f9fafb']}
             start={{ x: 0, y: 0 }}
@@ -221,9 +217,17 @@ export default function HomeScreen() {
             <Ionicons name="add" size={28} color="white" />
           </TouchableOpacity>
 
-
+          {/* Transparent overlay to dismiss menus when tapping the list — only active when a menu is open */}
+          {(filterMenuVisible || profileMenuVisible) && (
+            <Pressable
+              style={StyleSheet.absoluteFillObject}
+              onPress={() => {
+                setFilterMenuVisible(false);
+                setProfileMenuVisible(false);
+              }}
+            />
+          )}
         </View>
-      </TouchableWithoutFeedback>
 
       {/* Root-Level Dropdowns for perfect z-index on iOS */}
       {profileMenuVisible && (
