@@ -382,7 +382,7 @@ export default function ListDetailScreen() {
 
                 {/* Root-Level Dropdown for perfect z-index on iOS and Android */}
                 {sortMenuVisible && (
-                    <Modal visible={true} transparent={true} animationType="fade" onRequestClose={() => setSortMenuVisible(false)}>
+                    <Modal visible={true} transparent={true} animationType="none" onRequestClose={() => setSortMenuVisible(false)}>
                         <TouchableWithoutFeedback onPress={() => setSortMenuVisible(false)}>
                             <View style={styles.sortMenuModalOverlay}>
                                 <TouchableWithoutFeedback>
