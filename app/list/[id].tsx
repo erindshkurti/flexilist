@@ -10,9 +10,10 @@ import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { doc, getDoc } from 'firebase/firestore';
-import React, { useEffect, useState } from 'react';
-import { Alert, FlatList, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, Animated, FlatList, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useVoiceInput } from '@/hooks/useVoiceInput';
 
 export default function ListDetailScreen() {
     const insets = useSafeAreaInsets();
@@ -36,6 +37,32 @@ export default function ListDetailScreen() {
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null);
     const [uncheckModalVisible, setUncheckModalVisible] = useState(false);
+
+    // Voice input
+    const activeVoiceFieldId = useRef<string | null>(null);
+    const micPulse = useRef(new Animated.Value(1)).current;
+    const { isListening, supported: voiceSupported, startListening, stopListening } = useVoiceInput({
+        onResult: (text) => {
+            if (activeVoiceFieldId.current) {
+                setCurrentItem(prev => ({ ...prev, [activeVoiceFieldId.current!]: text }));
+            }
+        },
+    });
+
+    useEffect(() => {
+        if (isListening) {
+            Animated.loop(
+                Animated.sequence([
+                    Animated.timing(micPulse, { toValue: 1.3, duration: 500, useNativeDriver: true }),
+                    Animated.timing(micPulse, { toValue: 1.0, duration: 500, useNativeDriver: true }),
+                ])
+            ).start();
+        } else {
+            micPulse.stopAnimation();
+            micPulse.setValue(1);
+            activeVoiceFieldId.current = null;
+        }
+    }, [isListening, micPulse]);
 
     const handleConfirmUncheckAll = async () => {
         try {
@@ -200,16 +227,54 @@ export default function ListDetailScreen() {
 
         return (
             <>
-                <TextInput
-                    value={value?.toString() || ''}
-                    onChangeText={(text) => {
-                        setCurrentItem({ ...currentItem, [field.id]: text });
-                    }}
-                    placeholder={`Enter ${field.name}`}
-                    placeholderTextColor="#9ca3af"
-                    keyboardType={field.type === 'number' ? 'numeric' : 'default'}
-                    style={styles.input}
-                />
+                {field.type === 'text' && voiceSupported ? (
+                    <View style={styles.inputInlineRow}>
+                        <TextInput
+                            value={value?.toString() || ''}
+                            onChangeText={(text) => {
+                                setCurrentItem({ ...currentItem, [field.id]: text });
+                            }}
+                            placeholder={`Enter ${field.name}`}
+                            placeholderTextColor="#9ca3af"
+                            keyboardType="default"
+                            style={styles.inputInlineText}
+                        />
+                        <TouchableOpacity
+                            onPress={() => {
+                                if (isListening && activeVoiceFieldId.current === field.id) {
+                                    stopListening();
+                                } else {
+                                    activeVoiceFieldId.current = field.id;
+                                    startListening();
+                                }
+                            }}
+                            style={styles.micInlineButton}
+                            activeOpacity={0.7}
+                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        >
+                            <Animated.View style={{
+                                transform: [{ scale: isListening && activeVoiceFieldId.current === field.id ? micPulse : 1 }]
+                            }}>
+                                <Ionicons
+                                    name={isListening && activeVoiceFieldId.current === field.id ? 'mic' : 'mic-outline'}
+                                    size={20}
+                                    color={isListening && activeVoiceFieldId.current === field.id ? '#ef4444' : '#9ca3af'}
+                                />
+                            </Animated.View>
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                    <TextInput
+                        value={value?.toString() || ''}
+                        onChangeText={(text) => {
+                            setCurrentItem({ ...currentItem, [field.id]: text });
+                        }}
+                        placeholder={`Enter ${field.name}`}
+                        placeholderTextColor="#9ca3af"
+                        keyboardType={field.type === 'number' ? 'numeric' : 'default'}
+                        style={styles.input}
+                    />
+                )}
                 {field.type === 'number' && hasNumberError && (
                     <View style={styles.errorContainer}>
                         <Ionicons name="alert-circle" size={14} color="#ef4444" />
@@ -1218,5 +1283,26 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         fontFamily: 'PlusJakartaSans_600SemiBold',
         color: 'white',
+    },
+    inputInlineRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#f9fafb',
+        borderWidth: 1,
+        borderColor: '#e5e7eb',
+        borderRadius: 12,
+        paddingRight: 12,
+    },
+    inputInlineText: {
+        flex: 1,
+        padding: 16,
+        fontSize: 16,
+        color: '#1f2937',
+        fontFamily: 'PlusJakartaSans_400Regular',
+    },
+    micInlineButton: {
+        padding: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });

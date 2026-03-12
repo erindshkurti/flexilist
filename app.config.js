@@ -24,7 +24,9 @@ const baseConfig = {
             "usesAppleSignIn": true,
             "buildNumber": buildNumber.toString(),
             "infoPlist": {
-                "ITSAppUsesNonExemptEncryption": false
+                "ITSAppUsesNonExemptEncryption": false,
+                "NSSpeechRecognitionUsageDescription": "FlexiList uses speech recognition so you can speak your list items instead of typing.",
+                "NSMicrophoneUsageDescription": "FlexiList needs microphone access to record your voice for item input."
             }
         },
         "android": {
@@ -39,7 +41,8 @@ const baseConfig = {
                 "BuildConfig": true
             },
             "edgeToEdgeEnabled": true,
-            "predictiveBackGestureEnabled": false
+            "predictiveBackGestureEnabled": false,
+            "permissions": ["android.permission.RECORD_AUDIO"]
         },
         "web": {
             "output": "static",
@@ -70,7 +73,8 @@ const baseConfig = {
                     "webClientId": "701865353940-0i3bkuu0j8p3qr1mbnok35vikq4ngjck.apps.googleusercontent.com"
                 }
             ],
-            "expo-apple-authentication"
+            "expo-apple-authentication",
+            "expo-speech-recognition"
         ],
         "experiments": {
             "typedRoutes": true,
