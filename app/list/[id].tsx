@@ -260,8 +260,7 @@ export default function ListDetailScreen() {
     };
 
     return (
-        <TouchableWithoutFeedback onPress={() => setSortMenuVisible(false)}>
-            <View style={styles.container}>
+        <View style={styles.container}>
                 <LinearGradient
                     colors={['#ffffff', '#f9fafb']}
                     start={{ x: 0, y: 0 }}
@@ -634,8 +633,7 @@ export default function ListDetailScreen() {
                         </View>
                     </View>
                 </Modal>
-            </View>
-        </TouchableWithoutFeedback>
+        </View>
     );
 }
 
