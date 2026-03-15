@@ -719,8 +719,9 @@ const styles = StyleSheet.create({
         paddingBottom: 24,
         paddingHorizontal: 20,
         backgroundColor: '#f9fafb',
-        borderBottomWidth: 1,
-        borderBottomColor: '#e2e8f0',
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+        borderTopWidth: 0,
         borderBottomLeftRadius: 32,
         borderBottomRightRadius: 32,
         zIndex: 100, // Ensure header (and dropdowns) stack above list
