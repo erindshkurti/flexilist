@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: '#f9fafb',
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: '#e2e8f0',
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
     zIndex: 1000,
