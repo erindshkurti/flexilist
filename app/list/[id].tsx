@@ -326,69 +326,70 @@ export default function ListDetailScreen() {
 
     return (
         <View style={styles.container}>
-                <LinearGradient
-                    colors={['#ffffff', '#f9fafb']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={[styles.header, { paddingTop: Math.max(insets.top + 20, 60) }]}
-                >
-                    <View style={styles.headerContent}>
-                        <View style={styles.titleRow}>
-                            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-                                <Ionicons name="arrow-back" size={24} color="#1f2937" />
-                            </TouchableOpacity>
-                            <View>
-                                <Text style={styles.headerTitle}>{list.title}</Text>
-                                {!!list.description && <Text style={styles.headerDescription}>{list.description}</Text>}
-                            </View>
+            <LinearGradient
+                colors={['#ffffff', '#f9fafb']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={[styles.header, { paddingTop: Math.max(insets.top + 20, 60) }]}
+            >
+                <View style={styles.headerContent}>
+                    <View style={styles.titleRow}>
+                        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+                            <Ionicons name="arrow-back" size={24} color="#1f2937" />
+                        </TouchableOpacity>
+                        <View>
+                            <Text style={styles.headerTitle}>{list.title}</Text>
+                            {!!list.description && <Text style={styles.headerDescription}>{list.description}</Text>}
                         </View>
+                    </View>
 
-                        <View style={styles.searchSortContainer}>
-                            <View style={[styles.searchBar, isSearchFocused && styles.searchBarFocused]}>
-                                <Ionicons name="search" size={20} color={isSearchFocused ? "#1f2937" : "#9ca3af"} />
-                                <TextInput
-                                    placeholder="Search items..."
-                                    value={search}
-                                    onChangeText={setSearch}
-                                    onFocus={() => setIsSearchFocused(true)}
-                                    onBlur={() => setIsSearchFocused(false)}
-                                    style={styles.searchInput}
-                                    placeholderTextColor="#9ca3af"
-                                />
-                            </View>
+                    <View style={styles.searchSortContainer}>
+                        <View style={[styles.searchBar, isSearchFocused && styles.searchBarFocused]}>
+                            <Ionicons name="search" size={20} color={isSearchFocused ? "#1f2937" : "#9ca3af"} />
+                            <TextInput
+                                placeholder="Search items..."
+                                value={search}
+                                onChangeText={setSearch}
+                                onFocus={() => setIsSearchFocused(true)}
+                                onBlur={() => setIsSearchFocused(false)}
+                                style={styles.searchInput}
+                                placeholderTextColor="#9ca3af"
+                            />
+                        </View>
+                        <TouchableOpacity
+                            onPress={() => {
+                                const newValue = !showCompleted;
+                                setShowCompleted(newValue);
+                                if (id) {
+                                    saveListPreference(id, { hideCompleted: !newValue });
+                                }
+                            }}
+                            style={styles.sortButton}
+                            activeOpacity={0.7}
+                        >
+                            <Ionicons
+                                name={showCompleted ? "eye-outline" : "eye-off-outline"}
+                                size={24}
+                                color="#1f2937"
+                            />
+                        </TouchableOpacity>
+                        <View style={styles.sortButtonWrapper}>
                             <TouchableOpacity
-                                onPress={() => {
-                                    const newValue = !showCompleted;
-                                    setShowCompleted(newValue);
-                                    if (id) {
-                                        saveListPreference(id, { hideCompleted: !newValue });
-                                    }
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    setSortMenuVisible(!sortMenuVisible);
                                 }}
                                 style={styles.sortButton}
                                 activeOpacity={0.7}
                             >
-                                <Ionicons
-                                    name={showCompleted ? "eye-outline" : "eye-off-outline"}
-                                    size={24}
-                                    color="#1f2937"
-                                />
+                                <Ionicons name="options-outline" size={24} color="#1f2937" />
                             </TouchableOpacity>
-                            <View style={styles.sortButtonWrapper}>
-                                <TouchableOpacity
-                                    onPress={(e) => {
-                                        e.stopPropagation();
-                                        setSortMenuVisible(!sortMenuVisible);
-                                    }}
-                                    style={styles.sortButton}
-                                    activeOpacity={0.7}
-                                >
-                                    <Ionicons name="options-outline" size={24} color="#1f2937" />
-                                </TouchableOpacity>
-                            </View>
                         </View>
                     </View>
-                </LinearGradient>
+                </View>
+            </LinearGradient>
 
+            <View style={styles.listContainer}>
                 <FlatList
                     data={filteredAndSortedItems}
                     keyExtractor={item => item.id}
@@ -698,6 +699,7 @@ export default function ListDetailScreen() {
                         </View>
                     </View>
                 </Modal>
+            </View>
         </View>
     );
 }
@@ -708,6 +710,12 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#ffffff',
     },
+    listContainer: {
+        flex: 1,
+        marginTop: -16,
+        position: 'relative',
+        zIndex: 1,
+    },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -715,7 +723,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
     },
     header: {
-        paddingTop: 60,
         paddingBottom: 24,
         paddingHorizontal: 20,
         backgroundColor: '#f9fafb',
@@ -724,7 +731,9 @@ const styles = StyleSheet.create({
         borderTopWidth: 0,
         borderBottomLeftRadius: 32,
         borderBottomRightRadius: 32,
-        zIndex: 100, // Ensure header (and dropdowns) stack above list
+        zIndex: 100,
+        position: 'relative',
+        overflow: 'visible',
     },
     headerContent: {
         maxWidth: 800,
