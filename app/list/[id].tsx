@@ -901,11 +901,12 @@ const styles = StyleSheet.create({
         fontFamily: 'PlusJakartaSans_400Regular',
     },
     listContent: {
-        padding: 20,
+        paddingTop: 36,
+        paddingHorizontal: 20,
+        paddingBottom: 100, // Space for FAB
         maxWidth: 840,
         width: '100%',
         alignSelf: 'center',
-        paddingBottom: 100, // Space for FAB
     },
     itemCard: {
         backgroundColor: '#ffffff',
