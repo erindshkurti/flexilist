@@ -8,10 +8,11 @@ import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from '
 interface ListCardProps {
     list: List;
     onDelete: (id: string, title: string) => void;
+    onArchive?: (id: string) => void;
     style?: StyleProp<ViewStyle>;
 }
 
-export const ListCard = ({ list, onDelete, style }: ListCardProps) => {
+export const ListCard = ({ list, onDelete, onArchive, style }: ListCardProps) => {
     const router = useRouter();
     // Prevent eager subcollection queries on optimistic UI lists until the server confirms the write
     // This solves the Firebase `insufficient permissions` offline cache bug on iOS
@@ -69,28 +70,18 @@ export const ListCard = ({ list, onDelete, style }: ListCardProps) => {
 
                 {/* Separate actions area - NOT nested inside the main touchable */}
                 <View style={styles.listCardActions}>
-                    <TouchableOpacity
-                        onPress={(e) => {
-                            e.stopPropagation?.();
-                            console.log('Edit button clicked for:', list.title);
-                            router.push(`/edit-list/${list.id}`);
-                        }}
-                        style={styles.editButton}
-                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                    >
-                        <Ionicons name="create-outline" size={20} color="#3b82f6" />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={(e) => {
-                            e.stopPropagation?.();
-                            console.log('Delete button clicked!');
-                            onDelete(list.id, list.title);
-                        }}
-                        style={styles.deleteButton}
-                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                    >
-                        <Ionicons name="trash-outline" size={20} color="#ef4444" />
-                    </TouchableOpacity>
+                    {onArchive && (
+                        <TouchableOpacity
+                            onPress={(e) => {
+                                e.stopPropagation?.();
+                                onArchive(list.id);
+                            }}
+                            style={styles.archiveButton}
+                            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                        >
+                            <Ionicons name="archive-outline" size={20} color="#f59e0b" />
+                        </TouchableOpacity>
+                    )}
                     <TouchableOpacity
                         onPress={(e) => {
                             e.stopPropagation?.();
@@ -173,10 +164,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 12,
     },
-    editButton: {
-        padding: 4,
-    },
-    deleteButton: {
+    archiveButton: {
         padding: 4,
     },
     fieldTags: {

@@ -117,15 +117,12 @@ export default function HomeScreen() {
   const renderItem = ({ item }: { item: any }) => (
     <View style={{ marginBottom: 16 }}>
       <SwipeableItem
-        onEdit={() => handleArchiveList(item.id)}
+        onEdit={() => handleEditList(item.id)}
         onDelete={() => handleDeleteList(item.id, item.title)}
         marginBottom={0}
         borderRadius={20}
-        leftIcon="archive-outline"
-        leftLabel="Archive"
-        leftColor="#f59e0b"
       >
-        <ListCard list={item} onDelete={handleDeleteList} style={{ marginBottom: 0 }} />
+        <ListCard list={item} onDelete={handleDeleteList} onArchive={handleArchiveList} style={{ marginBottom: 0 }} />
       </SwipeableItem>
     </View>
   );
