@@ -32,6 +32,7 @@ export default function HomeScreen() {
   const [listToDelete, setListToDelete] = useState<{ id: string; title: string } | null>(null);
   const [archiveModalVisible, setArchiveModalVisible] = useState(false);
   const [listToArchive, setListToArchive] = useState<{ id: string; title: string } | null>(null);
+  const [deleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false);
 
   // Note: We intentionally don't save '/(tabs)' here because it would
   // overwrite the saved route before restoration logic can read it.
@@ -46,36 +47,28 @@ export default function HomeScreen() {
   };
 
   const handleDeleteAccount = () => {
-    Alert.alert(
-      "Delete Account",
-      "Are you sure you want to permanently delete your account and all your lists? This action cannot be undone.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await deleteAccount();
-              router.replace('/login');
-            } catch (error: any) {
-              const errorMessage = error?.message || String(error);
-              if (error?.code === 'auth/requires-recent-login' || errorMessage.includes('requires-recent-login')) {
-                Alert.alert(
-                  "Session Expired",
-                  "For your security, please sign in again to delete your account.",
-                  [
-                    { text: "OK", onPress: () => handleSignOut() }
-                  ]
-                );
-              } else {
-                Alert.alert("Error", errorMessage || "Failed to delete account. Please try again later.");
-              }
-            }
-          }
+    setProfileMenuVisible(false);
+    setDeleteAccountModalVisible(true);
+  };
+
+  const confirmDeleteAccount = async () => {
+    try {
+      await deleteAccount();
+      setDeleteAccountModalVisible(false);
+      router.replace('/login');
+    } catch (error: any) {
+      setDeleteAccountModalVisible(false);
+      const errorMessage = error?.message || String(error);
+      if (error?.code === 'auth/requires-recent-login' || errorMessage.includes('requires-recent-login')) {
+        handleSignOut();
+      } else {
+        if (Platform.OS === 'web') {
+            window.alert(errorMessage || 'Failed to delete account.');
+        } else {
+            Alert.alert("Error", errorMessage || "Failed to delete account. Please try again later.");
         }
-      ]
-    );
+      }
+    }
   };
 
   const handleDeleteList = (listId: string, listTitle: string) => {
@@ -404,6 +397,37 @@ export default function HomeScreen() {
                 style={[styles.deleteModalButton, styles.confirmArchiveButton]}
               >
                 <Text style={styles.confirmDeleteButtonText}>Archive</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Delete Account Modal */}
+      <Modal
+        visible={deleteAccountModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setDeleteAccountModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.deleteModal}>
+            <Text style={styles.deleteModalTitle}>Delete Account</Text>
+            <Text style={styles.deleteModalMessage}>
+              Are you sure you want to permanently delete your account and all your lists? This action cannot be undone.
+            </Text>
+            <View style={styles.deleteModalButtons}>
+              <TouchableOpacity
+                onPress={() => setDeleteAccountModalVisible(false)}
+                style={[styles.deleteModalButton, styles.cancelButton]}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={confirmDeleteAccount}
+                style={[styles.deleteModalButton, styles.confirmDeleteButton]}
+              >
+                <Text style={styles.confirmDeleteButtonText}>Delete</Text>
               </TouchableOpacity>
             </View>
           </View>
