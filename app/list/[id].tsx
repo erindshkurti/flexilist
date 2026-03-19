@@ -437,6 +437,15 @@ export default function ListDetailScreen() {
                             </View>
                         </SwipeableItem>
                     )}
+                    ListEmptyComponent={
+                        <View style={styles.emptyState}>
+                            <View style={styles.emptyIcon}>
+                                <Ionicons name="list-outline" size={64} color="#d1d5db" />
+                            </View>
+                            <Text style={styles.emptyTitle}>No items yet</Text>
+                            <Text style={styles.emptySubtitle}>Tap the + button to add an item!</Text>
+                        </View>
+                    }
                 />
 
                 <TouchableOpacity
@@ -907,6 +916,7 @@ const styles = StyleSheet.create({
         maxWidth: 840,
         width: '100%',
         alignSelf: 'center',
+        flexGrow: 1,
     },
     itemCard: {
         backgroundColor: '#ffffff',
@@ -1315,5 +1325,27 @@ const styles = StyleSheet.create({
         padding: 4,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    emptyState: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingBottom: 60,
+    },
+    emptyIcon: {
+        marginBottom: 24,
+        opacity: 0.5,
+    },
+    emptyTitle: {
+        fontSize: 22,
+        fontWeight: '700',
+        fontFamily: 'PlusJakartaSans_700Bold',
+        color: '#1f2937',
+        marginBottom: 8,
+    },
+    emptySubtitle: {
+        fontSize: 15,
+        fontFamily: 'PlusJakartaSans_400Regular',
+        color: '#6b7280',
     },
 });
