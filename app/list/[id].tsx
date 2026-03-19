@@ -1331,9 +1331,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingBottom: 60,
+        gap: 12,
     },
     emptyIcon: {
-        marginBottom: 24,
+        marginBottom: 0,
         opacity: 0.5,
     },
     emptyTitle: {

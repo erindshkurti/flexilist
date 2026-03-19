@@ -698,9 +698,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingBottom: 60,
     backgroundColor: '#ffffff',
+    gap: 12,
   },
   emptyIcon: {
-    marginBottom: 24,
+    marginBottom: 0,
     opacity: 0.5,
   },
   emptyTitle: {
