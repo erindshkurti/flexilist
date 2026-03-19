@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        paddingTop: 60,
+        paddingBottom: 60,
         gap: 12,
     },
     emptyStateTitle: {
