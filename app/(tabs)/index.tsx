@@ -235,17 +235,19 @@ export default function HomeScreen() {
             <Ionicons name="add" size={28} color="white" />
           </TouchableOpacity>
 
-          {/* Transparent overlay to dismiss menus when tapping the list — only active when a menu is open */}
-          {(filterMenuVisible || profileMenuVisible) && (
-            <Pressable
-              style={StyleSheet.absoluteFillObject}
-              onPress={() => {
-                setFilterMenuVisible(false);
-                setProfileMenuVisible(false);
-              }}
-            />
-          )}
         </View>
+
+      {/* Transparent overlay to dismiss menus when tapping anywhere */}
+      {(filterMenuVisible || profileMenuVisible) && (
+        <TouchableOpacity
+          style={styles.menuDismissOverlay}
+          activeOpacity={1}
+          onPress={() => {
+            setFilterMenuVisible(false);
+            setProfileMenuVisible(false);
+          }}
+        />
+      )}
 
       {/* Root-Level Dropdowns for perfect z-index on iOS */}
       {profileMenuVisible && (
@@ -611,6 +613,11 @@ const styles = StyleSheet.create({
     height: 44,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  menuDismissOverlay: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    zIndex: 99998,
   },
   filterMenuWrapper: {
     position: 'absolute',
