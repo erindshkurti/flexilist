@@ -46,6 +46,11 @@ export const ListCard = ({ list, onDelete, onArchive, style }: ListCardProps) =>
                                             </Text>
                                         </View>
                                     )}
+                                    {list.archived && (
+                                        <View style={styles.archivedBadge}>
+                                            <Text style={styles.archivedText}>Archived</Text>
+                                        </View>
+                                    )}
                                 </View>
                                 {list.description ? (
                                     <Text style={styles.listDescription} numberOfLines={1}>{list.description}</Text>
@@ -153,6 +158,20 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         fontFamily: 'PlusJakartaSans_600SemiBold',
         color: '#4b5563',
+    },
+    archivedBadge: {
+        backgroundColor: '#fef3c7', // amber-50
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        borderRadius: 12,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    archivedText: {
+        fontSize: 12,
+        fontWeight: '700',
+        fontFamily: 'PlusJakartaSans_700Bold',
+        color: '#d97706', // amber-600
     },
     listDescription: {
         fontSize: 14,
