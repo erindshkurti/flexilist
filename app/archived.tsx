@@ -242,9 +242,10 @@ const styles = StyleSheet.create({
         padding: 4,
     },
     headerTitle: {
-        fontSize: 22,
-        fontFamily: 'PlusJakartaSans_700Bold',
-        color: '#111827',
+        fontSize: 28,
+        fontWeight: '800',
+        fontFamily: 'PlusJakartaSans_800ExtraBold',
+        color: '#1f2937',
     },
     searchContainer: {
         flexDirection: 'row',
