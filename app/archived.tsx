@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ArchivedScreen() {
@@ -14,8 +14,21 @@ export default function ArchivedScreen() {
     const { archivedLists, loading } = useArchivedLists();
     const { unarchiveList, deleteList } = useLists();
 
+    const [search, setSearch] = useState('');
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
+    const [sortBy, setSortBy] = useState<'name' | 'created' | 'modified'>('modified');
+    const [sortMenuVisible, setSortMenuVisible] = useState(false);
+
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [listToDelete, setListToDelete] = useState<{ id: string; title: string } | null>(null);
+
+    const filteredLists = archivedLists
+        .filter(list => list.title.toLowerCase().includes(search.toLowerCase()))
+        .sort((a, b) => {
+            if (sortBy === 'name') return a.title.localeCompare(b.title);
+            if (sortBy === 'created') return (b.createdAt || 0) - (a.createdAt || 0);
+            return (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0);
+        });
 
     const handleRestore = async (listId: string) => {
         try {
@@ -66,13 +79,38 @@ export default function ArchivedScreen() {
                 style={[styles.header, { paddingTop: Math.max(insets.top + 20, 60) }]}
             >
                 <View style={styles.headerContent}>
+                    {/* Title row */}
                     <View style={styles.titleRow}>
                         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                             <Ionicons name="arrow-back" size={24} color="#1f2937" />
                         </TouchableOpacity>
-                        <View>
-                            <Text style={styles.headerTitle}>Archived Lists</Text>
-                            <Text style={styles.headerSubtitle}>Swipe right to restore</Text>
+                        <Text style={styles.headerTitle}>Archived Lists</Text>
+                    </View>
+
+                    {/* Search + sort row */}
+                    <View style={styles.searchContainer}>
+                        <View style={[styles.searchBar, isSearchFocused && styles.searchBarFocused]}>
+                            <Ionicons name="search" size={20} color={isSearchFocused ? '#1f2937' : '#9ca3af'} />
+                            <TextInput
+                                placeholder="Search archived..."
+                                value={search}
+                                onChangeText={setSearch}
+                                onFocus={() => setIsSearchFocused(true)}
+                                onBlur={() => setIsSearchFocused(false)}
+                                style={styles.searchInput}
+                                placeholderTextColor="#9ca3af"
+                            />
+                        </View>
+                        <View style={styles.sortButtonWrapper}>
+                            <TouchableOpacity
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    setSortMenuVisible(!sortMenuVisible);
+                                }}
+                                style={styles.sortButton}
+                            >
+                                <Ionicons name="options-outline" size={24} color="#1f2937" />
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </View>
@@ -83,17 +121,21 @@ export default function ArchivedScreen() {
                     <View style={styles.emptyState}>
                         <Text style={styles.emptyStateText}>Loading...</Text>
                     </View>
-                ) : archivedLists.length === 0 ? (
+                ) : filteredLists.length === 0 ? (
                     <View style={styles.emptyState}>
                         <Ionicons name="archive-outline" size={56} color="#d1d5db" />
-                        <Text style={styles.emptyStateTitle}>No archived lists</Text>
+                        <Text style={styles.emptyStateTitle}>
+                            {archivedLists.length === 0 ? 'No archived lists' : 'No results'}
+                        </Text>
                         <Text style={styles.emptyStateText}>
-                            Lists you archive will appear here.
+                            {archivedLists.length === 0
+                                ? 'Lists you archive will appear here.'
+                                : 'Try a different search term.'}
                         </Text>
                     </View>
                 ) : (
                     <FlatList
-                        data={archivedLists}
+                        data={filteredLists}
                         keyExtractor={item => item.id}
                         renderItem={renderItem}
                         contentContainerStyle={styles.listContent}
@@ -101,6 +143,37 @@ export default function ArchivedScreen() {
                     />
                 )}
             </View>
+
+            {/* Sort dropdown */}
+            {sortMenuVisible && (
+                <View style={styles.sortMenuOverlay} pointerEvents="box-none">
+                    <TouchableOpacity
+                        style={styles.sortMenuDismiss}
+                        activeOpacity={1}
+                        onPress={() => setSortMenuVisible(false)}
+                    />
+                    <View style={styles.sortMenuCard} onStartShouldSetResponder={() => true}>
+                        <Text style={styles.dropdownTitle}>Sort by</Text>
+                        {([
+                            { key: 'modified', label: 'Date Modified', icon: 'calendar-outline' },
+                            { key: 'created',  label: 'Date Created',  icon: 'time-outline'     },
+                            { key: 'name',     label: 'Alphabetical',  icon: 'text-outline'     },
+                        ] as const).map(({ key, label, icon }) => (
+                            <TouchableOpacity
+                                key={key}
+                                style={[styles.dropdownItem, sortBy === key && styles.dropdownItemActive]}
+                                onPress={() => { setSortBy(key); setSortMenuVisible(false); }}
+                            >
+                                <Ionicons name={icon} size={20} color={sortBy === key ? '#1f2937' : '#4b5563'} />
+                                <Text style={[styles.dropdownText, sortBy === key && styles.dropdownTextActive]}>
+                                    {label}
+                                </Text>
+                                {sortBy === key && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </View>
+            )}
 
             {/* Delete confirmation modal */}
             <Modal
@@ -163,6 +236,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 12,
+        marginBottom: 20,
     },
     backButton: {
         padding: 4,
@@ -172,11 +246,43 @@ const styles = StyleSheet.create({
         fontFamily: 'PlusJakartaSans_700Bold',
         color: '#111827',
     },
-    headerSubtitle: {
-        fontSize: 13,
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+    },
+    searchBar: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#f3f4f6',
+        borderRadius: 14,
+        paddingHorizontal: 14,
+        paddingVertical: 10,
+        gap: 10,
+        borderWidth: 1.5,
+        borderColor: 'transparent',
+    },
+    searchBarFocused: {
+        backgroundColor: '#ffffff',
+        borderColor: '#e5e7eb',
+    },
+    searchInput: {
+        flex: 1,
+        fontSize: 15,
+        color: '#1f2937',
         fontFamily: 'PlusJakartaSans_400Regular',
-        color: '#9ca3af',
-        marginTop: 2,
+        outlineStyle: 'none',
+    } as any,
+    sortButtonWrapper: {
+        position: 'relative',
+        zIndex: 3000,
+        overflow: 'visible',
+    },
+    sortButton: {
+        padding: 8,
+        borderRadius: 12,
+        backgroundColor: '#f3f4f6',
     },
     listContainer: {
         flex: 1,
@@ -211,6 +317,61 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         paddingHorizontal: 40,
     },
+    // Sort dropdown
+    sortMenuOverlay: {
+        position: 'absolute',
+        top: 0, left: 0, right: 0, bottom: 0,
+        zIndex: 2000,
+    },
+    sortMenuDismiss: {
+        position: 'absolute',
+        top: 0, left: 0, right: 0, bottom: 0,
+    },
+    sortMenuCard: {
+        position: 'absolute',
+        top: 155,
+        right: 20,
+        backgroundColor: '#ffffff',
+        borderRadius: 16,
+        paddingVertical: 8,
+        paddingHorizontal: 4,
+        minWidth: 200,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.12,
+        shadowRadius: 16,
+        elevation: 8,
+    },
+    dropdownTitle: {
+        fontSize: 12,
+        fontFamily: 'PlusJakartaSans_600SemiBold',
+        color: '#9ca3af',
+        textTransform: 'uppercase',
+        letterSpacing: 0.8,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+    },
+    dropdownItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 10,
+        gap: 10,
+    },
+    dropdownItemActive: {
+        backgroundColor: '#f9fafb',
+    },
+    dropdownText: {
+        fontSize: 14,
+        fontFamily: 'PlusJakartaSans_400Regular',
+        color: '#4b5563',
+    },
+    dropdownTextActive: {
+        fontFamily: 'PlusJakartaSans_600SemiBold',
+        color: '#1f2937',
+    },
+    // Delete modal
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.4)',
