@@ -11,12 +11,20 @@ import { Alert, FlatList, Image, Modal, Platform, Pressable, StyleSheet, Text, T
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
-  const { lists, loading, deleteList } = useLists();
+  const { lists, loading, deleteList, archiveList } = useLists();
   const { user, signOut, deleteAccount } = useAuth();
   const router = useRouter();
 
   const handleEditList = (listId: string) => {
     router.push(`/edit-list/${listId}`);
+  };
+
+  const handleArchiveList = async (listId: string) => {
+    try {
+      await archiveList(listId);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to archive list. Please try again.');
+    }
   };
   const [search, setSearch] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -109,10 +117,13 @@ export default function HomeScreen() {
   const renderItem = ({ item }: { item: any }) => (
     <View style={{ marginBottom: 16 }}>
       <SwipeableItem
-        onEdit={() => handleEditList(item.id)}
+        onEdit={() => handleArchiveList(item.id)}
         onDelete={() => handleDeleteList(item.id, item.title)}
         marginBottom={0}
         borderRadius={20}
+        leftIcon="archive-outline"
+        leftLabel="Archive"
+        leftColor="#f59e0b"
       >
         <ListCard list={item} onDelete={handleDeleteList} style={{ marginBottom: 0 }} />
       </SwipeableItem>
@@ -241,6 +252,17 @@ export default function HomeScreen() {
                 <Text style={styles.profileName} numberOfLines={1}>{user?.displayName || 'User'}</Text>
                 <Text style={styles.profileEmail} numberOfLines={1}>{user?.email}</Text>
               </View>
+              <View style={styles.menuDivider} />
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => {
+                  setProfileMenuVisible(false);
+                  router.push('/archived' as any);
+                }}
+              >
+                <Ionicons name="archive-outline" size={20} color="#6b7280" />
+                <Text style={[styles.menuText, { color: '#4b5563' }]}>Archived Lists</Text>
+              </TouchableOpacity>
               <View style={styles.menuDivider} />
               <TouchableOpacity
                 style={styles.menuItem}

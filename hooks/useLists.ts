@@ -16,6 +16,8 @@ export const useLists = () => {
             return;
         }
 
+        // Simple query — no composite index needed.
+        // We filter archived lists client-side so existing docs without the field work too.
         const q = query(
             collection(db, 'lists'),
             where('userId', '==', user.uid),
@@ -23,11 +25,13 @@ export const useLists = () => {
         );
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
-            const listsData = snapshot.docs.map(doc => ({
-                id: doc.id,
-                hasPendingWrites: doc.metadata.hasPendingWrites,
-                ...doc.data()
-            })) as List[];
+            const listsData = (snapshot.docs
+                .map(doc => ({
+                    id: doc.id,
+                    hasPendingWrites: doc.metadata.hasPendingWrites,
+                    ...doc.data()
+                })) as List[])
+                .filter(l => !l.archived);  // hide archived from main view
             setLists(listsData);
             setLoading(false);
         }, (error) => {
@@ -36,7 +40,7 @@ export const useLists = () => {
         });
 
         return unsubscribe;
-    }, [user?.uid]); // Only re-subscribe when user ID changes
+    }, [user?.uid]);
 
     const createList = async (title: string, description: string, fields: ListField[]) => {
         if (!user) {
@@ -51,6 +55,7 @@ export const useLists = () => {
                 title,
                 description,
                 fields,
+                archived: false,
                 createdAt: Date.now(),
                 updatedAt: Date.now()
             });
@@ -88,5 +93,70 @@ export const useLists = () => {
         }
     };
 
-    return { lists, loading, createList, deleteList, updateList };
+    const archiveList = async (listId: string) => {
+        try {
+            await updateDoc(doc(db, 'lists', listId), {
+                archived: true,
+                updatedAt: Date.now()
+            });
+        } catch (error) {
+            console.error('Error archiving list:', error);
+            throw error;
+        }
+    };
+
+    const unarchiveList = async (listId: string) => {
+        try {
+            await updateDoc(doc(db, 'lists', listId), {
+                archived: false,
+                updatedAt: Date.now()
+            });
+        } catch (error) {
+            console.error('Error unarchiving list:', error);
+            throw error;
+        }
+    };
+
+    return { lists, loading, createList, deleteList, updateList, archiveList, unarchiveList };
+};
+
+export const useArchivedLists = () => {
+    const { user } = useAuth();
+    const [archivedLists, setArchivedLists] = useState<List[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (!user) {
+            setArchivedLists([]);
+            setLoading(false);
+            return;
+        }
+
+        // Simple query, filter client-side — avoids composite index requirement
+        const q = query(
+            collection(db, 'lists'),
+            where('userId', '==', user.uid),
+            orderBy('createdAt', 'desc')
+        );
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const listsData = (snapshot.docs
+                .map(doc => ({
+                    id: doc.id,
+                    hasPendingWrites: doc.metadata.hasPendingWrites,
+                    ...doc.data()
+                })) as List[])
+                .filter(l => l.archived === true)
+                .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+            setArchivedLists(listsData);
+            setLoading(false);
+        }, (error) => {
+            console.error("Error fetching archived lists:", error);
+            setLoading(false);
+        });
+
+        return unsubscribe;
+    }, [user?.uid]);
+
+    return { archivedLists, loading };
 };

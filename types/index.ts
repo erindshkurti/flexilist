@@ -13,6 +13,7 @@ export interface List {
     fields: ListField[];
     createdAt: number;
     updatedAt: number;
+    archived?: boolean;
     hasPendingWrites?: boolean;
 }
 

@@ -9,9 +9,22 @@ interface SwipeableItemProps {
     onDelete: () => void;
     marginBottom?: number;
     borderRadius?: number;
+    // Configurable left action (defaults to Edit)
+    leftIcon?: React.ComponentProps<typeof Ionicons>['name'];
+    leftLabel?: string;
+    leftColor?: string;
 }
 
-export const SwipeableItem = ({ children, onEdit, onDelete, marginBottom = 12, borderRadius = 16 }: SwipeableItemProps) => {
+export const SwipeableItem = ({
+    children,
+    onEdit,
+    onDelete,
+    marginBottom = 12,
+    borderRadius = 16,
+    leftIcon = 'pencil',
+    leftLabel = 'Edit',
+    leftColor = '#3b82f6',
+}: SwipeableItemProps) => {
     const swipeableRef = useRef<Swipeable>(null);
 
     const renderLeftActions = (progress: Animated.AnimatedInterpolation<number>, dragX: Animated.AnimatedInterpolation<number>) => {
@@ -23,7 +36,7 @@ export const SwipeableItem = ({ children, onEdit, onDelete, marginBottom = 12, b
         return (
             <RectButton
                 shouldActivateOnStart={true}
-                style={[styles.leftAction, { marginBottom, borderRadius, borderTopRightRadius: 0, borderBottomRightRadius: 0 }]}
+                style={[styles.leftAction, { backgroundColor: leftColor, marginBottom, borderRadius, borderTopRightRadius: 0, borderBottomRightRadius: 0 }]}
                 onPress={() => {
                     swipeableRef.current?.close();
                     onEdit();
@@ -36,8 +49,8 @@ export const SwipeableItem = ({ children, onEdit, onDelete, marginBottom = 12, b
                             transform: [{ translateX: trans }],
                         },
                     ]}>
-                    <Ionicons name="pencil" size={24} color="white" />
-                    <Text style={styles.actionLabel}>Edit</Text>
+                    <Ionicons name={leftIcon} size={24} color="white" />
+                    <Text style={styles.actionLabel}>{leftLabel}</Text>
                 </Animated.View>
             </RectButton>
         );
@@ -93,19 +106,18 @@ export const SwipeableItem = ({ children, onEdit, onDelete, marginBottom = 12, b
 const styles = StyleSheet.create({
     leftAction: {
         minWidth: 120,
-        backgroundColor: '#3b82f6', // blue-500
         justifyContent: 'center',
-        alignItems: 'flex-start', // Align content to the left side
+        alignItems: 'flex-start',
         paddingLeft: 20,
         marginBottom: 12,
         borderRadius: 16,
         borderTopRightRadius: 0,
         borderBottomRightRadius: 0,
-        marginRight: -36, // pull under the item further
+        marginRight: -36,
     },
     rightAction: {
         minWidth: 120,
-        backgroundColor: '#ef4444', // red-500
+        backgroundColor: '#ef4444',
         justifyContent: 'center',
         alignItems: 'flex-end',
         paddingRight: 20,
@@ -113,7 +125,7 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         borderTopLeftRadius: 0,
         borderBottomLeftRadius: 0,
-        marginLeft: -36, // pull under the item further
+        marginLeft: -36,
     },
     actionText: {
         alignItems: 'center',
