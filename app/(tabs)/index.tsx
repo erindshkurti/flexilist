@@ -690,11 +690,13 @@ const styles = StyleSheet.create({
     maxWidth: 840,
     width: '100%',
     alignSelf: 'center',
+    flexGrow: 1,
   },
   emptyState: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 80,
+    paddingBottom: 60,
     backgroundColor: '#ffffff',
   },
   emptyIcon: {
