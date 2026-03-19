@@ -355,20 +355,13 @@ export default function HomeScreen() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.deleteModal}>
-            <View style={styles.deleteModalHeader}>
-              <Ionicons name="warning-outline" size={48} color="#ef4444" />
-              <Text style={styles.deleteModalTitle}>Delete List</Text>
-            </View>
+            <Text style={styles.deleteModalTitle}>Delete List</Text>
             <Text style={styles.deleteModalMessage}>
-              Are you sure you want to delete &quot;{listToDelete?.title}&quot;?{'\n'}
-              This action cannot be undone.
+              Permanently delete "{listToDelete?.title}"? This cannot be undone.
             </Text>
             <View style={styles.deleteModalButtons}>
               <TouchableOpacity
-                onPress={() => {
-                  setDeleteModalVisible(false);
-                  setListToDelete(null);
-                }}
+                onPress={() => { setDeleteModalVisible(false); setListToDelete(null); }}
                 style={[styles.deleteModalButton, styles.cancelButton]}
               >
                 <Text style={styles.cancelButtonText}>Cancel</Text>
@@ -393,13 +386,9 @@ export default function HomeScreen() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.deleteModal}>
-            <View style={styles.deleteModalHeader}>
-              <Ionicons name="archive-outline" size={48} color="#f59e0b" />
-              <Text style={styles.deleteModalTitle}>Archive List</Text>
-            </View>
+            <Text style={styles.deleteModalTitle}>Archive List</Text>
             <Text style={styles.deleteModalMessage}>
-              Archive "{listToArchive?.title}"?{`\n`}
-              You can restore it anytime from Archived Lists.
+              Archive "{listToArchive?.title}"?{`\n`}You can restore it anytime from Archived Lists.
             </Text>
             <View style={styles.deleteModalButtons}>
               <TouchableOpacity
@@ -719,41 +708,35 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
   deleteModal: {
-    backgroundColor: 'white',
-    borderRadius: 24,
-    padding: 32,
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 24,
     width: '100%',
     maxWidth: 400,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.15,
     shadowRadius: 24,
     elevation: 10,
   },
-  deleteModalHeader: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
   deleteModalTitle: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 18,
     fontFamily: 'PlusJakartaSans_700Bold',
-    color: '#1f2937',
-    marginTop: 12,
+    color: '#111827',
+    marginBottom: 8,
   },
   deleteModalMessage: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'PlusJakartaSans_400Regular',
     color: '#6b7280',
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 32,
+    lineHeight: 22,
+    marginBottom: 24,
   },
   deleteModalButtons: {
     flexDirection: 'row',
@@ -761,7 +744,7 @@ const styles = StyleSheet.create({
   },
   deleteModalButton: {
     flex: 1,
-    paddingVertical: 14,
+    paddingVertical: 12,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -770,21 +753,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3f4f6',
   },
   cancelButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
     fontFamily: 'PlusJakartaSans_600SemiBold',
-    color: '#4b5563',
+    color: '#374151',
+    fontSize: 14,
   },
   confirmDeleteButton: {
     backgroundColor: '#ef4444',
   },
   confirmArchiveButton: {
-    backgroundColor: '#f59e0b',
+    backgroundColor: '#9ca3af',
   },
   confirmDeleteButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
     fontFamily: 'PlusJakartaSans_600SemiBold',
-    color: 'white',
+    color: '#ffffff',
+    fontSize: 14,
   },
 });
