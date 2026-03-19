@@ -79,7 +79,7 @@ export const ListCard = ({ list, onDelete, onArchive, style }: ListCardProps) =>
                             style={styles.archiveButton}
                             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                         >
-                            <Ionicons name="archive-outline" size={20} color="#f59e0b" />
+                            <Ionicons name="archive-outline" size={20} color="#9ca3af" />
                         </TouchableOpacity>
                     )}
                     <TouchableOpacity
