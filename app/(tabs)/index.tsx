@@ -19,12 +19,9 @@ export default function HomeScreen() {
     router.push(`/edit-list/${listId}`);
   };
 
-  const handleArchiveList = async (listId: string) => {
-    try {
-      await archiveList(listId);
-    } catch (error) {
-      Alert.alert('Error', 'Failed to archive list. Please try again.');
-    }
+  const handleArchiveList = (listId: string, listTitle: string) => {
+    setListToArchive({ id: listId, title: listTitle });
+    setArchiveModalVisible(true);
   };
   const [search, setSearch] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -33,6 +30,8 @@ export default function HomeScreen() {
   const [profileMenuVisible, setProfileMenuVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [listToDelete, setListToDelete] = useState<{ id: string; title: string } | null>(null);
+  const [archiveModalVisible, setArchiveModalVisible] = useState(false);
+  const [listToArchive, setListToArchive] = useState<{ id: string; title: string } | null>(null);
 
   // Note: We intentionally don't save '/(tabs)' here because it would
   // overwrite the saved route before restoration logic can read it.
@@ -99,6 +98,17 @@ export default function HomeScreen() {
     }
   };
 
+  const confirmArchive = async () => {
+    if (!listToArchive) return;
+    try {
+      await archiveList(listToArchive.id);
+      setArchiveModalVisible(false);
+      setListToArchive(null);
+    } catch (error: any) {
+      Alert.alert('Error', 'Failed to archive list. Please try again.');
+    }
+  };
+
   const filteredLists = lists
     .filter(list => list.title.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
@@ -122,7 +132,7 @@ export default function HomeScreen() {
         marginBottom={0}
         borderRadius={20}
       >
-        <ListCard list={item} onDelete={handleDeleteList} onArchive={handleArchiveList} style={{ marginBottom: 0 }} />
+        <ListCard list={item} onDelete={handleDeleteList} onArchive={(id) => handleArchiveList(id, item.title)} style={{ marginBottom: 0 }} />
       </SwipeableItem>
     </View>
   );
@@ -368,6 +378,41 @@ export default function HomeScreen() {
                 style={[styles.deleteModalButton, styles.confirmDeleteButton]}
               >
                 <Text style={styles.confirmDeleteButtonText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Archive confirmation modal */}
+      <Modal
+        visible={archiveModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => { setArchiveModalVisible(false); setListToArchive(null); }}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.deleteModal}>
+            <View style={styles.deleteModalHeader}>
+              <Ionicons name="archive-outline" size={48} color="#f59e0b" />
+              <Text style={styles.deleteModalTitle}>Archive List</Text>
+            </View>
+            <Text style={styles.deleteModalMessage}>
+              Archive "{listToArchive?.title}"?{`\n`}
+              You can restore it anytime from Archived Lists.
+            </Text>
+            <View style={styles.deleteModalButtons}>
+              <TouchableOpacity
+                onPress={() => { setArchiveModalVisible(false); setListToArchive(null); }}
+                style={[styles.deleteModalButton, styles.cancelButton]}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={confirmArchive}
+                style={[styles.deleteModalButton, styles.confirmArchiveButton]}
+              >
+                <Text style={styles.confirmDeleteButtonText}>Archive</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -732,6 +777,9 @@ const styles = StyleSheet.create({
   },
   confirmDeleteButton: {
     backgroundColor: '#ef4444',
+  },
+  confirmArchiveButton: {
+    backgroundColor: '#f59e0b',
   },
   confirmDeleteButtonText: {
     fontSize: 16,
