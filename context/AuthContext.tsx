@@ -1,6 +1,8 @@
 import { deleteUser, signOut as firebaseSignOut, onAuthStateChanged, User } from 'firebase/auth';
 import { collection, deleteDoc, doc, getDocs, query, where } from 'firebase/firestore';
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { auth, db } from '../config/firebase';
 
 interface AuthContextType {
@@ -33,6 +35,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const signOut = async () => {
         try {
+            if (Platform.OS !== 'web') {
+                try {
+                    await GoogleSignin.signOut();
+                } catch (error) {
+                    console.log('GoogleSignin.signOut error (ignored):', error);
+                }
+            }
             await firebaseSignOut(auth);
         } catch (error) {
             console.error('Sign out error:', error);
