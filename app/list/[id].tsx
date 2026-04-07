@@ -355,6 +355,11 @@ export default function ListDetailScreen() {
                                 style={styles.searchInput}
                                 placeholderTextColor="#9ca3af"
                             />
+                            {search.length > 0 && (
+                                <TouchableOpacity onPress={() => setSearch('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                                    <Ionicons name="close-circle" size={18} color="#9ca3af" />
+                                </TouchableOpacity>
+                            )}
                         </View>
                         <TouchableOpacity
                             onPress={() => {
