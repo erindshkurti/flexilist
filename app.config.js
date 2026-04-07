@@ -12,7 +12,7 @@ const baseConfig = {
     "expo": {
         "name": "FlexiList",
         "slug": "flexilist",
-        "version": "1.0.1",
+        "version": "1.0.2",
         "orientation": "default",
         "icon": "./assets/images/logo.png",
         "scheme": "flexilist",

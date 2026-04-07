@@ -1,0 +1,100 @@
+default_platform(:ios)
+
+BUNDLE_ID       = "com.erindshkurti.flexilist"
+WORKSPACE       = "ios/flexilist.xcworkspace"
+SCHEME          = "FlexiList"
+BUILD_DIR       = "ios/build"
+ARCHIVE_PATH    = "#{BUILD_DIR}/flexilist.xcarchive"
+EXPORT_PATH     = "#{BUILD_DIR}/ipa"
+
+platform :ios do
+
+  # ─── Download certs & profiles from Apple, install into Keychain ───────────
+  # Run this once (or when certs expire) to sync credentials locally.
+  lane :sync_certs do
+    # Downloads distribution certificate + installs into Keychain
+    get_certificates(
+      development: false,
+      output_path: "fastlane/certs"
+    )
+    # Downloads App Store provisioning profile
+    get_provisioning_profile(
+      app_identifier: BUNDLE_ID,
+      provisioning_name: "#{BUNDLE_ID} AppStore",
+      filename: "fastlane/profiles/appstore.mobileprovision"
+    )
+    UI.success "✅ Certificates and profiles synced. Run `fastlane build_release` to build."
+  end
+
+  # ─── Full local Release build → IPA ────────────────────────────────────────
+  lane :build_release do
+    # 1. Regenerate the native iOS project
+    sh("cd .. && npx expo prebuild --platform ios --clean 2>&1")
+
+    # 2. Install CocoaPods
+    cocoapods(podfile: "ios/Podfile", use_bundle_exec: false)
+
+    # 3. Configure signing (manual, so xcodebuild doesn't try automatic lookup)
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "ios/flexilist.xcodeproj",
+      bundle_identifier: BUNDLE_ID,
+      profile_name: "#{BUNDLE_ID} AppStore",
+      code_sign_identity: "iPhone Distribution",
+      team_id: "C9A4DF8HX9"
+    )
+
+    # 4. Archive
+    sh(
+      "xcodebuild",
+      "-workspace", "../#{WORKSPACE}",
+      "-scheme", SCHEME,
+      "-configuration", "Release",
+      "-archivePath", "../#{ARCHIVE_PATH}",
+      "archive",
+      "CODE_SIGN_STYLE=Manual",
+      "PROVISIONING_PROFILE_SPECIFIER=#{BUNDLE_ID} AppStore",
+      "CODE_SIGN_IDENTITY=iPhone Distribution",
+      "DEVELOPMENT_TEAM=C9A4DF8HX9"
+    )
+
+    # 5. Export IPA
+    sh(
+      "xcodebuild",
+      "-exportArchive",
+      "-archivePath", "../#{ARCHIVE_PATH}",
+      "-exportPath", "../#{EXPORT_PATH}",
+      "-exportOptionsPlist", "../fastlane/ExportOptions.plist"
+    )
+
+    ipa_path = "#{EXPORT_PATH}/#{SCHEME}.ipa"
+    UI.success "✅ IPA ready at: #{ipa_path}"
+    ipa_path
+  end
+
+  # ─── Build + upload to TestFlight in one step ──────────────────────────────
+  lane :release do
+    # Auto-bump build number
+    build_number_path = File.expand_path("../build-number.json")
+    build_data = JSON.parse(File.read(build_number_path))
+    new_build = build_data["buildNumber"] + 1
+    File.write(build_number_path, JSON.pretty_generate({ "buildNumber" => new_build }))
+    UI.message "📦 Build number bumped to #{new_build}"
+
+    ipa = build_release
+    
+    app_store_connect_api_key(
+      key_id: "HBPJCRP52X",
+      issuer_id: "39e8ffc3-d910-4712-90b5-0098863f7fc3",
+      key_filepath: File.expand_path("~/Development/.appstore/AuthKey_HBPJCRP52X.p8"),
+      in_house: false
+    )
+
+    upload_to_testflight(
+      ipa: ipa,
+      skip_waiting_for_build_processing: true
+    )
+    UI.success "🚀 Build #{new_build} uploaded to TestFlight!"
+  end
+
+end

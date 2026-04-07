@@ -50,3 +50,11 @@ GoogleService-Info.plist
 
 # Local task tracking
 TODO.md
+
+# Fastlane — credential files (dirs tracked via .gitkeep)
+fastlane/certs/*
+fastlane/profiles/*
+!fastlane/certs/.gitkeep
+!fastlane/profiles/.gitkeep
+fastlane/report.xml
+ios/build/

@@ -37,15 +37,10 @@ EXPO_PUBLIC_FIREBASE_PROJECT_ID=...
 
 Web deployment always happens locally.
 
-### Step 1: Build the Static Site
+### Step 1: Build & Deploy
+We have a unified script that exports the React Native web bundle, copies the privacy policy, and uploads to Firebase:
 ```bash
-npm run build
-```
-This generates the optimized production bundle in the `dist/` directory.
-
-### Step 2: Deploy to Firebase Hosting
-```bash
-npx firebase deploy --only hosting
+npm run deploy:web
 ```
 
 Your app will be live at: `https://flexilist-5a873.web.app`

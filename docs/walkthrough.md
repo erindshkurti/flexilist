@@ -24,15 +24,18 @@ FlexiList is a cross-platform list management app built with **React Native (Exp
 
 ### Item Management (List Detail)
 - View items with their dynamic fields rendered inline
-- **Add / Edit / Delete** items via modal forms
-- **Mark complete** with animated checkbox toggle
-- **Show/Hide completed** toggle (eye icon), persisted per-list via AsyncStorage
-- **Search** items by any field value
-- **Sort** by Date Created or Alphabetical
-- **Swipe-to-edit** and **swipe-to-delete** on individual items
-
-### UI / UX
-- Premium card-based design with shadows, gradients (`expo-linear-gradient`), and rounded corners
+- **Custom List Schemas** — define exactly what fields to track per list
+- **Cross-Platform** — iOS, Android, and Web
+- **Secure Authentication** — Google Sign-In + Apple Sign-In via Firebase Auth
+- **Cloud Sync** — real-time sync with Firestore
+- **Offline Mode** — lists and items cached locally (AsyncStorage on native, IndexedDB on web); works without a connection
+- **Swipe Actions** — swipe to edit or delete lists and items
+- **Clone List** — duplicate any list (with all items) via an atomic Firestore batch write
+- **Voice Input** — speak list items, titles, and field names using device speech recognition
+- **Smart Filtering** — search, sort (by date modified, date created, or alphabetical), and toggle completed items
+- **Per-List Preferences** — hide-completed state persists per list
+- **Completed List Highlights** — fully completed lists show a green card on the home screen
+- **Modern UI** — card-based design with shadows, gradients, custom typography, and smooth interactionsrners
 - Custom typography via Google Fonts (Plus Jakarta Sans)
 - Responsive layout — centered `maxWidth: 800px` content on desktop
 - Floating Action Button (FAB) for quick item/list creation
@@ -67,21 +70,37 @@ config/
   firebase.ts         — Firebase initialization (Auth + Firestore)
 hooks/
   useAuth.tsx         — Auth context provider
-  useLists.ts         — Firestore CRUD for lists
-  useListItems.ts     — Firestore CRUD for list items
+  useLists.ts         — Firestore CRUD for lists (with offline cache)
+  useListItems.ts     — Firestore CRUD for list items (with offline cache)
+  useOfflineCache.ts  — AsyncStorage/localStorage cache utility
+  useVoiceInput.ts    — Speech recognition hook
+fastlane/
+  Fastfile            — Build lanes (sync_certs, build_release, release)
+  Appfile             — Apple team / bundle ID config
+  ExportOptions.plist — IPA export settings
+  certs/              — Downloaded certificates (gitignored)
+  profiles/           — Downloaded provisioning profiles (gitignored)
 ```
 
 ## Deployment
 
 ### Web (Firebase Hosting)
 ```bash
-npm run deploy
+npm run deploy:web
 ```
 This runs `expo export`, copies the privacy policy HTML, and deploys to Firebase Hosting.
 
 **Live URL:** https://flexilist-5a873.web.app
 
-### iOS (App Store via EAS)
+### iOS (App Store)
+```bash
+# Local build via Fastlane (recommended)
+npm run build:ios               # → ios/build/ipa/FlexiList.ipa
+npm run deploy:ios              # build + upload to TestFlight
+
+# EAS cloud build
+eas build --platform ios --profile production
+```
 See [ios-deployment-guide.md](./ios-deployment-guide.md) for full instructions.
 
 ### Android (Google Play via EAS)

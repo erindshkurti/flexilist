@@ -6,11 +6,15 @@ FlexiList is a modern, cross-platform application for flexible list management. 
 
 - **Custom List Schemas** — define exactly what fields to track per list
 - **Cross-Platform** — iOS, Android, and Web
-- **Secure Authentication** — Google Sign-In via Firebase Auth
+- **Secure Authentication** — Google Sign-In + Apple Sign-In via Firebase Auth
 - **Cloud Sync** — real-time sync with Firestore
+- **Offline Mode** — cached reads via AsyncStorage (native) and IndexedDB (web)
 - **Swipe Actions** — swipe to edit or delete lists and items
-- **Smart Filtering** — search, sort (by date modified, date created, or alphabetical), and toggle completed items
+- **Clone List** — duplicate any list and all its items atomically
+- **Voice Input** — speak list items, titles, and field names
+- **Smart Filtering** — search, sort, and toggle completed items
 - **Per-List Preferences** — hide-completed state persists per list
+- **Completed List Highlights** — fully-done lists show a green card
 - **Modern UI** — card-based design with shadows, gradients, custom typography, and smooth interactions
 
 ## Tech Stack
@@ -86,7 +90,7 @@ See [docs/web-deployment-guide.md](./docs/web-deployment-guide.md) for the full 
 **Quick reference:**
 ```bash
 # Build + deploy (includes privacy policy page)
-npm run deploy
+npm run deploy:web
 
 # Deploy only (skip rebuild)
 firebase deploy --only hosting
@@ -100,13 +104,17 @@ See [docs/ios-deployment-guide.md](./docs/ios-deployment-guide.md) for the full 
 
 **Quick reference:**
 ```bash
-# EAS local build (free, recommended)
+# Fastlane local build (recommended — free, ~4 min)
+npm run build:ios               # → ios/build/ipa/FlexiList.ipa
+npm run deploy:ios              # build + upload to TestFlight
+
+# EAS local build (free)
 npm run build:eas:ios
 
 # EAS cloud build
 eas build --platform ios --profile production
 
-# Submit to App Store Connect
+# Submit to TestFlight (if you have a pre-built IPA via EAS)
 eas submit --platform ios --latest
 ```
 
