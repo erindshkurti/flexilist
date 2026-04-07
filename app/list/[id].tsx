@@ -2,6 +2,7 @@ import { Button } from '@/components/Button';
 import { SwipeableItem } from '@/components/SwipeableItem';
 import { db } from '@/config/firebase';
 import { useListItems } from '@/hooks/useListItems';
+import { useLists } from '@/hooks/useLists';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { List, ListField } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
@@ -37,6 +38,10 @@ export default function ListDetailScreen() {
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null);
     const [uncheckModalVisible, setUncheckModalVisible] = useState(false);
+    const [cloneModalVisible, setCloneModalVisible] = useState(false);
+    const [isCloning, setIsCloning] = useState(false);
+
+    const { cloneList } = useLists();
 
     // Voice input
     const activeVoiceFieldId = useRef<string | null>(null);
@@ -70,6 +75,20 @@ export default function ListDetailScreen() {
             setUncheckModalVisible(false);
         } catch {
             Alert.alert("Error", "Failed to uncheck items.");
+        }
+    };
+
+    const handleCloneList = async () => {
+        if (!list) return;
+        try {
+            setIsCloning(true);
+            const newId = await cloneList(list);
+            setCloneModalVisible(false);
+            router.replace(`/list/${newId}` as any);
+        } catch {
+            Alert.alert('Error', 'Failed to clone list. Please try again.');
+        } finally {
+            setIsCloning(false);
         }
     };
 
@@ -495,10 +514,11 @@ export default function ListDetailScreen() {
                                             {sortBy === 'name' && <Ionicons name="checkmark" size={16} color="#1f2937" style={{ marginLeft: 'auto' }} />}
                                         </TouchableOpacity>
 
-                                        {items.some(item => item.completed) && (
-                                            <>
-                                                <View style={styles.dropdownDivider} />
-                                                <Text style={styles.dropdownTitle}>Actions</Text>
+                                        {/* Actions section — always shown */}
+                                        <>
+                                            <View style={styles.dropdownDivider} />
+                                            <Text style={styles.dropdownTitle}>Actions</Text>
+                                            {items.some(item => item.completed) && (
                                                 <TouchableOpacity
                                                     style={styles.dropdownItem}
                                                     onPress={() => {
@@ -509,8 +529,18 @@ export default function ListDetailScreen() {
                                                     <Ionicons name="refresh-outline" size={20} color="#4b5563" />
                                                     <Text style={styles.dropdownText}>Uncheck All</Text>
                                                 </TouchableOpacity>
-                                            </>
-                                        )}
+                                            )}
+                                            <TouchableOpacity
+                                                style={styles.dropdownItem}
+                                                onPress={() => {
+                                                    setSortMenuVisible(false);
+                                                    setCloneModalVisible(true);
+                                                }}
+                                            >
+                                                <Ionicons name="copy-outline" size={20} color="#4b5563" />
+                                                <Text style={styles.dropdownText}>Clone List</Text>
+                                            </TouchableOpacity>
+                                        </>
                                     </View>
                                 </TouchableWithoutFeedback>
                             </View>
@@ -708,6 +738,42 @@ export default function ListDetailScreen() {
                                     style={[styles.deleteModalButton, { backgroundColor: '#10b981' }]}
                                 >
                                     <Text style={styles.confirmDeleteButtonText}>Uncheck</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
+
+                {/* Clone List Confirmation Modal */}
+                <Modal
+                    visible={cloneModalVisible}
+                    transparent={true}
+                    animationType="fade"
+                    onRequestClose={() => setCloneModalVisible(false)}
+                >
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.deleteModal}>
+                            <View style={styles.deleteModalHeader}>
+                                <Ionicons name="copy-outline" size={48} color="#6366f1" />
+                                <Text style={styles.deleteModalTitle}>Clone List</Text>
+                            </View>
+                            <Text style={styles.deleteModalMessage}>
+                                A copy of "{list?.title}" will be created with all its items (unchecked). You'll be taken to the new list.
+                            </Text>
+                            <View style={styles.deleteModalButtons}>
+                                <TouchableOpacity
+                                    onPress={() => setCloneModalVisible(false)}
+                                    style={[styles.deleteModalButton, styles.cancelButtonModal]}
+                                    disabled={isCloning}
+                                >
+                                    <Text style={styles.cancelButtonText}>Cancel</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={handleCloneList}
+                                    style={[styles.deleteModalButton, { backgroundColor: '#6366f1', opacity: isCloning ? 0.6 : 1 }]}
+                                    disabled={isCloning}
+                                >
+                                    <Text style={styles.confirmDeleteButtonText}>{isCloning ? 'Cloning…' : 'Clone'}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>

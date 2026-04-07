@@ -1,7 +1,7 @@
 import { db } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
 import { List, ListField } from '@/types';
-import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc, where } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query, updateDoc, where, writeBatch } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
 export const useLists = () => {
@@ -117,7 +117,45 @@ export const useLists = () => {
         }
     };
 
-    return { lists, loading, createList, deleteList, updateList, archiveList, unarchiveList };
+    const cloneList = async (sourceList: List) => {
+        if (!user) throw new Error('Must be logged in to clone a list');
+        const now = Date.now();
+
+        // 1. Create the new list document
+        const newListRef = await addDoc(collection(db, 'lists'), {
+            userId: user.uid,
+            title: `Copy of ${sourceList.title}`,
+            description: sourceList.description || '',
+            fields: sourceList.fields,
+            archived: false,
+            createdAt: now,
+            updatedAt: now,
+        });
+
+        // 2. Copy all items in a single batch
+        const itemsSnap = await getDocs(
+            query(collection(db, 'lists', sourceList.id, 'items'), orderBy('createdAt', 'asc'))
+        );
+
+        if (!itemsSnap.empty) {
+            const batch = writeBatch(db);
+            itemsSnap.docs.forEach(itemDoc => {
+                const newItemRef = doc(collection(db, 'lists', newListRef.id, 'items'));
+                const { id: _id, ...data } = itemDoc.data() as any;
+                batch.set(newItemRef, {
+                    ...data,
+                    completed: false,
+                    createdAt: now,
+                    updatedAt: now,
+                });
+            });
+            await batch.commit();
+        }
+
+        return newListRef.id;
+    };
+
+    return { lists, loading, createList, deleteList, updateList, archiveList, unarchiveList, cloneList };
 };
 
 export const useArchivedLists = () => {
