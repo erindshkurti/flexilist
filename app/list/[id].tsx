@@ -448,7 +448,7 @@ export default function ListDetailScreen() {
 
                                             {list.fields.length > 1 && list.fields.slice(1).map(field => (
                                                 item.data[field.id] && (
-                                                    <View key={field.id} style={styles.labelChip}>
+                                                    <View key={field.id} style={[styles.labelChip, item.completed && styles.labelChipCompleted]}>
                                                         <Text style={[styles.labelText, item.completed && styles.labelTextCompleted]}>
                                                             {field.name}: {item.data[field.id]}
                                                         </Text>
@@ -1014,7 +1014,7 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     itemCardCompleted: {
-        backgroundColor: '#f3f4f6',
+        backgroundColor: '#f0fdf4',
     },
     checkbox: {
         marginRight: 12,
@@ -1051,8 +1051,11 @@ const styles = StyleSheet.create({
         fontFamily: 'PlusJakartaSans_500Medium',
     },
     labelTextCompleted: {
-        color: '#9ca3af',
+        color: '#166534',
         textDecorationLine: 'line-through',
+    },
+    labelChipCompleted: {
+        backgroundColor: '#dcfce7',
     },
     fieldRow: {
         marginBottom: 4,

@@ -25,8 +25,10 @@ export const ListCard = ({ list, onDelete, onArchive, style }: ListCardProps) =>
         return { total, completed };
     }, [items, loading]);
 
+    const isComplete = !loading && counts.total > 0 && counts.completed === counts.total;
+
     return (
-        <View style={[styles.listCard, style]}>
+        <View style={[styles.listCard, isComplete && styles.listCardComplete, style]}>
             <View style={styles.innerContainer}>
                 {/* Main clickable area for navigation */}
                 <TouchableOpacity
@@ -40,8 +42,8 @@ export const ListCard = ({ list, onDelete, onArchive, style }: ListCardProps) =>
                                 <View style={styles.titleRow}>
                                     <Text style={styles.listTitle}>{list.title}</Text>
                                     {!loading && (
-                                        <View style={styles.countBadge}>
-                                            <Text style={styles.countText}>
+                                        <View style={[styles.countBadge, isComplete && styles.countBadgeComplete]}>
+                                            <Text style={[styles.countText, isComplete && styles.countTextComplete]}>
                                                 {counts.completed}/{counts.total}
                                             </Text>
                                         </View>
@@ -60,8 +62,8 @@ export const ListCard = ({ list, onDelete, onArchive, style }: ListCardProps) =>
 
                         <View style={styles.fieldTags}>
                             {list.fields.slice(0, 3).map((field: any) => (
-                                <View key={field.id} style={styles.fieldTag}>
-                                    <Text style={styles.fieldTagText}>{field.name}</Text>
+                                <View key={field.id} style={[styles.fieldTag, isComplete && styles.fieldTagComplete]}>
+                                    <Text style={[styles.fieldTagText, isComplete && styles.fieldTagTextComplete]}>{field.name}</Text>
                                 </View>
                             ))}
                             {list.fields.length > 3 && (
@@ -116,6 +118,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#f9fafb',
     },
+    listCardComplete: {
+        backgroundColor: '#f0fdf4',
+        borderColor: '#bbf7d0',
+    },
     innerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -153,11 +159,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    countBadgeComplete: {
+        backgroundColor: '#dcfce7',
+    },
     countText: {
         fontSize: 12,
         fontWeight: '600',
         fontFamily: 'PlusJakartaSans_600SemiBold',
         color: '#4b5563',
+    },
+    countTextComplete: {
+        color: '#166534',
     },
     archivedBadge: {
         backgroundColor: '#fef3c7', // amber-50
@@ -197,11 +209,17 @@ const styles = StyleSheet.create({
         paddingVertical: 6,
         borderRadius: 8,
     },
+    fieldTagComplete: {
+        backgroundColor: '#dcfce7',
+    },
     fieldTagText: {
         fontSize: 12,
         color: '#4b5563',
         fontWeight: '600',
         fontFamily: 'PlusJakartaSans_600SemiBold',
+    },
+    fieldTagTextComplete: {
+        color: '#166534',
     },
     clickableArea: {
         flex: 1,
