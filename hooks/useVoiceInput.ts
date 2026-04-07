@@ -14,6 +14,9 @@ export type UseVoiceInputReturn = {
     stopListening: () => void;
 };
 
+const toTitleCase = (text: string) =>
+    text.replace(/\b\w/g, (char) => char.toUpperCase());
+
 export function useVoiceInput({ onResult, lang = 'en-US' }: UseVoiceInputOptions): UseVoiceInputReturn {
     const [isListening, setIsListening] = useState(false);
     const onResultRef = useRef(onResult);
@@ -25,7 +28,7 @@ export function useVoiceInput({ onResult, lang = 'en-US' }: UseVoiceInputOptions
     useSpeechRecognitionEvent('result', (event) => {
         const transcript = event.results?.[0]?.transcript;
         if (transcript) {
-            onResultRef.current(transcript);
+            onResultRef.current(toTitleCase(transcript));
         }
     });
     useSpeechRecognitionEvent('error', () => setIsListening(false));
@@ -75,7 +78,7 @@ export function useVoiceInput({ onResult, lang = 'en-US' }: UseVoiceInputOptions
         recognition.onresult = (event: any) => {
             const transcript = event.results?.[0]?.[0]?.transcript;
             if (transcript) {
-                onResultRef.current(transcript);
+                onResultRef.current(toTitleCase(transcript));
             }
         };
 
