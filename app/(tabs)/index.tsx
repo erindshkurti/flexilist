@@ -800,7 +800,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ef4444',
   },
   confirmArchiveButton: {
-    backgroundColor: '#f59e0b',
+    backgroundColor: '#4b5563',
   },
   confirmDeleteButtonText: {
     fontFamily: 'PlusJakartaSans_600SemiBold',

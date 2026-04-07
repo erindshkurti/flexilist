@@ -86,7 +86,7 @@ export const ListCard = ({ list, onDelete, onArchive, style }: ListCardProps) =>
                             style={styles.archiveButton}
                             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                         >
-                            <Ionicons name="archive-outline" size={20} color="#f59e0b" />
+                            <Ionicons name="archive-outline" size={20} color="#4b5563" />
                         </TouchableOpacity>
                     )}
                     <TouchableOpacity
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
         color: '#166534',
     },
     archivedBadge: {
-        backgroundColor: '#fef3c7', // amber-50
+        backgroundColor: '#f3f4f6',
         paddingHorizontal: 8,
         paddingVertical: 2,
         borderRadius: 12,
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '700',
         fontFamily: 'PlusJakartaSans_700Bold',
-        color: '#d97706', // amber-600
+        color: '#4b5563',
     },
     listDescription: {
         fontSize: 14,
