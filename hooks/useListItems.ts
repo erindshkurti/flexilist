@@ -1,5 +1,6 @@
 import { db } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
+import { cacheKey, readCache, writeCache } from '@/hooks/useOfflineCache';
 import { ListItem } from '@/types';
 import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc, writeBatch } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
@@ -10,23 +11,39 @@ export const useListItems = (listId: string) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!listId) return;
+        if (!listId) {
+            setLoading(false);
+            return;
+        }
 
+        // ── Seed from cache immediately ────────────────────────────────────
+        const key = cacheKey.items(listId);
+        readCache<ListItem[]>(key).then(cached => {
+            if (cached && cached.length > 0) {
+                setItems(cached);
+                setLoading(false);
+            }
+        });
+
+        // ── Live Firestore subscription ────────────────────────────────────
         const q = query(
             collection(db, 'lists', listId, 'items'),
             orderBy('createdAt', 'desc')
         );
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
-            const itemsData = snapshot.docs.map(doc => ({
-                id: doc.id,
+            const itemsData = snapshot.docs.map(d => ({
+                id: d.id,
                 listId,
-                ...doc.data()
+                ...d.data()
             })) as ListItem[];
             setItems(itemsData);
             setLoading(false);
+            // Always refresh cache with the latest server snapshot
+            writeCache(key, itemsData);
         }, (error) => {
-            console.error("Error fetching items:", error);
+            console.error('Error fetching items:', error);
+            // Don't clear state — cached data remains visible offline
             setLoading(false);
         });
 
@@ -34,7 +51,7 @@ export const useListItems = (listId: string) => {
     }, [listId]);
 
     const addItem = async (data: Record<string, any>) => {
-        if (!user) throw new Error("Must be logged in to add items");
+        if (!user) throw new Error('Must be logged in to add items');
         const now = Date.now();
         await addDoc(collection(db, 'lists', listId, 'items'), {
             data,

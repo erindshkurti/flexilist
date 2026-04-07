@@ -1,5 +1,6 @@
 import { db } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
+import { cacheKey, readCache, writeCache } from '@/hooks/useOfflineCache';
 import { List, ListField } from '@/types';
 import { addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query, updateDoc, where, writeBatch } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
@@ -16,6 +17,16 @@ export const useLists = () => {
             return;
         }
 
+        // ── Seed from cache immediately so the UI renders without a spinner ──
+        const key = cacheKey.lists(user.uid);
+        readCache<List[]>(key).then(cached => {
+            if (cached && cached.length > 0) {
+                setLists(cached);
+                setLoading(false);
+            }
+        });
+
+        // ── Live Firestore subscription ────────────────────────────────────
         // Simple query — no composite index needed.
         // We filter archived lists client-side so existing docs without the field work too.
         const q = query(
@@ -26,16 +37,19 @@ export const useLists = () => {
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const listsData = (snapshot.docs
-                .map(doc => ({
-                    id: doc.id,
-                    hasPendingWrites: doc.metadata.hasPendingWrites,
-                    ...doc.data()
+                .map(d => ({
+                    id: d.id,
+                    hasPendingWrites: d.metadata.hasPendingWrites,
+                    ...d.data()
                 })) as List[])
                 .filter(l => !l.archived);  // hide archived from main view
             setLists(listsData);
             setLoading(false);
+            // Refresh local cache with the latest server data
+            writeCache(key, listsData);
         }, (error) => {
-            console.error("Error fetching lists:", error);
+            console.error('Error fetching lists:', error);
+            // Don't clear state — cached data is already shown
             setLoading(false);
         });
 
@@ -170,6 +184,15 @@ export const useArchivedLists = () => {
             return;
         }
 
+        // ── Seed from cache ────────────────────────────────────────────────
+        const key = cacheKey.archivedLists(user.uid);
+        readCache<List[]>(key).then(cached => {
+            if (cached && cached.length > 0) {
+                setArchivedLists(cached);
+                setLoading(false);
+            }
+        });
+
         // Simple query, filter client-side — avoids composite index requirement
         const q = query(
             collection(db, 'lists'),
@@ -179,17 +202,18 @@ export const useArchivedLists = () => {
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const listsData = (snapshot.docs
-                .map(doc => ({
-                    id: doc.id,
-                    hasPendingWrites: doc.metadata.hasPendingWrites,
-                    ...doc.data()
+                .map(d => ({
+                    id: d.id,
+                    hasPendingWrites: d.metadata.hasPendingWrites,
+                    ...d.data()
                 })) as List[])
                 .filter(l => l.archived === true)
                 .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
             setArchivedLists(listsData);
             setLoading(false);
+            writeCache(key, listsData);
         }, (error) => {
-            console.error("Error fetching archived lists:", error);
+            console.error('Error fetching archived lists:', error);
             setLoading(false);
         });
 

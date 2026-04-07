@@ -1,6 +1,6 @@
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 import { Platform } from 'react-native';
 
 // Firebase configuration from environment variables
@@ -23,10 +23,12 @@ const firebaseConfig = {
 };
 
 // Singleton pattern to ensure we only initialize once
-let app;
-let authInstance;
+const isFirstInit = getApps().length === 0;
 
-if (getApps().length === 0) {
+let app: ReturnType<typeof initializeApp>;
+let authInstance: ReturnType<typeof getAuth>;
+
+if (isFirstInit) {
     app = initializeApp(firebaseConfig);
 
     if (Platform.OS === 'web') {
@@ -49,4 +51,27 @@ if (getApps().length === 0) {
 }
 
 export const auth = authInstance;
-export const db = getFirestore(app);
+
+// ── Firestore ────────────────────────────────────────────────────────────────
+// Web: enable IndexedDB persistent cache so Firestore data survives page
+//      refreshes and is readable while offline.
+// Native: use plain getFirestore — the SDK queues writes automatically;
+//         reads are served from the AsyncStorage cache in the data hooks.
+let dbInstance: ReturnType<typeof getFirestore>;
+
+if (Platform.OS === 'web' && isFirstInit) {
+    try {
+        dbInstance = initializeFirestore(app, {
+            localCache: persistentLocalCache({
+                tabManager: persistentMultipleTabManager(),
+            }),
+        });
+    } catch {
+        // Falls back to in-memory cache (e.g. multi-tab conflict on reload)
+        dbInstance = getFirestore(app);
+    }
+} else {
+    dbInstance = getFirestore(app);
+}
+
+export const db = dbInstance;
