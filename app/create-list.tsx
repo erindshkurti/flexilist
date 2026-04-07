@@ -1,11 +1,12 @@
 import { Button } from '@/components/Button';
 import { useLists } from '@/hooks/useLists';
+import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { ListField } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Alert, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, Animated, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function CreateListScreen() {
@@ -21,6 +22,50 @@ export default function CreateListScreen() {
     const [typeDropdownVisible, setTypeDropdownVisible] = useState<string | null>(null);
     const [errors, setErrors] = useState<{ title?: string; fields?: Record<string, string> }>({});
     const [infoModalVisible, setInfoModalVisible] = useState(false);
+
+    // ── Voice input ───────────────────────────────────────────────────────────
+    // activeVoiceFieldId encodes which field is active:
+    //   'title' | 'description' | `field-name-${field.id}`
+    const activeVoiceFieldId = useRef<string | null>(null);
+    const micPulse = useRef(new Animated.Value(1)).current;
+    const { isListening, supported: voiceSupported, startListening, stopListening } = useVoiceInput({
+        onResult: (text) => {
+            const key = activeVoiceFieldId.current;
+            if (!key) return;
+            if (key === 'title') {
+                setTitle(text);
+            } else if (key === 'description') {
+                setDescription(text);
+            } else if (key.startsWith('field-name-')) {
+                const fieldId = key.replace('field-name-', '');
+                updateField(fieldId, 'name', text);
+            }
+        },
+    });
+
+    useEffect(() => {
+        if (isListening) {
+            Animated.loop(
+                Animated.sequence([
+                    Animated.timing(micPulse, { toValue: 1.3, duration: 500, useNativeDriver: true }),
+                    Animated.timing(micPulse, { toValue: 1.0, duration: 500, useNativeDriver: true }),
+                ])
+            ).start();
+        } else {
+            micPulse.stopAnimation();
+            micPulse.setValue(1);
+            activeVoiceFieldId.current = null;
+        }
+    }, [isListening, micPulse]);
+
+    const toggleVoice = (fieldKey: string) => {
+        if (isListening && activeVoiceFieldId.current === fieldKey) {
+            stopListening();
+        } else {
+            activeVoiceFieldId.current = fieldKey;
+            startListening();
+        }
+    };
 
     const addField = () => {
         setFields([...fields, {
@@ -102,13 +147,31 @@ export default function CreateListScreen() {
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
                 <View style={styles.section}>
                     <Text style={styles.label}>List Title</Text>
-                    <TextInput
-                        value={title}
-                        onChangeText={setTitle}
-                        placeholder="e.g., Grocery List"
-                        placeholderTextColor="#9ca3af"
-                        style={[styles.input, errors.title && styles.inputError]}
-                    />
+                    <View style={[styles.inputInlineRow, errors.title && styles.inputError]}>
+                        <TextInput
+                            value={title}
+                            onChangeText={setTitle}
+                            placeholder="e.g., Grocery List"
+                            placeholderTextColor="#9ca3af"
+                            style={styles.inputInlineText}
+                        />
+                        {voiceSupported && (
+                            <TouchableOpacity
+                                onPress={() => toggleVoice('title')}
+                                style={styles.micInlineButton}
+                                activeOpacity={0.7}
+                                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                            >
+                                <Animated.View style={{ transform: [{ scale: isListening && activeVoiceFieldId.current === 'title' ? micPulse : 1 }] }}>
+                                    <Ionicons
+                                        name={isListening && activeVoiceFieldId.current === 'title' ? 'mic' : 'mic-outline'}
+                                        size={20}
+                                        color={isListening && activeVoiceFieldId.current === 'title' ? '#ef4444' : '#9ca3af'}
+                                    />
+                                </Animated.View>
+                            </TouchableOpacity>
+                        )}
+                    </View>
                     {errors.title && (
                         <View style={styles.errorContainer}>
                             <Ionicons name="alert-circle" size={14} color="#ef4444" />
@@ -119,13 +182,31 @@ export default function CreateListScreen() {
 
                 <View style={styles.section}>
                     <Text style={styles.label}>Description (Optional)</Text>
-                    <TextInput
-                        value={description}
-                        onChangeText={setDescription}
-                        placeholder="What is this list for?"
-                        placeholderTextColor="#9ca3af"
-                        style={styles.input}
-                    />
+                    <View style={styles.inputInlineRow}>
+                        <TextInput
+                            value={description}
+                            onChangeText={setDescription}
+                            placeholder="What is this list for?"
+                            placeholderTextColor="#9ca3af"
+                            style={styles.inputInlineText}
+                        />
+                        {voiceSupported && (
+                            <TouchableOpacity
+                                onPress={() => toggleVoice('description')}
+                                style={styles.micInlineButton}
+                                activeOpacity={0.7}
+                                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                            >
+                                <Animated.View style={{ transform: [{ scale: isListening && activeVoiceFieldId.current === 'description' ? micPulse : 1 }] }}>
+                                    <Ionicons
+                                        name={isListening && activeVoiceFieldId.current === 'description' ? 'mic' : 'mic-outline'}
+                                        size={20}
+                                        color={isListening && activeVoiceFieldId.current === 'description' ? '#ef4444' : '#9ca3af'}
+                                    />
+                                </Animated.View>
+                            </TouchableOpacity>
+                        )}
+                    </View>
                 </View>
 
                 <View style={styles.section}>
@@ -166,13 +247,31 @@ export default function CreateListScreen() {
 
                             <View style={styles.fieldRow}>
                                 <View style={styles.fieldNameContainer}>
-                                    <TextInput
-                                        value={field.name}
-                                        onChangeText={(text) => updateField(field.id, 'name', text)}
-                                        placeholder="Field Name"
-                                        placeholderTextColor="#9ca3af"
-                                        style={[styles.fieldInput, errors.fields?.[field.id] && styles.inputError]}
-                                    />
+                                    <View style={styles.fieldNameRow}>
+                                        <TextInput
+                                            value={field.name}
+                                            onChangeText={(text) => updateField(field.id, 'name', text)}
+                                            placeholder="Field Name"
+                                            placeholderTextColor="#9ca3af"
+                                            style={[styles.fieldInput, errors.fields?.[field.id] && styles.inputError]}
+                                        />
+                                        {voiceSupported && (
+                                            <TouchableOpacity
+                                                onPress={() => toggleVoice(`field-name-${field.id}`)}
+                                                style={styles.micFieldButton}
+                                                activeOpacity={0.7}
+                                                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                                            >
+                                                <Animated.View style={{ transform: [{ scale: isListening && activeVoiceFieldId.current === `field-name-${field.id}` ? micPulse : 1 }] }}>
+                                                    <Ionicons
+                                                        name={isListening && activeVoiceFieldId.current === `field-name-${field.id}` ? 'mic' : 'mic-outline'}
+                                                        size={18}
+                                                        color={isListening && activeVoiceFieldId.current === `field-name-${field.id}` ? '#ef4444' : '#9ca3af'}
+                                                    />
+                                                </Animated.View>
+                                            </TouchableOpacity>
+                                        )}
+                                    </View>
                                     {errors.fields?.[field.id] && (
                                         <View style={styles.errorContainer}>
                                             <Ionicons name="alert-circle" size={14} color="#ef4444" />
@@ -375,15 +474,46 @@ const styles = StyleSheet.create({
     fieldNameContainer: {
         flex: 1,
     },
-    fieldInput: {
+    fieldNameRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
         backgroundColor: '#ffffff',
         borderWidth: 1,
         borderColor: '#e5e7eb',
         borderRadius: 8,
+        paddingHorizontal: 4,
+    },
+    fieldInput: {
+        flex: 1,
         padding: 12,
         fontSize: 15,
         color: '#1f2937',
         fontFamily: 'PlusJakartaSans_400Regular',
+    },
+    micFieldButton: {
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+    },
+    inputInlineRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#f9fafb',
+        borderWidth: 1,
+        borderColor: '#e5e7eb',
+        borderRadius: 12,
+        paddingHorizontal: 8,
+    },
+    inputInlineText: {
+        flex: 1,
+        padding: 16,
+        fontSize: 16,
+        color: '#1f2937',
+        fontFamily: 'PlusJakartaSans_400Regular',
+        ...Platform.select({ web: { outlineStyle: 'none' } as any }),
+    },
+    micInlineButton: {
+        paddingHorizontal: 8,
+        paddingVertical: 4,
     },
     fieldTypeContainer: {
         width: 110,
