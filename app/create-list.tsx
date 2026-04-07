@@ -28,6 +28,10 @@ export default function CreateListScreen() {
     //   'title' | 'description' | `field-name-${field.id}`
     const activeVoiceFieldId = useRef<string | null>(null);
     const micPulse = useRef(new Animated.Value(1)).current;
+    // Sentence case: only the first letter capitalised, rest lowercased
+    const toSentenceCase = (text: string) =>
+        text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+
     const { isListening, supported: voiceSupported, startListening, stopListening } = useVoiceInput({
         onResult: (text) => {
             const key = activeVoiceFieldId.current;
@@ -35,7 +39,7 @@ export default function CreateListScreen() {
             if (key === 'title') {
                 setTitle(text);
             } else if (key === 'description') {
-                setDescription(text);
+                setDescription(toSentenceCase(text));
             } else if (key.startsWith('field-name-')) {
                 const fieldId = key.replace('field-name-', '');
                 updateField(fieldId, 'name', text);
