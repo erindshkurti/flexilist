@@ -26,7 +26,8 @@ const baseConfig = {
             "infoPlist": {
                 "ITSAppUsesNonExemptEncryption": false,
                 "NSSpeechRecognitionUsageDescription": "FlexiList uses speech recognition so you can speak your list items instead of typing.",
-                "NSMicrophoneUsageDescription": "FlexiList needs microphone access to record your voice for item input."
+                "NSMicrophoneUsageDescription": "FlexiList needs microphone access to record your voice for item input.",
+                "NSPhotoLibraryUsageDescription": "FlexiList does not request access to your photos. This permission is automatically linked by the underlying application framework."
             }
         },
         "android": {
