@@ -26,9 +26,15 @@ export const ListCard = ({ list, onDelete, onArchive, style }: ListCardProps) =>
     }, [items, loading]);
 
     const isComplete = !loading && counts.total > 0 && counts.completed === counts.total;
+    const isArchived = list.archived;
 
     return (
-        <View style={[styles.listCard, isComplete && styles.listCardComplete, style]}>
+        <View style={[
+            styles.listCard,
+            isComplete && !isArchived && styles.listCardComplete,
+            isArchived && styles.listCardArchived,
+            style
+        ]}>
             <View style={styles.innerContainer}>
                 {/* Main clickable area for navigation */}
                 <TouchableOpacity
@@ -42,8 +48,16 @@ export const ListCard = ({ list, onDelete, onArchive, style }: ListCardProps) =>
                                 <View style={styles.titleRow}>
                                     <Text style={styles.listTitle}>{list.title}</Text>
                                     {!loading && (
-                                        <View style={[styles.countBadge, isComplete && styles.countBadgeComplete]}>
-                                            <Text style={[styles.countText, isComplete && styles.countTextComplete]}>
+                                        <View style={[
+                                            styles.countBadge,
+                                            isComplete && !isArchived && styles.countBadgeComplete,
+                                            isArchived && styles.countBadgeArchived
+                                        ]}>
+                                            <Text style={[
+                                                styles.countText,
+                                                isComplete && !isArchived && styles.countTextComplete,
+                                                isArchived && styles.countTextArchived
+                                            ]}>
                                                 {counts.completed}/{counts.total}
                                             </Text>
                                         </View>
@@ -62,8 +76,21 @@ export const ListCard = ({ list, onDelete, onArchive, style }: ListCardProps) =>
 
                         <View style={styles.fieldTags}>
                             {list.fields.slice(0, 3).map((field: any) => (
-                                <View key={field.id} style={[styles.fieldTag, isComplete && styles.fieldTagComplete]}>
-                                    <Text style={[styles.fieldTagText, isComplete && styles.fieldTagTextComplete]}>{field.name}</Text>
+                                <View
+                                    key={field.id}
+                                    style={[
+                                        styles.fieldTag,
+                                        isComplete && !isArchived && styles.fieldTagComplete,
+                                        isArchived && styles.fieldTagArchived
+                                    ]}
+                                >
+                                    <Text style={[
+                                        styles.fieldTagText,
+                                        isComplete && !isArchived && styles.fieldTagTextComplete,
+                                        isArchived && styles.fieldTagTextArchived
+                                    ]}>
+                                        {field.name}
+                                    </Text>
                                 </View>
                             ))}
                             {list.fields.length > 3 && (
@@ -122,6 +149,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#f0fdf4',
         borderColor: '#f0fdf4',
     },
+    listCardArchived: {
+        backgroundColor: '#f3f4f6',
+        borderColor: '#f3f4f6',
+    },
     innerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -170,6 +201,12 @@ const styles = StyleSheet.create({
     },
     countTextComplete: {
         color: '#166534',
+    },
+    countBadgeArchived: {
+        backgroundColor: '#e5e7eb',
+    },
+    countTextArchived: {
+        color: '#6b7280',
     },
     archivedBadge: {
         backgroundColor: '#f3f4f6',
@@ -220,6 +257,12 @@ const styles = StyleSheet.create({
     },
     fieldTagTextComplete: {
         color: '#166534',
+    },
+    fieldTagArchived: {
+        backgroundColor: '#e5e7eb',
+    },
+    fieldTagTextArchived: {
+        color: '#6b7280',
     },
     clickableArea: {
         flex: 1,
