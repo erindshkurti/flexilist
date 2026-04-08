@@ -4,8 +4,9 @@ import { useArchivedLists, useLists } from '@/hooks/useLists';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Alert, FlatList, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, Animated, FlatList, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ArchivedScreen() {
@@ -21,6 +22,28 @@ export default function ArchivedScreen() {
 
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [listToDelete, setListToDelete] = useState<{ id: string; title: string } | null>(null);
+
+    // Voice search logic
+    const micPulse = useRef(new Animated.Value(1)).current;
+    const { isListening, supported: voiceSupported, startListening, stopListening } = useVoiceInput({
+        onResult: (text) => {
+            setSearch(text);
+        },
+    });
+
+    useEffect(() => {
+        if (isListening) {
+            Animated.loop(
+                Animated.sequence([
+                    Animated.timing(micPulse, { toValue: 1.3, duration: 500, useNativeDriver: true }),
+                    Animated.timing(micPulse, { toValue: 1.0, duration: 500, useNativeDriver: true }),
+                ])
+            ).start();
+        } else {
+            micPulse.stopAnimation();
+            micPulse.setValue(1);
+        }
+    }, [isListening, micPulse]);
 
     const filteredLists = archivedLists
         .filter(list => list.title.toLowerCase().includes(search.toLowerCase()))
@@ -100,11 +123,32 @@ export default function ArchivedScreen() {
                                 style={styles.searchInput}
                                 placeholderTextColor="#9ca3af"
                             />
-                            {search.length > 0 && (
-                                <TouchableOpacity onPress={() => setSearch('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                                    <Ionicons name="close-circle" size={18} color="#9ca3af" />
-                                </TouchableOpacity>
-                            )}
+                            <View style={styles.searchRightIcons}>
+                                {search.length > 0 && (
+                                    <TouchableOpacity
+                                        onPress={() => setSearch('')}
+                                        style={styles.iconButton}
+                                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                                    >
+                                        <Ionicons name="close-circle" size={18} color="#9ca3af" />
+                                    </TouchableOpacity>
+                                )}
+                                {voiceSupported && (
+                                    <TouchableOpacity
+                                        onPress={() => isListening ? stopListening() : startListening()}
+                                        style={styles.micButton}
+                                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                                    >
+                                        <Animated.View style={{ transform: [{ scale: isListening ? micPulse : 1 }] }}>
+                                            <Ionicons
+                                                name={isListening ? "mic" : "mic-outline"}
+                                                size={20}
+                                                color={isListening ? "#ef4444" : "#9ca3af"}
+                                            />
+                                        </Animated.View>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
                         </View>
                         <View style={styles.sortButtonWrapper}>
                             <TouchableOpacity
@@ -267,9 +311,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'white',
         borderRadius: 16,
-        paddingHorizontal: 16,
+        paddingHorizontal: 10,
         paddingVertical: 0,
-        gap: 12,
+        gap: 6,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.05,
@@ -289,13 +333,29 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#1f2937',
         paddingVertical: 14,
-        paddingHorizontal: 6,
+        paddingHorizontal: 4,
         fontFamily: 'PlusJakartaSans_500Medium',
+        minWidth: 0,
         ...Platform.select({
             web: {
                 outlineStyle: 'none',
             } as any,
         }),
+    },
+    searchRightIcons: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+    },
+    iconButton: {
+        padding: 2,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    micButton: {
+        padding: 2,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     sortButtonWrapper: {
         position: 'relative',

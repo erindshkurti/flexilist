@@ -48,7 +48,9 @@ export default function ListDetailScreen() {
     const micPulse = useRef(new Animated.Value(1)).current;
     const { isListening, supported: voiceSupported, startListening, stopListening } = useVoiceInput({
         onResult: (text) => {
-            if (activeVoiceFieldId.current) {
+            if (activeVoiceFieldId.current === 'search') {
+                setSearch(text);
+            } else if (activeVoiceFieldId.current) {
                 setCurrentItem(prev => ({ ...prev, [activeVoiceFieldId.current!]: text }));
             }
         },
@@ -374,11 +376,41 @@ export default function ListDetailScreen() {
                                 style={styles.searchInput}
                                 placeholderTextColor="#9ca3af"
                             />
-                            {search.length > 0 && (
-                                <TouchableOpacity onPress={() => setSearch('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                                    <Ionicons name="close-circle" size={18} color="#9ca3af" />
-                                </TouchableOpacity>
-                            )}
+                            <View style={styles.searchRightIcons}>
+                                {search.length > 0 && (
+                                    <TouchableOpacity
+                                        onPress={() => setSearch('')}
+                                        style={styles.iconButton}
+                                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                                    >
+                                        <Ionicons name="close-circle" size={18} color="#9ca3af" />
+                                    </TouchableOpacity>
+                                )}
+                                {voiceSupported && (
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            if (isListening && activeVoiceFieldId.current === 'search') {
+                                                stopListening();
+                                            } else {
+                                                activeVoiceFieldId.current = 'search';
+                                                startListening();
+                                            }
+                                        }}
+                                        style={styles.micButton}
+                                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                                    >
+                                        <Animated.View style={{
+                                            transform: [{ scale: isListening && activeVoiceFieldId.current === 'search' ? micPulse : 1 }]
+                                        }}>
+                                            <Ionicons
+                                                name={isListening && activeVoiceFieldId.current === 'search' ? 'mic' : 'mic-outline'}
+                                                size={20}
+                                                color={isListening && activeVoiceFieldId.current === 'search' ? '#ef4444' : '#9ca3af'}
+                                            />
+                                        </Animated.View>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
                         </View>
                         <TouchableOpacity
                             onPress={() => {
@@ -844,9 +876,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'white',
         borderRadius: 16,
-        paddingHorizontal: 16,
+        paddingHorizontal: 10,
         paddingVertical: 0,
-        gap: 12,
+        gap: 6,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.05,
@@ -866,13 +898,19 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#1f2937',
         paddingVertical: 14,
-        paddingHorizontal: 6,
+        paddingHorizontal: 4,
         fontFamily: 'PlusJakartaSans_500Medium',
+        minWidth: 0,
         ...Platform.select({
             web: {
                 outlineStyle: 'none',
             } as any,
         }),
+    },
+    searchRightIcons: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
     },
     sortButtonWrapper: {
         position: 'relative',
@@ -1408,6 +1446,21 @@ const styles = StyleSheet.create({
     },
     micInlineButton: {
         padding: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    searchRightIcons: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    iconButton: {
+        padding: 2,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    micButton: {
+        padding: 2,
         justifyContent: 'center',
         alignItems: 'center',
     },
