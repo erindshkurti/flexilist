@@ -42,7 +42,13 @@ export const useListItems = (listId: string) => {
             // Always refresh cache with the latest server snapshot
             writeCache(key, itemsData);
         }, (error) => {
-            console.error('Error fetching items:', error);
+            // Permission denied usually happens when a list is newly created optimistically 
+            // but not yet visible to the server for a subcollection query.
+            if (error.code === 'permission-denied') {
+                console.log('Permission delayed for list:', listId, '(List may be newly created)');
+            } else {
+                console.error('Error fetching items:', error);
+            }
             // Don't clear state — cached data remains visible offline
             setLoading(false);
         });
