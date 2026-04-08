@@ -84,6 +84,7 @@ export default function ArchivedScreen() {
                 onDelete={() => handleDeletePress(item.id, item.title)}
                 marginBottom={0}
                 borderRadius={20}
+                borderColor="#e5e7eb"
                 leftIcon="arrow-undo-outline"
                 leftLabel="Restore"
                 leftColor="#10b981"

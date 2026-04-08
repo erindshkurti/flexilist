@@ -141,15 +141,15 @@ const styles = StyleSheet.create({
         shadowRadius: 12,
         elevation: 3,
         borderWidth: 1,
-        borderColor: '#f9fafb',
+        borderColor: '#f1f5f9',
     },
     listCardComplete: {
         backgroundColor: '#f0fdf4',
-        borderColor: '#f0fdf4',
+        borderColor: '#dcfce7',
     },
     listCardArchived: {
         backgroundColor: '#f3f4f6',
-        borderColor: '#f3f4f6',
+        borderColor: '#e5e7eb',
     },
     innerContainer: {
         flexDirection: 'row',

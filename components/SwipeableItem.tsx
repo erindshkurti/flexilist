@@ -13,6 +13,7 @@ interface SwipeableItemProps {
     leftIcon?: React.ComponentProps<typeof Ionicons>['name'];
     leftLabel?: string;
     leftColor?: string;
+    borderColor?: string;
 }
 
 export const SwipeableItem = ({
@@ -24,6 +25,7 @@ export const SwipeableItem = ({
     leftIcon = 'pencil',
     leftLabel = 'Edit',
     leftColor = '#3b82f6',
+    borderColor = '#f1f5f9',
 }: SwipeableItemProps) => {
     const swipeableRef = useRef<Swipeable>(null);
 
@@ -36,7 +38,15 @@ export const SwipeableItem = ({
         return (
             <RectButton
                 shouldActivateOnStart={true}
-                style={[styles.leftAction, { backgroundColor: leftColor, marginBottom, borderRadius, borderTopRightRadius: 0, borderBottomRightRadius: 0 }]}
+                style={[styles.leftAction, { 
+                    backgroundColor: leftColor, 
+                    borderRadius, 
+                    borderTopRightRadius: 0, 
+                    borderBottomRightRadius: 0,
+                    borderColor: borderColor,
+                    borderWidth: 1,
+                    borderRightWidth: 0
+                }]}
                 onPress={() => {
                     swipeableRef.current?.close();
                     onEdit();
@@ -65,7 +75,14 @@ export const SwipeableItem = ({
         return (
             <RectButton
                 shouldActivateOnStart={true}
-                style={[styles.rightAction, { marginBottom, borderRadius, borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }]}
+                style={[styles.rightAction, { 
+                    borderRadius, 
+                    borderTopLeftRadius: 0, 
+                    borderBottomLeftRadius: 0,
+                    borderColor: borderColor,
+                    borderWidth: 1,
+                    borderLeftWidth: 0
+                }]}
                 onPress={() => {
                     swipeableRef.current?.close();
                     onDelete();
@@ -86,20 +103,22 @@ export const SwipeableItem = ({
     };
 
     return (
-        <Swipeable
-            ref={swipeableRef}
-            renderLeftActions={renderLeftActions}
-            renderRightActions={renderRightActions}
-            friction={2}
-            leftThreshold={30}
-            rightThreshold={30}
-            overshootLeft={false}
-            overshootRight={false}
-            containerStyle={{ overflow: 'visible' }}
-            childrenContainerStyle={{ overflow: 'visible' }}
-        >
-            {children}
-        </Swipeable>
+        <Animated.View style={{ marginBottom }}>
+            <Swipeable
+                ref={swipeableRef}
+                renderLeftActions={renderLeftActions}
+                renderRightActions={renderRightActions}
+                friction={2}
+                leftThreshold={30}
+                rightThreshold={30}
+                overshootLeft={false}
+                overshootRight={false}
+                containerStyle={{ overflow: 'visible' }}
+                childrenContainerStyle={{ overflow: 'visible' }}
+            >
+                {children}
+            </Swipeable>
+        </Animated.View>
     );
 };
 
@@ -109,11 +128,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'flex-start',
         paddingLeft: 20,
-        marginBottom: 12,
         borderRadius: 16,
         borderTopRightRadius: 0,
         borderBottomRightRadius: 0,
         marginRight: -36,
+        borderWidth: 1,
+        borderRightWidth: 0,
     },
     rightAction: {
         minWidth: 120,
@@ -121,11 +141,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'flex-end',
         paddingRight: 20,
-        marginBottom: 12,
         borderRadius: 16,
         borderTopLeftRadius: 0,
         borderBottomLeftRadius: 0,
         marginLeft: -36,
+        borderWidth: 1,
+        borderLeftWidth: 0,
     },
     actionText: {
         alignItems: 'center',

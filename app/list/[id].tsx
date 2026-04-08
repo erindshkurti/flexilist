@@ -454,8 +454,15 @@ export default function ListDetailScreen() {
                         <SwipeableItem
                             onEdit={() => openEditModal(item)}
                             onDelete={() => handleDeleteItem(item.id, getItemName(item))}
+                            marginBottom={16}
+                            borderRadius={16}
+                            borderColor={item.completed ? '#dcfce7' : '#f1f5f9'}
                         >
-                            <View style={[styles.itemCard, item.completed && styles.itemCardCompleted]}>
+                            <View style={[
+                                styles.itemCard, 
+                                item.completed && styles.itemCardCompleted,
+                                { marginBottom: 0 }
+                            ]}>
                                 <TouchableOpacity
                                     onPress={() => toggleComplete(item.id, item.completed || false)}
                                     style={styles.checkbox}
@@ -1050,9 +1057,12 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.08,
         shadowRadius: 12,
         elevation: 3,
+        borderWidth: 1,
+        borderColor: '#f1f5f9',
     },
     itemCardCompleted: {
         backgroundColor: '#f0fdf4',
+        borderColor: '#dcfce7',
     },
     checkbox: {
         marginRight: 12,
