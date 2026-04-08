@@ -146,15 +146,23 @@ Firebase supports `.ipa` distribution for iOS (requires an Ad Hoc provisioning p
 | **TestFlight upload** | `npm run deploy:ios` (built-in) | `eas submit` | `eas submit` |
 
 
-## 6. Production Release
+## 6. Production Release (App Store Connect)
 
-1. Go to [App Store Connect](https://appstoreconnect.apple.com/).
-2. **My Apps** → **+** → **New App**.
-   - Bundle ID: `com.erindshkurti.flexilist`
-   - SKU: `flexilist`
-3. Complete the store listing (Privacy Policy URL, Screenshots, Description).
-4. Under **Build**, select your uploaded version.
-5. Click **Submit for Review** (Usually takes 1–3 days).
+Follow these steps to release your build (or an update) to the public:
+
+1. **Create/Select Version**:
+   - Go to [App Store Connect](https://appstoreconnect.apple.com/) → **My Apps** → **FlexiList**.
+   - **For Updates**: Click the **+** button next to **iOS App** in the left sidebar and enter the new version number (e.g., 1.1.0).
+   - **For first release**: Click the existing version marked **Prepare for Submission** (e.g., 1.0.0).
+2. **What's New**: Complete the **What's New in This Version** section describing your changes (e.g., "Added voice search").
+3. **Link Build**: Scroll down to the **Build** section and click **Select a build before you submit**.
+   - Choose the desired build from your TestFlight history.
+   - Click **Done**.
+4. **Metadata**: 
+   - Review and update **Screenshots** if the UI has changed significantly.
+   - Ensure the **App Privacy** section is still accurate.
+5. **Submit**: Click **Add for Review** in the top right corner.
+   - Apple's review team usually takes **1–2 business days** to approve the app.
 
 
 ## Troubleshooting
