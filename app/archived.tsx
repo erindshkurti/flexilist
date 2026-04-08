@@ -25,9 +25,12 @@ export default function ArchivedScreen() {
 
     // Voice search logic
     const micPulse = useRef(new Animated.Value(1)).current;
+    const isSearchVoiceActive = useRef(false);
     const { isListening, supported: voiceSupported, startListening, stopListening } = useVoiceInput({
         onResult: (text) => {
-            setSearch(text);
+            if (isSearchVoiceActive.current) {
+                setSearch(text);
+            }
         },
     });
 
@@ -42,6 +45,7 @@ export default function ArchivedScreen() {
         } else {
             micPulse.stopAnimation();
             micPulse.setValue(1);
+            isSearchVoiceActive.current = false;
         }
     }, [isListening, micPulse]);
 
@@ -136,7 +140,14 @@ export default function ArchivedScreen() {
                                 )}
                                 {voiceSupported && (
                                     <TouchableOpacity
-                                        onPress={() => isListening ? stopListening() : startListening()}
+                                        onPress={() => {
+                                            if (isListening) {
+                                                stopListening();
+                                            } else {
+                                                isSearchVoiceActive.current = true;
+                                                startListening();
+                                            }
+                                        }}
                                         style={styles.micButton}
                                         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                                     >
