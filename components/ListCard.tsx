@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     },
     listCardComplete: {
         backgroundColor: '#f0fdf4',
-        borderColor: '#bbf7d0',
+        borderColor: '#f0fdf4',
     },
     innerContainer: {
         flexDirection: 'row',
